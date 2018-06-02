@@ -2308,7 +2308,7 @@
 		input[type="button"].special,
 		button.special,
 		.button.special {
-			background-color: #ed4933;
+			background-color: #003366;
 			box-shadow: none !important;
 			color: #ffffff !important;
 		}
@@ -2641,7 +2641,7 @@
 		}
 
 		.wrapper.style1 {
-			background-color: #21b2a6;
+			background-color: #003366;
 			color: #c7ebe8;
 		}
 
