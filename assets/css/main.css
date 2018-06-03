@@ -2318,7 +2318,7 @@
 			input[type="button"].special:hover,
 			button.special:hover,
 			.button.special:hover {
-				background-color: #ef5e4a !important;
+				background-color: #004c99 !important;
 			}
 
 			input[type="submit"].special:active,
@@ -3160,7 +3160,7 @@
 		-ms-transition: -ms-transform 0.5s ease;
 		transition: transform 0.5s ease;
 		-webkit-overflow-scrolling: touch;
-		background: #21b2a6;
+		background: #003366;
 		color: #ffffff;
 		height: 100%;
 		max-width: 80%;
