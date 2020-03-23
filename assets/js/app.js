@@ -5,25 +5,25 @@
     var $sections = $('.box');
     var $nav_videos = $('.box video.nav-video');
 
-    if ($('form#contact_form').length > 0) {
-        $('form#contact_form').validate({
-            messages: {},
-            submitHandler: function(form) {
-                $.ajax({
-                    type: 'POST',
-                    url: '../../send.php',
-                    data: $(form).serialize(),
-                    success: function(data) {
-                        if (data.match(/success/)) {
-                            $(form).trigger('reset');
-                            $('#thanks').show().fadeOut(5000);
-                        }
-                    }
-                });
-                return false;
-            }
-        });
-    }
+    // if ($('form#contact_form').length > 0) {
+    //   $('form#contact_form').validate({
+    //     messages: {},
+    //   submitHandler: function(form) {
+    //     $.ajax({
+    //       type: 'POST',
+    //     url: '/send.php',
+    //   data: $(form).serialize(),
+    // success: function(data) {
+    //   if (data.match(/success/)) {
+    //     $(form).trigger('reset');
+    //    $('#thanks').show().fadeOut(5000);
+    //          }
+    //        }
+    //   });
+    // return false;
+    //       }
+    //  });
+    // }
 
     // https://jonsuh.com/blog/detect-the-end-of-css-animations-and-transitions-with-javascript/
     // Function from David Walsh: http://davidwalsh.name/css-animation-callback
