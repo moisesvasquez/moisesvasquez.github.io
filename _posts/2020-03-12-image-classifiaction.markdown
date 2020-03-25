@@ -1,10 +1,10 @@
 ---
 layout: post
-title: "English Premiere Legue Predictor"
-date: 2020-03-11 20:07:25 -0400
+title:  "Image Classification"
+date:   2020-03-11 20:07:25 -0400
 image: https://media.brstatic.com/2019/03/22142110/How-to-trade-stocks.jpg
-permalink: /projects/epl
-description: "Predicting the results of the English Premier League using Artificial Neural Networks"
+permalink: /projects/image-classification
+description: "I have moved to this city three months ago. I love the street food here. On weekends, I explore new eating joints. This way, I get to learn the routes of this city and prepare myself professionally. Being a sales professional, my profile requires a lot of traveling."
 ---
 <div class="full">
     <div class="large-6 columns">
