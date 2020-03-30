@@ -2,9 +2,9 @@
 layout: post
 title:  "Image Classification"
 date:   2020-03-11 20:07:25 -0400
-image: https://media.brstatic.com/2019/03/22142110/How-to-trade-stocks.jpg
+image: https://i.pinimg.com/originals/25/7c/c1/257cc149de4ea6c0d3cd6cb03218affd.jpg
 permalink: /projects/image-classification
-description: "I have moved to this city three months ago. I love the street food here. On weekends, I explore new eating joints. This way, I get to learn the routes of this city and prepare myself professionally. Being a sales professional, my profile requires a lot of traveling."
+description: "Building an image classification algorithm API with R."
 ---
 <div class="full">
     <div class="large-6 columns">

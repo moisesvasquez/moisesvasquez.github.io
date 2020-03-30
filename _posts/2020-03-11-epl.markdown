@@ -2,7 +2,7 @@
 layout: post
 title: "English Premiere Legue Predictor"
 date: 2020-03-11 20:07:25 -0400
-image: https://media.brstatic.com/2019/03/22142110/How-to-trade-stocks.jpg
+image: https://resources.premierleague.com/premierleague/photo/2018/12/14/aface409-82b3-45c3-a20e-1aa1ea9d583d/PL-Lion.png
 permalink: /projects/epl
 description: "Predicting the results of the English Premier League using Artificial Neural Networks"
 ---

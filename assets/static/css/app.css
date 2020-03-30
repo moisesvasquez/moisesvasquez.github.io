@@ -670,6 +670,13 @@ html.no-touchevents .nav-video {
     line-height: 1em;
 }
 
+.small-text {
+    font-size: 13px;
+    line-height: 1.3em;
+    font-style: italic;
+    color: #494949;
+}
+
 @keyframes BackgroundAnimated-l-r {
     from {
         background-position: 0 0;

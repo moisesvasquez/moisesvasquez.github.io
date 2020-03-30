@@ -2,9 +2,9 @@
 layout: post
 title:  "Miami Dade"
 date:   2020-03-11 20:07:25 -0400
-image: https://media.brstatic.com/2019/03/22142110/How-to-trade-stocks.jpg
+image: https://valientelaw.com/wp-content/uploads/2018/09/miami-dade.jpg
 permalink: /projects/miami-dade
-description: "I have moved to this city three months ago. I love the street food here. On weekends, I explore new eating joints. This way, I get to learn the routes of this city and prepare myself professionally. Being a sales professional, my profile requires a lot of traveling."
+description: "Using Miami-Dade's County real-time data to build prediction models."
 ---
 <div class="full">
     <div class="large-6 columns">
