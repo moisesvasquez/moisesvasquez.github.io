@@ -1,16 +1,16 @@
 ---
 layout: post
-title: "English Premiere Legue Predictor"
-date: 2020-03-11 20:07:25 -0400
-image: https://resources.premierleague.com/premierleague/photo/2018/12/14/aface409-82b3-45c3-a20e-1aa1ea9d583d/PL-Lion.png
-permalink: /projects/epl
-description: "Predicting the results of the English Premier League using Artificial Neural Networks"
-category: Artificial Intelligence, Web Scraping, Neural Networks
-duration: 12 Weeks
-tools: Prediction Models, H20 Artificila Neural Network
+title:  "Miami Dade"
+date:   2020-03-11 20:07:25 -0400
+image: https://valientelaw.com/wp-content/uploads/2018/09/miami-dade.jpg
+permalink: /projects/miami-dade
+description: "Using Miami-Dade's County real-time data to build prediction models."
+category: Prediction Models
+duration: 8 Weeks
+tools: Miami Dade API, Machine Learning, Time Series Analysis, Descition Tree
 language: R Language
-brief: "The English Premeire Legue is the best league in the world right now. Has been named the best league in the world three years in a row. It consists of 20 teams. The prediction of the premiere league is an ongoing project by <a href='https://github.com/STUBigData' target='_blank'>STU Big Data</a>. Early versions of the predictor delt with team data as a whole. My version of the predictor uses data from all the players."
-github: "https://github.com/moisesvasquez/Fantasy-Stock-Market-Git-Repo"
+brief: "Is there a way to predict the next 311 call using machine learning? It turns out it is. In this project I was able to predict with a 85% accuracy the next 311 call topic, response time, and city"
+github: "https://github.com/moisesvasquez/Miami-Dade"
 dashboard:
 ---
 <div class="case-header">

@@ -1,16 +1,16 @@
 ---
 layout: post
-title: "English Premiere Legue Predictor"
-date: 2020-03-11 20:07:25 -0400
-image: https://resources.premierleague.com/premierleague/photo/2018/12/14/aface409-82b3-45c3-a20e-1aa1ea9d583d/PL-Lion.png
-permalink: /projects/epl
-description: "Predicting the results of the English Premier League using Artificial Neural Networks"
-category: Artificial Intelligence, Web Scraping, Neural Networks
-duration: 12 Weeks
-tools: Prediction Models, H20 Artificila Neural Network
+title:  "Image Classification"
+date:   2020-03-11 20:07:25 -0400
+image: https://i.pinimg.com/originals/25/7c/c1/257cc149de4ea6c0d3cd6cb03218affd.jpg
+permalink: /projects/image-classification
+description: "Building an image classification algorithm API with R."
+category: Image Processing, Classification Models
+duration: 8 Weeks
+tools: Descition Trees, Naive Bayes Model, Image Manipulation
 language: R Language
-brief: "The English Premeire Legue is the best league in the world right now. Has been named the best league in the world three years in a row. It consists of 20 teams. The prediction of the premiere league is an ongoing project by <a href='https://github.com/STUBigData' target='_blank'>STU Big Data</a>. Early versions of the predictor delt with team data as a whole. My version of the predictor uses data from all the players."
-github: "https://github.com/moisesvasquez/Fantasy-Stock-Market-Git-Repo"
+brief: "To succesfully use this project, you need a large compilation of images that are separated in at least 2 folders, each folder representing a class to be classified. The images need to be stored on a local directory. For this project we have two folders stored locally one with pictures of cars , obtained from Kaggle, and another file of pictures that are not cars, obtained from the Visual Genome."
+github: "https://github.com/moisesvasquez/Image-Classification"
 dashboard:
 ---
 <div class="case-header">
