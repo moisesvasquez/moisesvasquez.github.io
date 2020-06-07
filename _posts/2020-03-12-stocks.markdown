@@ -9,7 +9,7 @@ category: Algotrading, Stock Prediction
 duration: 8 Weeks
 tools: Project Rex API, Alphavantager API, Time Series Analysis, Descition Tree
 language: R Language
-brief: "Stock Market Project API This project is a version of the Fantasy Stock Game. A key generated in alphavantage.co's API is used for checking stock prices and making transactions. The number of price look-ups is limited with Alpha Vantage, API number of calls are limited and must be made made at the optimum time."
+brief: "Is there a way to predict the stock market? In this project we attempted to do so as part of a Fantasy Stock competition. Using prediction models and machine learning algorithms, my team and I where able to accurately predict and make more than 250 successful buy/sell decisions each day of the competition."
 github: "https://github.com/moisesvasquez/Fantasy-Stock-Market-Git-Repo"
 dashboard:
 ---
