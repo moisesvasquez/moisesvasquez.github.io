@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Projects | Moises Vasquez</title>
+    <title>Blog | Moises Vasquez</title>
     <link rel="stylesheet" href="../assets/static/css/foundation.css">
     <link rel="stylesheet" href="../assets/static/css/slick.css">
     <link rel="stylesheet" href="../assets/static/css/slick-theme.css">
@@ -43,7 +43,7 @@
                 <h2>
                     <a href="">
                         <video loop autoplay muted playsinline class="nav-video">
-                <source src='../assets/images/@stock/works-2.optimized..faststart.mp4' type='video/mp4'>
+                            <source src='../assets/images/@stock/blog2-8.optimized..faststart.mp4' type='video/mp4' >
               </video>
 
                         <svg width="600" height="338" viewBox="0 0 600 338" class="svg-graphic" id="svg-graphic-works">
@@ -59,24 +59,56 @@
                 <rect x="0" y="0" width="600" height="338" />
               </svg>
 
-                        <span>Projects</span>
+                        <span>Blog</span>
                     </a>
                 </h2>
             </nav>
             <div class="header-title">
                 <div class="row">
                     <div class="large-8 columns">
-                        <h2>Projects</h2>
-                        <p>A collection of my best projects. Real world projects with real data that help solve a problem.</p>
+                        <h2>Blog</h2>
+                        <p>A collection of informative blogs, to help you with topics related to Data Science.</p>
                     </div>
                 </div>
             </div>
         </div>
         <div class="content">
-            <div class="works">
+            <div class="posts">
                 {% for post in site.posts %}
-                {% if post.tags contains 'project' %}
-                <div class="large-3 medium-6 columns">
+                {% if post.tags contains 'blog-post' %}
+
+                <div class="large-6 columns">
+                    <div class="post {% if forloop.first == true %}featured{% endif %}">
+                      <div class="post-desc">
+                        <p class="info-author">
+                          <span>
+                            Posted by
+                            <a href="#">Moises</a>
+                          </span>
+                        </p>
+                        <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+                        <p class="info-others">
+                          <span>{{ post.date | date: "%b %d, %y" }}</span>
+                          <span>
+                            In <a href="#" rel="category tag">Design</a>
+                          </span>
+                        </p>
+                        <div class="two spacing"></div>
+                        <!-- <p><a href="#" class="button boxed black">Read more</a></p> -->
+                      </div>
+        
+                      <div class="post-image-wrap">
+                        <div class="post-image" style=" background: url({{ post.image }}) center center no-repeat;
+                        background-size: cover;"></div>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
+
+                <!--<div class="large-3 medium-6 columns">
                     <div class="item">
                         <a href="{{ post.github }}" target="_blank">
                             <div class="circle-wrap">
@@ -89,7 +121,7 @@
                         </a>
 
                     </div>
-                </div>
+                </div>-->
                 {% endif %}
                 {% endfor %}
             </div>
@@ -104,13 +136,13 @@
     </nav>
 
 
-    <script src="../assets/bower_components/jquery/dist/jquery.js"></script>
-    <script src="../assets/bower_components/foundation-sites/dist/js/foundation.js"></script>
-    <script src="../assets/bower_components/countto/jquery.countTo.js"></script>
-    <script src="../assets/js/jquery.appear.js"></script>
-    <script src="../assets/js/jquery.validate.js"></script>
-    <script src="../assets/js/slick.min.js" type="text/javascript"></script>
-    <script src="../assets/js/app.js"></script>
+    <script src="/assets/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/assets/bower_components/foundation-sites/dist/js/foundation.js"></script>
+    <script src="/assets/bower_components/countto/jquery.countTo.js"></script>
+    <script src="/assets/js/jquery.appear.js"></script>
+    <script src="/assets/js/jquery.validate.js"></script>
+    <script src="/assets/js/slick.min.js" type="text/javascript"></script>
+    <script src="/assets/js/app.js"></script>
     <script src="https://use.fontawesome.com/e83b4447db.js"></script>
 </body>
 

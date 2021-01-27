@@ -12,6 +12,7 @@ language: R Language
 brief: "Is there a way to predict the stock market? In this project we attempted to do so as part of a Fantasy Stock competition. Using prediction models and machine learning algorithms, my team and I where able to accurately predict and make more than 250 successful buy/sell decisions each day of the competition."
 github: "https://github.com/moisesvasquez/Fantasy-Stock-Market-Git-Repo"
 dashboard:
+tags: project
 ---
 <div class="case-header">
   <div class="media-wrapper">

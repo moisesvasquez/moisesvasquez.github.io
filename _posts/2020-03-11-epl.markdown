@@ -12,6 +12,7 @@ language: R Language
 brief: "The English Premeire Legue is the best league in the world right now. Has been named the best league in the world three years in a row. It consists of 20 teams. The prediction of the premiere league is an ongoing project by <a href='https://github.com/STUBigData' target='_blank'>STU Big Data</a>. Early versions of the predictor delt with team data as a whole. My version of the predictor uses data from all the players."
 github: "https://github.com/moisesvasquez/EPLPredictor"
 dashboard:
+tags: project
 ---
 <div class="case-header">
   <div class="media-wrapper">

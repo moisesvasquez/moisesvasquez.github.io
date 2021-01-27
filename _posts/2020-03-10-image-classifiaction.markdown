@@ -12,6 +12,7 @@ language: R Language
 brief: "To succesfully use this project, you need a large compilation of images that are separated in at least 2 folders, each folder representing a class to be classified. The images need to be stored on a local directory. For this project we have two folders stored locally one with pictures of cars , obtained from Kaggle, and another file of pictures that are not cars, obtained from the Visual Genome."
 github: "https://github.com/moisesvasquez/Image-Classification"
 dashboard:
+tags: project
 ---
 <div class="case-header">
   <div class="media-wrapper">

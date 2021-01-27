@@ -12,6 +12,7 @@ language: R Language
 brief: "Is there a way to predict the next 311 call using machine learning? It turns out it is. In this project I was able to predict with a 85% accuracy the next 311 call topic, response time, and city"
 github: "https://github.com/moisesvasquez/Miami-Dade"
 dashboard:
+tags: project
 ---
 <div class="case-header">
   <div class="media-wrapper">
