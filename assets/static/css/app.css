@@ -16,6 +16,17 @@
 --------------*/
 
 
+/* Wedding Landing */
+@media only screen and (max-width: 600px) {
+    .front-image{
+        padding-top: 30%;
+    }
+    .full{
+        padding: 0 !important;
+    }
+  }
+
+
 /* base */
 
 a {
