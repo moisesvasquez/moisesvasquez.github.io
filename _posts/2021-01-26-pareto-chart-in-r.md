@@ -12,7 +12,8 @@ tags: blog-post
 Have you ever wanted to build a custom pareto chart using ggplot2? Well in this guide I'll show you how to do just that.
 
 You can jump straigt to the full code by clicking here:
-[Full Code](#fullcodepart)
+
+[Full Code](#fullcode)
 
 Or take it step by step in the guide
 
