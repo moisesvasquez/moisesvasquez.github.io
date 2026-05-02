@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSC Men's Ministry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyan: {
+                            neon: '#02e3fb',
+                            dark: '#01aebf'
+                        },
+                        dark: {
+                            bg: '#0f0f0f',
+                            card: '#1a1a1a',
+                            border: '#333333'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: white;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom Checkbox styles */
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .checkmark {
+            position: relative;
+            top: 0;
+            left: 0;
+            height: 24px;
+            width: 24px;
+            background-color: #222;
+            border: 2px solid #444;
+            border-radius: 6px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .checkbox-container:hover input ~ .checkmark {
+            border-color: #02e3fb;
+        }
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #02e3fb;
+            border-color: #02e3fb;
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 7px;
+            top: 3px;
+            width: 6px;
+            height: 12px;
+            border: solid #000;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        /* Hide scrollbar for cleaner look */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-5">
+
+    <!-- Header Logo / Title -->
+    <div class="w-full max-w-md mt-6 mb-8 text-center">
+        <h1 class="text-3xl font-extrabold tracking-tight">
+            <span class="text-cyan-neon">TSC</span> Men's Ministry
+        </h1>
+        <p class="text-gray-400 mt-2 text-lg font-medium">Interest Form</p>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="w-full max-w-md relative flex-grow flex flex-col">
+
+        <!-- ======================================= -->
+        <!-- SECTION 1: FORM PAGE                    -->
+        <!-- ======================================= -->
+        <div id="formSection" class="w-full bg-dark-card rounded-2xl p-6 shadow-2xl border border-dark-border transition-all duration-300">
+            <form id="interestForm" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLScYeuorS5HtA6kmYY35odLCS3Fw6X-EfmJFqNW20BH9XL-hbg/formResponse" onsubmit="handleFormSubmit(event)">
+                
+                <!-- Name Field -->
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2" for="name">Name</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="entry.195199384" 
+                        required 
+                        class="w-full bg-[#222] border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:border-cyan-neon focus:ring-1 focus:ring-cyan-neon transition-colors"
+                        placeholder="John Doe"
+                    >
+                </div>
+
+                <!-- Phone Field -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-300 mb-2" for="phone">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="entry.165292469" 
+                        required 
+                        class="w-full bg-[#222] border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:border-cyan-neon focus:ring-1 focus:ring-cyan-neon transition-colors"
+                        placeholder="(123) 456-7890"
+                    >
+                </div>
+
+                <!-- Checkbox -->
+                <div class="mb-8 p-4 bg-[#222] rounded-xl border border-gray-800">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="groupInterest" name="entry.1797560521" value="Yes">
+                        <span class="checkmark mt-0.5"></span>
+                        <span class="ml-4 text-sm font-medium text-gray-200 leading-snug">
+                            Interested in a Fitness, Fellowship, and Faith Group
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="w-full bg-cyan-neon text-black font-bold text-lg py-4 px-6 rounded-xl shadow-[0_0_15px_rgba(2,227,251,0.4)] hover:bg-cyan-dark hover:shadow-[0_0_20px_rgba(2,227,251,0.6)] transition-all duration-300 active:scale-95 flex justify-center items-center">
+                    <span>Send Info to Moises</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- ======================================= -->
+        <!-- SECTION 2: ACTIONS PAGE (Hidden by default) -->
+        <!-- ======================================= -->
+        <div id="actionSection" class="w-full hidden space-y-5 transition-all duration-300">
+            
+            <!-- Calendar Card -->
+            <div class="bg-dark-card rounded-2xl p-5 border border-dark-border shadow-lg">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-cyan-neon/10 p-2.5 rounded-lg text-cyan-neon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold">Add May Men's Groups to your calendar</h2>
+                </div>
+                
+                <div class="space-y-3 mb-5 pl-2 border-l-2 border-gray-700 ml-2">
+                    <div>
+                        <p class="text-cyan-neon font-semibold text-sm">Thursday May 14th @ 7:30pm</p>
+                    </div>
+                    <div>
+                        <p class="text-cyan-neon font-semibold text-sm">Saturday May 23rd @ 10:00am</p>
+                    </div>
+                    <div class="pt-2">
+                        <p class="text-xs text-gray-400 flex items-start gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            18490 Johnson St Suite H, Pembroke Pines, FL 33029
+                        </p>
+                    </div>
+                </div>
+
+                <button onclick="downloadCalendar()" class="w-full bg-[#222] border border-cyan-neon text-cyan-neon font-bold py-3 rounded-xl hover:bg-cyan-neon hover:text-black transition-colors active:scale-95">
+                    Add to Calendar
+                </button>
+            </div>
+
+            <!-- Contact Card -->
+            <div class="bg-dark-card rounded-2xl p-5 border border-dark-border shadow-lg">
+                 <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-cyan-neon/10 p-2.5 rounded-lg text-cyan-neon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold">Add Moises to your Contacts</h2>
+                </div>
+                
+                <div class="mb-5 ml-2">
+                    <p class="font-semibold text-lg">Moises Vasquez</p>
+                    <p class="text-cyan-neon mt-1">863-605-7672</p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <button onclick="downloadContact()" class="w-full bg-[#222] border border-cyan-neon text-cyan-neon font-bold py-3 rounded-xl hover:bg-cyan-neon hover:text-black transition-colors active:scale-95">
+                        Add Moises
+                    </button>
+                    
+                    <a href="https://chat.whatsapp.com/JVxRRR3t5gZ8pIshkCv2LM" target="_blank" class="w-full bg-[#25D366] text-white font-bold py-3 rounded-xl hover:bg-[#20bd5a] transition-colors active:scale-95 flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        Join the whatsapp group
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER TOGGLE -->
+    <div class="mt-8 mb-6 text-center">
+        <button id="toggleBtn" onclick="toggleView()" class="text-gray-500 hover:text-cyan-neon font-medium text-sm transition-colors border-b border-transparent hover:border-cyan-neon pb-0.5">
+            Skip to Actions & Links
+        </button>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let currentView = 'form'; // 'form' or 'actions'
+
+        // Handles the submission directly to Google Forms without leaving the page
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            // Visual feedback
+            submitBtn.innerHTML = '<span class="animate-pulse">Sending...</span>';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(form);
+
+            // Get the URL directly from the form's action attribute
+            const googleFormURL = form.action;
+
+            fetch(googleFormURL, {
+                method: "POST",
+                mode: "no-cors", // Required to prevent CORS blocking from standard Google Forms
+                body: formData
+            }).then(() => {
+                // Success - swap to action screen
+                toggleView('actions');
+                
+                // Reset form optionally
+                form.reset();
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }).catch(error => {
+                // Because of 'no-cors', fetches technically fail to read response but still POST the data
+                toggleView('actions');
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            });
+        }
+
+        // Toggles between the Form view and the Actions view
+        function toggleView(forceView = null) {
+            const formSec = document.getElementById('formSection');
+            const actionSec = document.getElementById('actionSection');
+            const toggleBtn = document.getElementById('toggleBtn');
+
+            if (forceView) currentView = forceView === 'form' ? 'actions' : 'form';
+
+            if (currentView === 'form') {
+                // Switch to actions
+                formSec.classList.add('hidden');
+                actionSec.classList.remove('hidden');
+                toggleBtn.innerText = "Back to Interest Form";
+                currentView = 'actions';
+                window.scrollTo(0, 0);
+            } else {
+                // Switch to form
+                actionSec.classList.add('hidden');
+                formSec.classList.remove('hidden');
+                toggleBtn.innerText = "Skip to Actions & Links";
+                currentView = 'form';
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Generates and downloads the ICS Calendar File
+        function downloadCalendar() {
+            // Floating time (no Z) is used so it imports to the local time context accurately 
+            // without confusing timezone shifts for local users.
+            const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TSC Men's Ministry//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:event-may14-2026@tscmensministry
+DTSTAMP:20260502T000000Z
+DTSTART:20260514T193000
+DTEND:20260514T210000
+SUMMARY:May Men's Group (Thursday)
+LOCATION:18490 Johnson St Suite H\\, Pembroke Pines\\, FL 33029
+END:VEVENT
+BEGIN:VEVENT
+UID:event-may23-2026@tscmensministry
+DTSTAMP:20260502T000000Z
+DTSTART:20260523T100000
+DTEND:20260523T113000
+SUMMARY:May Men's Group (Saturday)
+LOCATION:18490 Johnson St Suite H\\, Pembroke Pines\\, FL 33029
+END:VEVENT
+END:VCALENDAR`.replace(/\n/g, '\r\n'); // Enforce standard line endings for .ics
+
+            triggerDownload(icsData, 'text/calendar;charset=utf-8', 'TSC_Mens_Groups_May.ics');
+        }
+
+        // Generates and downloads the VCF Contact File
+        function downloadContact() {
+            const vcfData = `BEGIN:VCARD
+VERSION:3.0
+N:Vasquez;Moises;;;
+FN:Moises Vasquez
+TEL;TYPE=CELL,VOICE:863-605-7672
+END:VCARD`.replace(/\n/g, '\r\n');
+
+            triggerDownload(vcfData, 'text/vcard;charset=utf-8', 'Moises_Vasquez.vcf');
+        }
+
+        // Helper function for Blob downloads
+        function triggerDownload(content, mimeType, filename) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
