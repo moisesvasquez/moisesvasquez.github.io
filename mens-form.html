@@ -231,7 +231,7 @@
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
-    <script>
+ <script>
         let currentView = 'form'; // 'form' or 'actions'
 
         // Handles the submission directly to Google Forms without leaving the page
@@ -247,6 +247,15 @@
             submitBtn.disabled = true;
 
             const formData = new FormData(form);
+
+            // ==========================================
+            // NEW LOGIC: Check if checkbox is unchecked
+            // ==========================================
+            const checkbox = document.getElementById('groupInterest');
+            if (!checkbox.checked) {
+                // If it's not checked, manually tell Google Forms the answer is "No"
+                formData.append('entry.1797560521', 'No');
+            }
 
             // Get the URL directly from the form's action attribute
             const googleFormURL = form.action;
@@ -298,8 +307,6 @@
 
         // Generates and downloads the ICS Calendar File
         function downloadCalendar() {
-            // Floating time (no Z) is used so it imports to the local time context accurately 
-            // without confusing timezone shifts for local users.
             const icsData = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//TSC Men's Ministry//EN
