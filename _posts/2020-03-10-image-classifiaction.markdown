@@ -13,6 +13,7 @@ brief: "To succesfully use this project, you need a large compilation of images 
 github: "https://github.com/moisesvasquez/Image-Classification"
 dashboard:
 tags: project
+type: Data Science
 ---
 <div class="case-header">
   <div class="media-wrapper">

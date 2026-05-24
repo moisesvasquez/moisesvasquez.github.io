@@ -18,19 +18,135 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,400,400i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
     <script src="../assets/js/modernizr-custom.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162886543-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'UA-162886543-1');
     </script>
-
+    <style>
+        .projects-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 32px 32px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f5f5f5;
+        }
+        .filter-btn {
+            font-family: montserrat, sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: none;
+            border: 1px solid #333;
+            color: #333;
+            padding: 8px 18px;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+            border-radius: 2px;
+        }
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #333;
+            color: #fff;
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0;
+            border-left: 1px solid #e0e0e0;
+            border-top: 1px solid #e0e0e0;
+        }
+        .project-card {
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 32px 28px;
+            background: #fff;
+            transition: background 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .project-card:hover {
+            background: #f9f9f9;
+        }
+        .project-card.hidden {
+            display: none;
+        }
+        .project-type-badge {
+            display: inline-block;
+            font-family: montserrat, sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 2px;
+            background: #eee;
+            color: #555;
+            align-self: flex-start;
+        }
+        .project-type-badge.type-data-science  { background: #e8f0ff; color: #2c5ecc; }
+        .project-type-badge.type-data-analysis { background: #e8f9f0; color: #1a7d47; }
+        .project-type-badge.type-web-app       { background: #fff3e8; color: #b55800; }
+        .project-card-title {
+            font-family: lora, serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+            margin: 0;
+            line-height: 1.3;
+        }
+        .project-card-desc {
+            font-family: montserrat, sans-serif;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.65;
+            margin: 0;
+            flex-grow: 1;
+        }
+        .project-card-link {
+            font-family: montserrat, sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px solid #000;
+            padding-bottom: 2px;
+            align-self: flex-start;
+            transition: color 0.15s ease, border-color 0.15s ease;
+        }
+        .project-card-link:hover {
+            color: #555;
+            border-color: #555;
+        }
+        .project-card-in-progress {
+            font-family: montserrat, sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #aaa;
+            align-self: flex-start;
+        }
+        .projects-empty {
+            display: none;
+            padding: 60px 32px;
+            font-family: montserrat, sans-serif;
+            font-size: 13px;
+            color: #aaa;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .projects-content-area {
+            padding: 32px 32px 60px;
+        }
+    </style>
 </head>
 
 <body>
@@ -43,22 +159,18 @@
                 <h2>
                     <a href="">
                         <video loop autoplay muted playsinline class="nav-video">
-                <source src='../assets/images/@stock/works-2.optimized..faststart.mp4' type='video/mp4'>
-              </video>
-
+                            <source src='../assets/images/@stock/works-2.optimized..faststart.mp4' type='video/mp4'>
+                        </video>
                         <svg width="600" height="338" viewBox="0 0 600 338" class="svg-graphic" id="svg-graphic-works">
-                <defs>
-                  <mask id="works-mask" x="0" y="0" width="600" height="338" >
-                    <rect x="0" y="0" width="600" height="338" fill="#fff" />
-                    <path d="M377.5,14.9c22,10,38.9,24.1,50.8,42.4c11.9,18.3,17.8,40,17.8,65c0,24.7-5.9,46.3-17.8,64.8
-		c-11.9,18.5-28.8,32.6-50.8,42.4c-22,9.8-47.9,14.7-77.8,14.7h-67.9V337h-78V0h145.9C329.6,0,355.5,5,377.5,14.9z"/>
-                  </mask>
-                </defs>
-                <!-- rect should be bigger than 337.5, vector shape should be smaller than 337.5 -->
-                <!-- the 337.5 is calcutated by 600 / 16 * 9 -->
-                <rect x="0" y="0" width="600" height="338" />
-              </svg>
-
+                            <defs>
+                                <mask id="works-mask" x="0" y="0" width="600" height="338">
+                                    <rect x="0" y="0" width="600" height="338" fill="#fff" />
+                                    <path d="M377.5,14.9c22,10,38.9,24.1,50.8,42.4c11.9,18.3,17.8,40,17.8,65c0,24.7-5.9,46.3-17.8,64.8
+                                    c-11.9,18.5-28.8,32.6-50.8,42.4c-22,9.8-47.9,14.7-77.8,14.7h-67.9V337h-78V0h145.9C329.6,0,355.5,5,377.5,14.9z"/>
+                                </mask>
+                            </defs>
+                            <rect x="0" y="0" width="600" height="338" />
+                        </svg>
                         <span>Projects</span>
                     </a>
                 </h2>
@@ -72,28 +184,38 @@
                 </div>
             </div>
         </div>
-        <div class="content">
-            <div class="works">
-                {% for post in site.posts %}
-                {% if post.tags contains 'project' %}
-                <div class="large-3 medium-6 columns">
-                    <div class="item">
-                        <a href="{{ post.github }}" target="_blank">
-                            <div class="circle-wrap">
-                                <div class="media" style="background-image: url({{ post.image }});"></div>
-                            </div>
-                            <div style="padding: 5%;">
-                                <p><em>{{ post.title }}</em></p>
-                                <h3>{{ post.description | truncate: 114,"" }}</h3>
-                            </div>
-                        </a>
 
-                    </div>
+        <div class="projects-filter">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="Data Science">Data Science</button>
+            <button class="filter-btn" data-filter="Data Analysis">Data Analysis</button>
+            <button class="filter-btn" data-filter="Web App">Web App</button>
+        </div>
+
+        <div class="projects-content-area">
+            <div class="projects-grid" id="projects-grid">
+                {% assign sorted_posts = site.posts | sort: 'date' | reverse %}
+                {% for post in sorted_posts %}
+                {% if post.tags contains 'project' %}
+                {% assign type_slug = post.type | downcase | replace: ' ', '-' %}
+                <div class="project-card" data-type="{{ post.type }}">
+                    <span class="project-type-badge type-{{ type_slug }}">{{ post.type }}</span>
+                    <h3 class="project-card-title">{{ post.title }}</h3>
+                    <p class="project-card-desc">{{ post.brief | default: post.description }}</p>
+                    {% if post.link and post.link != '' %}
+                    <a class="project-card-link" href="{{ post.link }}" target="_blank" rel="noopener">Visit Site &rarr;</a>
+                    {% elsif post.github and post.github != '' %}
+                    <a class="project-card-link" href="{{ post.github }}" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+                    {% else %}
+                    <span class="project-card-in-progress">In Progress</span>
+                    {% endif %}
                 </div>
                 {% endif %}
                 {% endfor %}
             </div>
+            <p class="projects-empty" id="projects-empty">No projects in this category yet.</p>
         </div>
+
         {% include footer.html %}
     </div>
 
@@ -103,7 +225,6 @@
         </a>
     </nav>
 
-
     <script src="../assets/bower_components/jquery/dist/jquery.js"></script>
     <script src="../assets/bower_components/foundation-sites/dist/js/foundation.js"></script>
     <script src="../assets/bower_components/countto/jquery.countTo.js"></script>
@@ -112,6 +233,33 @@
     <script src="../assets/js/slick.min.js" type="text/javascript"></script>
     <script src="../assets/js/app.js"></script>
     <script src="https://use.fontawesome.com/e83b4447db.js"></script>
+
+    <script>
+        (function () {
+            var filterBtns = document.querySelectorAll('.filter-btn');
+            var cards = document.querySelectorAll('.project-card');
+            var emptyMsg = document.getElementById('projects-empty');
+
+            filterBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var filter = btn.getAttribute('data-filter');
+                    filterBtns.forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    var visible = 0;
+                    cards.forEach(function (card) {
+                        var type = card.getAttribute('data-type') || '';
+                        if (filter === 'all' || type === filter) {
+                            card.classList.remove('hidden');
+                            visible++;
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                    emptyMsg.style.display = visible === 0 ? 'block' : 'none';
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

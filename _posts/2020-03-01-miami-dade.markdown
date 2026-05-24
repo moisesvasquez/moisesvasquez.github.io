@@ -13,6 +13,7 @@ brief: "Is there a way to predict the next 311 call using machine learning? It t
 github: "https://github.com/moisesvasquez/Miami-Dade"
 dashboard:
 tags: project
+type: Data Science
 ---
 <div class="case-header">
   <div class="media-wrapper">

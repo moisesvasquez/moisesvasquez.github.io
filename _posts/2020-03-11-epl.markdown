@@ -13,6 +13,7 @@ brief: "The English Premeire Legue is the best league in the world right now. Ha
 github: "https://github.com/moisesvasquez/EPLPredictor"
 dashboard:
 tags: project
+type: Data Analysis
 ---
 <div class="case-header">
   <div class="media-wrapper">

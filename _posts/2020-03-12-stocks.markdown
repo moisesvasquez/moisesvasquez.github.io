@@ -13,6 +13,7 @@ brief: "Is there a way to predict the stock market? In this project we attempted
 github: "https://github.com/moisesvasquez/Fantasy-Stock-Market-Git-Repo"
 dashboard:
 tags: project
+type: Data Science
 ---
 <div class="case-header">
   <div class="media-wrapper">
