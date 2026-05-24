@@ -297,3 +297,14 @@
 
 
 })(jQuery);
+
+(function() {
+    var birthday = new Date(1995, 4, 18); // May 18, 1995
+    var today = new Date();
+    var age = today.getFullYear() - birthday.getFullYear();
+    if (today.getMonth() < birthday.getMonth() ||
+        (today.getMonth() === birthday.getMonth() && today.getDate() < birthday.getDate())) {
+        age--;
+    }
+    document.querySelectorAll('.js-age').forEach(function(el) { el.textContent = age; });
+})();
