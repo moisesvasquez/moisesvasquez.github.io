@@ -1,63 +1,75 @@
 ---
 layout: post
-title:  "Building Check Your Gauges: Why I Made a Wellness App Nobody Asked For"
+title:  "Check Your Gauges"
 date:   2024-06-02 00:00:00 -0400
 permalink: /blog/check-your-gauges
-description: "A behind-the-scenes look at why I built Check Your Gauges — the design decisions, the philosophy behind 30-second check-ins, and what I learned along the way."
+description: "What a concept from Exponential Conference 2026 taught me about wholeness, accountability, and what it really means to be known in community."
 tags: blog-post
 author: Moises Vasquez
 ---
 
-Nobody came to me and said, "Hey Moises, you should build a whole-life wellness tracker." I just kept noticing something that bugged me, and eventually the itch got bad enough that I had to scratch it.
+A few weeks ago I had the privilege of attending the [Exponential Conference 2026](https://exponential.org/global-2026/) in Orlando with some of our church leadership team. Thousands of pastors, church planters, and ministry leaders gathered from across the country — and while there was a lot of content, one of the things that stayed with me most was a simple question that kept surfacing throughout the week:
 
-Here's what I kept noticing: the people around me — myself included — were living in two parallel realities. In the first reality, everything was fine. Productive. Moving. In the second reality, something felt off. Not dramatically off, just... quietly depleted. And nobody was talking about the second one because there was no real language for it, no shared check-in, no moment where you actually said out loud, "I think my relational gauge is in the yellow."
-
-That's what eventually became [Check Your Gauges](https://checkyourgauges.com).
+*How are your gauges?*
 
 ---
 
-## The Idea Was Embarrassingly Simple
+## Four Gauges, One Whole Person
 
-Four categories: Mental, Spiritual, Relational, Physical. Once a week you score each one. That's it.
+The framework is simple. Every person — every leader, every parent, every follower of Jesus — is running on four gauges at any given time:
 
-I kept waiting for the idea to feel more sophisticated before I built it. It never did. And eventually I realized the simplicity *was* the point. The value isn't in the complexity of the framework — it's in doing the 30-second check-in consistently, week after week, until patterns start to emerge. "Huh, I've been in the yellow physically for six weeks straight. That's not a fluke, that's a trend."
+**Mental.** **Spiritual.** **Relational.** **Physical.**
 
-The four pillars aren't groundbreaking. But they cover the whole person in a way that most tools don't bother to. Fitness apps care about physical. Meditation apps care about mental. But the dimensions aren't actually independent — relational isolation bleeds into spiritual drift, physical depletion bleeds into mental fog. I wanted one place where you could see all four at once.
-
----
-
-## The Constraint That Shaped Everything
-
-From day one I had one hard rule: the check-in cannot take more than 30 seconds.
-
-This sounds easy. It wasn't. The natural instinct when you're building something like this is to add more — more nuance, more journaling prompts, more context. "Wouldn't it be better if users explained *why* they rated physical a 6?" Maybe. But then some weeks the check-in takes 10 minutes and you skip it. And the week after that you skip it again. And suddenly the streak is broken and the app is collecting dust.
-
-Consistency beats depth every time in a tool like this. A 30-second check-in you actually do every week for a year gives you infinitely more signal than a 10-minute one you did twice in January.
-
-Holding that constraint required saying no to a lot of features. It was the right call.
+Like the dashboard of a car, each gauge can be green (running well), yellow (getting low), or red (running on empty). And just like with a car, you can push through yellow for a little while. But if you ignore enough reds for long enough, something breaks down. The question isn't whether the gauges matter — it's whether we're honest enough to look at them.
 
 ---
 
-## The Group Accountability Feature Was the Fun Part
+## What Each Gauge Actually Measures
 
-The solo check-in is useful. The group check-in is where it gets interesting.
+**Mental**
 
-You can share your gauges with a small group — a team, a few friends, a community you're part of — and see everyone's scores in one view. It turns the usual "how are you?" / "good, how are you?" exchange into something with actual information in it. If someone's relational gauge has been red for three weeks, you know to check in differently. You know something real.
+This is your inner life — not just how smart you are, but how you're actually doing emotionally and psychologically. Are you carrying stress that hasn't been processed? Are you mentally clear, or are you scattered and running on autopilot? The mental gauge is often the first to drop and the last we notice, because we're usually too busy to check it. Burnout rarely announces itself. It's usually a slow, quiet leak.
 
-Building that feature was the most fun part of the project because it felt the most true to what I actually believe: that we're meant to know and be known, and that a little visibility goes a long way.
+**Spiritual**
 
----
+This one is tricky, especially in church circles — because it's the easiest to fake. You can show up, serve, say all the right things, and still be bone dry on the inside. The spiritual gauge isn't measuring your activity. It's measuring your actual connection with God. Where are you *really* with Him right now, not where you wish you were or where you want people to think you are? That honest answer is the one that matters.
 
-## What I Learned Building It
+**Relational**
 
-A few things I'd tell myself if I were starting over:
+How are your most important relationships? Not acquaintances, not the people who follow you online — your *real* people. Your spouse. Your closest friends. The ones who actually know you. Relational health isn't just the absence of conflict. It's whether you feel genuinely connected, seen, and supported. Isolation doesn't always look like loneliness. Sometimes it looks like staying so busy that nobody ever gets close enough to know what's really going on.
 
-**Ship earlier.** I waited longer than I needed to before putting it in front of real users. Every week of extra polish before launch was a week without actual feedback.
+**Physical**
 
-**The hard part isn't the build.** The hard part is getting people to change a habit — in this case, adding a weekly check-in to their routine. The app can be good and still struggle to stick if the habit isn't already there. I'm still learning how to help with that part.
-
-**Simple is a feature you have to defend.** Once you have users, there's constant pressure to add things. Every request makes sense on its own. But features compound, and what starts as "one small addition" eventually becomes the thing that kills the 30-second rule. You have to protect simplicity intentionally.
+This is the one we either obsess over or completely ignore. Are you sleeping? Moving your body? Running at a pace that's actually sustainable? Physical depletion is sneaky because it doesn't stay in one gauge — when the body goes red, it drags everything else down with it. Rest isn't laziness. Margin isn't weakness. They're fuel.
 
 ---
 
-It's free to use at [checkyourgauges.com](https://checkyourgauges.com) — no credit card, no complicated onboarding. If you try it, I'd genuinely love to hear what you think.
+## Why the Church Needs to Talk About This
+
+Here's what hit me sitting in that room with thousands of church leaders: *we are really bad at this.*
+
+Not because we don't care. But because many of us have grown up in a church culture that quietly rewards the appearance of being fine. We've gotten so practiced at answering "how are you?" with "good, busy, blessed" — before anyone can ask a follow-up — that we've almost forgotten how to tell the truth.
+
+And so we keep moving. And the gauges keep dropping. And nobody knows.
+
+But Scripture doesn't call us to that kind of life. Galatians 6:2 tells us to *bear one another's burdens.* James 5:16 calls us to *confess our sins to one another and pray for each other so that we may be healed.* These aren't instructions for a crisis — they're a picture of what ordinary, everyday Christian community is supposed to look like. A place where people actually know how you're doing.
+
+That requires two things: **accountability** and **vulnerability.**
+
+**Accountability** isn't someone watching over your shoulder. It's inviting people into your actual life. It's saying, *I want you to know where I really am — not where I'd like you to think I am.* It means asking each other real questions and being willing to sit with real answers.
+
+**Vulnerability** is the harder one. It means being willing to say "my relational gauge is in the red right now" in a room where you're supposed to have it together. It means trusting that the people around you can handle the truth — and that being known is actually safer than being managed.
+
+Here's the thing about vulnerability in the body of Christ: it's not a weakness. It's an invitation. When one person is brave enough to say *I'm not doing great*, it gives everyone else permission to stop pretending. That's when real community starts. That's when prayer becomes something more than a closing ritual. That's when the body of Christ actually functions the way it was designed to.
+
+---
+
+## A Simple Practice
+
+What would it look like for your small group, your leadership team, or even your family to start checking in on these four gauges together? Not as a performance review — just as an honest check-in. *How are you, really? Which gauge is lowest right now?*
+
+I've been building a small tool called [Check Your Gauges](https://checkyourgauges.com) to make that kind of weekly check-in easier. But honestly, you don't need an app. You just need the question, and people who are committed to actually answering it.
+
+The most life-giving moments I've experienced in community haven't come from the highlights. They've come from someone being brave enough to say *I'm not okay* — and being met with presence instead of a quick fix.
+
+That's the body of Christ. That's what we're built for.
