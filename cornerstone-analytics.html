@@ -1,0 +1,449 @@
+---
+layout: null
+permalink: /cornerstone-analytics/
+---
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Cornerstone Analytics helps churches track what matters — from building your first dashboard to elevating an existing data team.">
+    <title>Cornerstone Analytics | Church Data Strategy</title>
+    <link rel="stylesheet" href="/assets/static/css/foundation.css">
+    <link rel="stylesheet" href="/assets/static/css/app.css">
+    <link href="/assets/static/css/fontello.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/assets/static/css/font-awesome.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+    {% include analytics.html %}
+    <style>
+
+        /* ── Page base ─────────────────── */
+        body { padding-top: 52px; margin: 0; }
+
+        /* ── Topbar ─────────────────────── */
+        .ca-topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 40px; height: 52px;
+            background: #000;
+        }
+        .ca-brand {
+            font-family: montserrat, sans-serif;
+            font-size: 11px; font-weight: 800;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: #fff; text-decoration: none;
+        }
+        .ca-brand:hover { color: #fff; }
+        .ca-back {
+            font-family: montserrat, sans-serif;
+            font-size: 10px; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: rgba(255,255,255,0.35); text-decoration: none;
+            transition: color 0.15s;
+        }
+        .ca-back:hover { color: rgba(255,255,255,0.75); }
+
+        /* ── Section eyebrow label ───────── */
+        .ca-label {
+            font-family: montserrat, sans-serif;
+            font-size: 10px; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: #0F4C81; margin-bottom: 14px;
+        }
+        .ca-label--dim { color: rgba(255,255,255,0.4); }
+
+        /* ── Section headings ───────────── */
+        .ca-h2 {
+            font-family: montserrat, sans-serif;
+            font-size: clamp(26px, 3.8vw, 42px);
+            font-weight: 800; text-transform: uppercase;
+            color: #000; line-height: 1.1; margin: 0 0 20px;
+        }
+        .ca-h2--white { color: #fff; }
+
+        /* ── Body copy ──────────────────── */
+        .ca-body {
+            font-family: lora, serif;
+            font-size: 16px; color: #555; line-height: 1.8; margin: 0;
+        }
+        .ca-body--white { color: rgba(255,255,255,0.45); }
+
+        /* ── Hero ───────────────────────── */
+        .ca-hero {
+            background: #000;
+            padding: 100px 10% 100px;
+            min-height: 80vh;
+            display: flex; align-items: center;
+        }
+        .ca-hero-inner { max-width: 860px; }
+        .ca-hero h1 {
+            font-family: montserrat, sans-serif;
+            font-size: clamp(36px, 5.5vw, 68px);
+            font-weight: 900; text-transform: uppercase;
+            color: #fff; line-height: 1.04; margin: 0 0 24px;
+        }
+        .ca-hero-sub {
+            font-family: lora, serif;
+            font-size: 18px; font-style: italic;
+            color: rgba(255,255,255,0.45);
+            max-width: 560px; line-height: 1.75; margin-bottom: 44px;
+        }
+        .ca-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+
+        /* ── Services ───────────────────── */
+        .ca-services-wrap { margin-top: 52px; }
+        .ca-service {
+            border-left: 4px solid #0F4C81;
+            padding-left: 22px;
+        }
+        .ca-service h3 {
+            font-family: montserrat, sans-serif;
+            font-size: 12px; font-weight: 800;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: #000; margin: 0 0 14px;
+        }
+        .ca-service p {
+            font-family: lora, serif;
+            font-size: 15px; color: #666; line-height: 1.8; margin: 0;
+        }
+
+        /* ── Project cards ──────────────── */
+        .ca-projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0;
+            border-left: 1px solid #e0e0e0;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 44px;
+        }
+        .ca-project-card {
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 32px 28px;
+            background: #fff;
+            transition: background 0.15s ease;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .ca-project-card:hover { background: #f9f9f9; }
+        .ca-project-badge {
+            display: inline-block;
+            font-family: montserrat, sans-serif;
+            font-size: 9px; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 4px 10px; border-radius: 2px;
+            background: #eee; color: #555;
+            align-self: flex-start;
+        }
+        .ca-project-badge--live { background: #e8f9f0; color: #1a7d47; }
+        .ca-project-card h3 {
+            font-family: lora, serif;
+            font-size: 20px; font-weight: 700;
+            color: #000; margin: 0; line-height: 1.3;
+        }
+        .ca-project-card p {
+            font-family: montserrat, sans-serif;
+            font-size: 13px; color: #555;
+            line-height: 1.65; margin: 0; flex-grow: 1;
+        }
+        .ca-project-link {
+            font-family: montserrat, sans-serif;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: #000; text-decoration: none;
+            border-bottom: 1px solid #000; padding-bottom: 2px;
+            align-self: flex-start;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .ca-project-link:hover { color: #555; border-color: #555; }
+        .ca-project-soon {
+            font-family: montserrat, sans-serif;
+            font-size: 11px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: #aaa; align-self: flex-start;
+        }
+
+        /* ── Credentials ────────────────── */
+        .ca-creds { border-top: 1px solid #e0e0e0; }
+        .ca-cred { border-bottom: 1px solid #e0e0e0; padding: 20px 0; }
+        .ca-cred strong {
+            display: block;
+            font-family: montserrat, sans-serif;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: #000; margin-bottom: 5px;
+        }
+        .ca-cred span {
+            font-family: lora, serif;
+            font-size: 14px; color: #777;
+        }
+
+        /* ── Skills ─────────────────────── */
+        .ca-skills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+        .ca-skill {
+            font-family: montserrat, sans-serif;
+            font-size: 9px; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 5px 12px; border-radius: 2px;
+            background: #eee; color: #555;
+        }
+
+        /* ── Blog cards ─────────────────── */
+        .ca-blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 0;
+            border-left: 1px solid rgba(255,255,255,0.09);
+            border-top: 1px solid rgba(255,255,255,0.09);
+            margin-top: 44px;
+        }
+        .ca-post-card {
+            border-right: 1px solid rgba(255,255,255,0.09);
+            border-bottom: 1px solid rgba(255,255,255,0.09);
+            padding: 32px 28px;
+            background: transparent;
+            transition: background 0.15s;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .ca-post-card:hover { background: rgba(255,255,255,0.04); }
+        .ca-post-card h3 {
+            font-family: lora, serif;
+            font-size: 18px; font-weight: 700;
+            color: #fff; margin: 0; line-height: 1.35;
+        }
+        .ca-post-card p {
+            font-family: lora, serif;
+            font-size: 14px; color: rgba(255,255,255,0.42);
+            line-height: 1.75; margin: 0; flex-grow: 1;
+        }
+        .ca-post-link {
+            font-family: montserrat, sans-serif;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            color: #fff; text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.28);
+            padding-bottom: 2px; align-self: flex-start;
+            transition: border-color 0.15s;
+        }
+        .ca-post-link:hover { border-color: #fff; }
+
+        /* ── Footer ─────────────────────── */
+        .ca-footer {
+            background: #111;
+            padding: 28px 10%;
+            display: flex; align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .ca-footer-copy {
+            font-family: montserrat, sans-serif;
+            font-size: 10px; letter-spacing: 1.5px;
+            text-transform: uppercase; color: rgba(255,255,255,0.2);
+        }
+        .ca-footer-link {
+            font-family: montserrat, sans-serif;
+            font-size: 10px; font-weight: 600;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            color: rgba(255,255,255,0.25); text-decoration: none;
+            transition: color 0.15s;
+        }
+        .ca-footer-link:hover { color: rgba(255,255,255,0.6); }
+
+        /* ── Responsive ─────────────────── */
+        @media (max-width: 860px) {
+            .ca-topbar { padding: 0 24px; }
+            .ca-hero { padding: 80px 6% 70px; }
+            .full { padding: 80px 6%; }
+        }
+        @media (max-width: 640px) {
+            .ca-hero h1 { font-size: 30px; }
+            .ca-projects-grid,
+            .ca-blog-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Topbar ─────────────────────────────────────────── -->
+<header class="ca-topbar">
+    <a href="/cornerstone-analytics/" class="ca-brand">Cornerstone Analytics</a>
+    <a href="/" class="ca-back"><i class="fa fa-close"></i>&nbsp; Portfolio</a>
+</header>
+
+<!-- ── Hero ──────────────────────────────────────────── -->
+<section class="ca-hero">
+    <div class="ca-hero-inner">
+        <p class="ca-label">Church Data Strategy</p>
+        <h1>Helping churches<br>track what<br>matters.</h1>
+        <p class="ca-hero-sub">Whether your church is starting from zero or looking to elevate an existing analytics team, Cornerstone brings clarity to what you measure so your leadership can focus on what it means.</p>
+        <div class="ca-hero-actions">
+            <a href="#contact" class="button boxed white">Work With Me</a>
+            <a href="#projects" class="button boxed white">See the Work</a>
+        </div>
+    </div>
+</section>
+
+<!-- ── Services ───────────────────────────────────────── -->
+<section class="full grey" id="services">
+    <div class="row">
+        <div class="large-12 columns">
+            <p class="ca-label">What We Do</p>
+            <h2 class="ca-h2">Analytics built for<br>ministry that multiplies.</h2>
+        </div>
+    </div>
+    <div class="two spacing"></div>
+    <div class="row ca-services-wrap">
+        <div class="large-4 columns">
+            <div class="ca-service">
+                <h3>Build Your Foundation</h3>
+                <p>Starting from zero is a real place to start. I help churches define what to measure, set up dashboards your team will actually use, and build sustainable data practices that grow with your ministry.</p>
+            </div>
+        </div>
+        <div class="large-4 columns">
+            <div class="ca-service">
+                <h3>Elevate Your Team</h3>
+                <p>Already have a data team? I partner with your analysts to advance capabilities, introduce new methodologies, and surface insights your numbers have not been able to say on their own yet.</p>
+            </div>
+        </div>
+        <div class="large-4 columns">
+            <div class="ca-service">
+                <h3>Ongoing Strategy</h3>
+                <p>A consistent analytics partner for your leadership. Regular reviews of your ministry data, translated from spreadsheet to story so your team can make decisions grounded in what is actually happening.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Expertise ──────────────────────────────────────── -->
+<section class="full" id="expertise">
+    <div class="row">
+        <div class="large-6 columns">
+            <p class="ca-label">Expertise</p>
+            <h2 class="ca-h2">Data science with<br>a ministry heart.</h2>
+            <p class="ca-body">I'm Moises Vasquez, a data scientist with a background spanning healthcare analytics, marketing intelligence, and business analytics. I currently work for one of the Fortune 100 Best Companies to Work For, where I apply enterprise-level analytical thinking every day. For the past several years I have been bringing that same rigor to the church, building tools and frameworks that help ministry leaders see more clearly.</p>
+            <div class="spacing"></div>
+            <p class="ca-body">Data visualization is where I do some of my best work. It was my favorite subject to teach, and it remains the discipline I care most about: turning raw numbers into something a room full of leaders can actually understand and act on. Every church, regardless of size, deserves that clarity.</p>
+            <div class="ca-skills">
+                <span class="ca-skill">Data Visualization</span>
+                <span class="ca-skill">R</span>
+                <span class="ca-skill">Python</span>
+                <span class="ca-skill">SQL</span>
+                <span class="ca-skill">Tableau</span>
+                <span class="ca-skill">Power BI</span>
+                <span class="ca-skill">AWS</span>
+                <span class="ca-skill">Azure</span>
+                <span class="ca-skill">MongoDB</span>
+                <span class="ca-skill">Machine Learning</span>
+                <span class="ca-skill">Hadoop</span>
+            </div>
+        </div>
+        <div class="large-5 large-offset-1 columns">
+            <div class="ca-creds">
+                <div class="ca-cred">
+                    <strong>M.S. in Data Science</strong>
+                    <span>St. Thomas University, Miami &mdash; 2020</span>
+                </div>
+                <div class="ca-cred">
+                    <strong>BSBA in Marketing</strong>
+                    <span>Minor in Computer Information Systems, Webber International University</span>
+                </div>
+                <div class="ca-cred">
+                    <strong>7+ Years in Analytics</strong>
+                    <span>Healthcare, marketing, and business intelligence across multiple industries</span>
+                </div>
+                <div class="ca-cred">
+                    <strong>Fortune 100 Best Companies to Work For</strong>
+                    <span>Currently working at an enterprise level, applying the same analytical standards to ministry that the world's best organizations run on</span>
+                </div>
+                <div class="ca-cred">
+                    <strong>Church-First Builder</strong>
+                    <span>Creator of Check Your Gauges and Discipleship Hub, tools built specifically for ministry leaders</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Projects ───────────────────────────────────────── -->
+<section class="full light-grey" id="projects">
+    <div class="row">
+        <div class="large-12 columns">
+            <p class="ca-label">Tools &amp; Projects</p>
+            <h2 class="ca-h2">Built for the church.<br>Ready to use.</h2>
+            <p class="ca-body">Practical tools that make the invisible visible so church leaders can steward their ministry with confidence.</p>
+            <div class="ca-projects-grid">
+
+                <div class="ca-project-card">
+                    <span class="ca-project-badge ca-project-badge--live">Live</span>
+                    <h3>Check Your Gauges</h3>
+                    <p>A weekly leader health check-in built around four gauges: Mental, Spiritual, Relational, and Physical. Score each on a 1 to 10 scale. Share with your team. Surface patterns before they become problems.</p>
+                    <a href="https://checkyourgauges.com" target="_blank" class="ca-project-link">checkyourgauges.com &rarr;</a>
+                </div>
+
+                <div class="ca-project-card">
+                    <span class="ca-project-badge">Coming Soon</span>
+                    <h3>Discipleship Hub</h3>
+                    <p>Track one-on-one discipleship relationships across your entire congregation. See who is discipling whom, identify gaps in coverage, and celebrate what is actually growing, relationship by relationship.</p>
+                    <span class="ca-project-soon">Coming Soon</span>
+                </div>
+
+                <div class="ca-project-card">
+                    <span class="ca-project-badge">Coming Soon</span>
+                    <h3>Track What Matters Worksheet</h3>
+                    <p>A guided worksheet to help your leadership team identify the right metrics for your church's mission. Stop measuring what is easy. Start measuring what is true.</p>
+                    <span class="ca-project-soon">Coming Soon</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Insights ────────────────────────────────────────── -->
+<section class="full black" id="insights">
+    <div class="row">
+        <div class="large-12 columns">
+            <p class="ca-label ca-label--dim">Insights</p>
+            <h2 class="ca-h2 ca-h2--white">Thinking on church analytics<br>and ministry health.</h2>
+            <p class="ca-body ca-body--white">Practical writing for church leaders who want to see more clearly.</p>
+            <div class="ca-blog-grid">
+                {% for post in site.posts %}
+                {% if post.tags contains 'Cornerstone' %}
+                <div class="ca-post-card">
+                    <h3>{{ post.title }}</h3>
+                    <p>{{ post.description }}</p>
+                    <a href="{{ post.url }}" class="ca-post-link">Read &rarr;</a>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Contact ─────────────────────────────────────────── -->
+<section class="full" id="contact">
+    <div class="row">
+        <div class="large-7 columns">
+            <p class="ca-label">Let's Talk</p>
+            <h2 class="ca-h2">Ready to track<br>what matters?</h2>
+            <p class="ca-body">Whether you are starting from scratch or looking to go deeper, I would love to hear about your church and where you are trying to go. Let's find out if Cornerstone is the right fit.</p>
+            <div class="two spacing"></div>
+            <a href="mailto:moisesvasquezca@gmail.com" class="button boxed black">moisesvasquezca@gmail.com</a>
+        </div>
+    </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────── -->
+<footer class="ca-footer">
+    <span class="ca-footer-copy">Cornerstone Analytics &mdash; Moises Vasquez &copy; 2026</span>
+    <a href="/" class="ca-footer-link"><i class="fa fa-close"></i>&nbsp; Back to Portfolio</a>
+</footer>
+
+<script src="/assets/bower_components/jquery/dist/jquery.js"></script>
+<script src="/assets/bower_components/foundation-sites/dist/js/foundation.js"></script>
+<script src="/assets/js/app.js"></script>
+<script src="https://use.fontawesome.com/e83b4447db.js"></script>
+</body>
+</html>

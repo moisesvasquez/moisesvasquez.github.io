@@ -4,7 +4,7 @@ title:  "Check Your Gauges"
 date:   2026-04-01 00:00:00 -0400
 permalink: /blog/check-your-gauges
 description: "What a concept from Exponential Conference 2026 taught me about wholeness, accountability, and what it really means to be known in community."
-tags: blog-post
+tags: [blog-post, Cornerstone]
 author: Moises Vasquez
 ---
 

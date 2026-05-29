@@ -6,7 +6,7 @@ image:
 permalink: /blog/goodharts-law-church-analytics
 description: "When a measure becomes a target, it ceases to be a good measure, and churches are not immune. What you track and celebrate shapes your entire culture."
 category: Leadership & Data
-tags: blog-post
+tags: [blog-post, Cornerstone]
 author: Moises Vasquez
 ---
 
