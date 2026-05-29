@@ -186,6 +186,10 @@
 }
 
 @media only screen and (max-width: 768px)  {
+  .post-content {
+    padding: 0 0.75rem;
+  }
+
   svg#svg-graphic-about, svg#svg-graphic-works, svg#svg-graphic-blog, svg#svg-graphic-contact {
     width: 280px;
   }
