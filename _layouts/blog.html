@@ -19,6 +19,36 @@
     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
     <script src="../assets/js/modernizr-custom.js"></script>
     {% include analytics.html %}
+    <style>
+        /* ── Blog listing card size ─────────────────────── */
+        .posts .post {
+            height: 190px;
+            padding: 32px 36px;
+        }
+        .posts .post h2 {
+            font-size: 20px;
+            line-height: 1.35;
+            margin-bottom: 0;
+        }
+        @media only screen and (max-width: 768px) {
+            .posts .post {
+                height: 160px;
+                padding: 24px 22px;
+            }
+            .posts .post h2 {
+                font-size: 18px;
+            }
+        }
+        @media only screen and (max-width: 480px) {
+            .posts .post {
+                height: 150px;
+                padding: 20px 18px;
+            }
+            .posts .post h2 {
+                font-size: 17px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -76,7 +106,6 @@
                           </span>
                         </p>
                         <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
-                        <div class="two spacing"></div>
                         <!-- <p><a href="#" class="button boxed black">Read more</a></p> -->
                       </div>
         

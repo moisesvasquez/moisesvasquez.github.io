@@ -28,7 +28,7 @@ These are easy to count. They fit in a spreadsheet. They make for a clean report
 
 But the second these numbers become *the* definition of health, the thing you celebrate from the stage, the thing your staff is evaluated on, the thing leadership prays over, Goodhart's Law kicks in hard.
 
-Suddenly your campus pastors are incentivized to keep people comfortable so they keep showing up. Your children's team starts juicing their headcount numbers. Your weekend services get subtly engineered for emotional peaks that produce hand-raises. And somewhere in the machine, the actual mission, making disciples, quietly gets deprioritized, because discipleship is *slow* and *hard* and doesn't have a great metric.
+Suddenly your campus pastors are incentivized to keep people comfortable so they keep showing up, your children's team starts juicing headcount numbers, and the weekend service gets quietly engineered for the emotional peaks that produce hand-raises. And somewhere in the machine, the actual mission, making disciples, quietly gets deprioritized, because discipleship is *slow* and *hard* and doesn't have a great metric.
 
 **What you celebrate creates your culture.** What you put on the scoreboard tells your staff, servants, and congregation what *actually* matters. And if the scoreboard only shows butts-in-seats, that's what everyone optimizes for.
 
@@ -46,7 +46,7 @@ Attendance tells you who showed up. It does not tell you:
 
 Giving totals tell you cash flow. They don't tell you whether generosity is becoming a posture of someone's life or whether they're writing a check to assuage guilt.
 
-Hand-raise salvations are genuinely exciting moments, but they are the *beginning* of discipleship, not the end of it. Treating them as a KPI is a great way to optimize for emotional altar moments while the follow-up pipeline quietly falls apart.
+Hand-raise salvations are exciting moments, but they are the *beginning* of discipleship, not the end of it. Treating them as a KPI is a great way to optimize for emotional altar moments while the follow-up pipeline quietly falls apart.
 
 ---
 
@@ -54,17 +54,17 @@ Hand-raise salvations are genuinely exciting moments, but they are the *beginnin
 
 This is the harder question, and honestly, the more interesting one. Some ideas:
 
-**Discipleship depth.** How many people are in a one-on-one discipleship relationship right now? How many were last year? Is that number growing? Is it distributed across the congregation or concentrated in the same 12 people?
+Discipleship depth. How many people are in a one-on-one discipleship relationship right now? How many were last year? Is that number growing? Is it distributed across the congregation or concentrated in the same 12 people?
 
-**Small group participation.** Not just "how many groups do we have" but: are people actually showing up? Are the groups actually doing anything transformative, or are they just a monthly hang with a Bible verse at the start?
+Small group participation. Not just "how many groups do we have" but: are people actually showing up? Are the groups doing anything that's forming people, or are they just a monthly hang with a Bible verse at the start?
 
-**People being served.** Who in your congregation is going through something hard right now, and is anyone showing up for them? This one's almost impossible to systematize, which is exactly why it matters; it forces the church to stay relational.
+People being served. Who in your congregation is going through something hard right now, and is anyone showing up for them? This one's almost impossible to systematize, which is exactly why it matters; it forces the church to stay relational.
 
-**People serving others.** Service matters, but more specifically: are people finding meaningful roles that connect to their gifts, or are they just filling slots on a sign-up sheet?
+People serving others. Are people finding meaningful roles that connect to their gifts, or are they just filling slots on a sign-up sheet?
 
-**Life change stories.** Qualitative, yes. Hard to aggregate, yes. But if you're collecting zero of these, that's data too.
+Life change stories. Qualitative, yes. Hard to aggregate, yes. But if you're collecting zero of these, that's data too.
 
-None of these are as clean as an attendance number. Most of them require actual relationship and conversation to surface. Which is, not coincidentally, the whole point.
+None of these are as clean as an attendance number. Most of them require relationship and conversation to surface. Which is, not coincidentally, the whole point.
 
 ---
 
@@ -72,7 +72,7 @@ None of these are as clean as an attendance number. Most of them require actual 
 
 I built a tool called [Discipleship Tracker](/projects/discipleship-tracker) that tries to make some of this more visible for church leaders, specifically the one-on-one discipleship relationships that are so central to how the early church actually spread, but so easy to lose track of at scale.
 
-The goal isn't to turn discipleship into a database entry. It's to help leaders see what's actually happening across their congregation so they can steward it better.
+The goal is to help leaders see what's actually happening across their congregation so they can steward it better. Discipleship doesn't need to become a database entry for that to work.
 
 Because the thing about Goodhart's Law is that it cuts both ways. Track the wrong things and your culture drifts. Build the right tracking habits, even imperfect ones, and you start to see what you've been missing.
 

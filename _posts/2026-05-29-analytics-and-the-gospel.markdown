@@ -10,74 +10,70 @@ tags: [blog-post, Cornerstone]
 author: Moises Vasquez
 ---
 
-I've heard the concern from pastors, from elders, from ministry leaders who genuinely love their church:
+I've heard the concern from ministry leaders and people in the congregation who love their church:
 
 *"If we start tracking everything, doesn't it start to feel like a business? Doesn't it pull us away from the actual gospel?"*
 
-It's a fair question. But I think it's asking the wrong thing.
+Fair question. But I think the concern is aimed at the wrong target.
 
-Because if tracking analytics is what pulls a church away from the gospel, the gospel was already slipping before the spreadsheet ever opened.
+A church obsessed with weekend headcount, giving totals, and hand-raise numbers on Sunday didn't get that way because someone opened a dashboard. That church already replaced the mission with the appearance of the mission. Analytics just makes it harder to ignore.
 
 ---
 
 ## Vanity Metrics Are a Gospel Problem
 
-A church that is obsessed with weekend headcount, giving totals, and hand-raise numbers on Sunday is not a church that analytics corrupted. It's a church that already replaced the mission with the appearance of the mission.
-
-The Great Commission is not "go and fill auditoriums." It's:
+The Great Commission says nothing about full auditoriums:
 
 > *"Go therefore and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all that I have commanded you."* — Matthew 28:19-20
 
-Making disciples. Teaching them to observe. This is relational, slow, costly work. If a church's definition of success is a packed parking lot on Sunday morning, that's a theological problem. Not a data problem. Analytics just reflects it back.
+Making disciples is relational, slow, and costly. If a church measures success by a packed parking lot on Sunday morning, that's a theological problem. The data didn't cause it.
 
 ---
 
-## The Tool Is Not the Temptation
+## The Tool Is Just a Mirror
 
-A spreadsheet does not decide what matters. The people running it do.
+A spreadsheet doesn't decide what matters. The people running it do.
 
-Every organization that has ever chased the wrong metrics did so because of what they valued, not because of the tools they used to measure it. The tool revealed the value system. It didn't create it.
-
-A church that uses attendance as its primary definition of health will find a way to optimize for attendance whether or not they ever open a dashboard. They'll make services more comfortable. They'll avoid the hard sermons. They'll celebrate big Sunday numbers from the stage. The problem lives upstream of the data.
+Every organization that has chased the wrong metrics did so because of what they valued, full stop. The tool revealed the value system. A church that defines health by attendance will optimize for attendance with or without a dashboard. The services soften. The hard sermons stop happening. And every Sunday someone up front tells the room how good the numbers are. The data is just showing you the fruit of what was already planted.
 
 ---
 
 ## What a Gospel-Centered Analytics System Actually Does
 
-A church that is genuinely committed to the Great Commission should want a rigorous analytics system more than anyone else.
+A church committed to the Great Commission should want a rigorous analytics system more than anyone, because shepherding a congregation at scale requires being able to see it clearly.
 
-Because if discipleship is the mission, you need to know:
+If discipleship is the mission, you need to know:
 
 - How many people are in an active discipleship relationship right now?
 - Who showed up six weeks ago and hasn't been back?
-- Which small groups are actually forming people, and which ones are just maintaining?
-- Who in your congregation is going through something hard and hasn't been checked on?
+- Which small groups are actually forming people, and which ones are just holding steady?
+- Who is going through something hard and hasn't been checked on?
 - Are the servants in your ministries finding meaning in it, or quietly burning out?
 
-These are not business questions. They are shepherd questions. And a shepherd who doesn't notice when a sheep is missing isn't more gospel-centered for the lack of attention. They're just less aware.
+These are shepherd questions. A shepherd who doesn't notice when a sheep is missing isn't more gospel-centered for the lack of attention. They're just less aware.
 
 > *"What do you think? If a man has a hundred sheep, and one of them has gone astray, does he not leave the ninety-nine on the mountains and go in search of the one that went astray?"* — Matthew 18:12
 
-The whole point of the parable is that the shepherd noticed. That noticing is not the absence of love. It is love in action.
+The shepherd noticed. That noticing is love in motion.
 
 ---
 
 ## Analytics as Stewardship
 
-The people in your church are not metrics. They are image-bearers of God, entrusted to your leadership. And that stewardship demands attention.
+The people in your church are not metrics. They are image-bearers of God, entrusted to your leadership. That stewardship demands attention.
 
-An analytics system, done right, does not reduce people to rows in a spreadsheet. It gives leaders the visibility to actually see their congregation. To notice who is growing and who is drifting. To find the people falling through the cracks before the cracks become chasms.
+Paul kept track of his people. He knew who was in prison (Philippians 1:7), who needed to be reconciled (Philippians 4:2), who was struggling and needed to be gently restored (Galatians 6:1). He paid close attention. That attentiveness was the gospel working through him, not a distraction from it.
 
-Paul kept track of his people. He knew who was in prison (Philippians 1:7), who needed to be reconciled (Philippians 4:2), who was struggling and needed to be gently restored (Galatians 6:1). He cared enough to pay attention. That attentiveness was not a departure from the gospel. It was an expression of it.
+Done well, an analytics system gives leaders the visibility to actually see their congregation. To notice who is growing and who is drifting. To find the people falling through the cracks before the cracks become chasms.
 
 ---
 
 ## The Real Danger
 
-The real danger is not that a church will track too much. The real danger is that a church will measure the wrong things and conclude they're healthy because the numbers look good.
+The real danger has never been tracking too much. The danger is measuring the wrong things and concluding you're healthy because the numbers look good.
 
-Big attendance. Strong giving. High servant counts. These can all be true of a church where nobody is actually being discipled, where people are isolated and unknown, where the back door is just as busy as the front.
+Strong attendance and healthy giving can both be true of a church where nobody is actually being discipled, where people are isolated and unknown, where the back door is just as busy as the front.
 
-Build your analytics system around the mission. Make discipleship measurable. Track what actually matters. And when the data surfaces someone who has been absent for three months, or a small group that has lost traction, or a ministry that is burning its people out, treat that as what it is: a gift of information that lets you love people better.
+Build the system around the mission, which means making discipleship measurable and tracking what actually matters. When the data surfaces someone absent for three months, a small group losing traction, or a ministry burning its people out, treat that information as the gift it is. A chance to love someone who was starting to slip away.
 
-That is not replacing the heart of the gospel. That is the gospel asking to be taken seriously enough to pay attention.
+Paying that kind of attention is what the gospel demands.
