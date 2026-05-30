@@ -17,6 +17,101 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,400,400i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
     {% include analytics.html %}
+    <style>
+        /* ── Mobile breathing room ─────────────────────── */
+        @media only screen and (max-width: 768px) {
+            .post-content .row,
+            .post .row { padding: 0 8px; }
+            .post-content { padding: 0 !important; }
+            body.single .post-content .columns { padding-left: 20px; padding-right: 20px; }
+        }
+        @media only screen and (max-width: 480px) {
+            body.single .post-content .columns { padding-left: 16px; padding-right: 16px; }
+        }
+
+        /* ── Audio player ───────────────────────────────── */
+        .pp-wrap {
+            background: #0a0a0a;
+            border-bottom: 1px solid #1e1e1e;
+            padding: 0;
+        }
+        .pp-wrap .row { margin: 0 auto; }
+        .pp {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+        }
+
+        /* Play / pause button */
+        .pp-btn {
+            flex-shrink: 0;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,0.2);
+            background: transparent;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.15s, background 0.15s;
+            padding: 0;
+        }
+        .pp-btn:hover {
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.06);
+        }
+        .pp-btn svg { width: 14px; height: 14px; fill: #fff; }
+        .pp-btn .pp-icon-pause { display: none; }
+
+        /* playing state */
+        .pp-wrap.is-playing .pp-icon-play  { display: none; }
+        .pp-wrap.is-playing .pp-icon-pause { display: block; }
+
+        /* Body */
+        .pp-body { flex: 1; min-width: 0; }
+        .pp-top {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 7px;
+        }
+        .pp-label {
+            font-family: montserrat, sans-serif;
+            font-size: 9px; font-weight: 700;
+            letter-spacing: 2.5px; text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+        }
+        .pp-wrap.is-playing .pp-label { color: rgba(255,255,255,0.8); }
+        .pp-meta {
+            font-family: montserrat, sans-serif;
+            font-size: 9px; font-weight: 600;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+        }
+
+        /* Progress track */
+        .pp-track {
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 1px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .pp-fill {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            border-radius: 1px;
+            transition: width 0.4s linear;
+        }
+
+        /* Not-supported state */
+        .pp-wrap.pp-unsupported { display: none; }
+
+        @media only screen and (max-width: 600px) {
+            .pp { gap: 12px; padding: 12px 0; }
+            .pp-btn { width: 34px; height: 34px; }
+            .pp-label { font-size: 8px; letter-spacing: 2px; }
+        }
+    </style>
 </head>
 
 <body class="single">
@@ -47,6 +142,37 @@
             <div class="post-image" style=" background: url({{ page.image }}) center center no-repeat; background-size: cover;"></div>
         </div>
     </div>
+
+    <!-- ── Audio player ──────────────────────────────── -->
+    <div class="pp-wrap" id="pp-wrap">
+        <div class="row">
+            <div class="large-8 large-centered columns">
+                <div class="pp">
+                    <button class="pp-btn" id="pp-btn" aria-label="Play post audio">
+                        <!-- Play icon -->
+                        <svg class="pp-icon-play" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="5,3 19,12 5,21"/>
+                        </svg>
+                        <!-- Pause icon -->
+                        <svg class="pp-icon-pause" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="5" y="3" width="4" height="18" rx="1"/>
+                            <rect x="15" y="3" width="4" height="18" rx="1"/>
+                        </svg>
+                    </button>
+                    <div class="pp-body">
+                        <div class="pp-top">
+                            <span class="pp-label">Listen to this post</span>
+                            <span class="pp-meta" id="pp-meta"></span>
+                        </div>
+                        <div class="pp-track" id="pp-track">
+                            <div class="pp-fill" id="pp-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="post-content">
         <div class="four spacing"></div>
         <div class="row">
@@ -57,28 +183,6 @@
         </div>
     </div>
 
-    <!--<nav class='wrapper'>
-        <div class="small-6 columns">
-            {% if page.previous.url %}
-        <a class="previous" href='{{ page.previous.url }}'>
-          <i class='fa fa-angle-left'></i>
-          <span class="sub-title">Previous post</span>
-          <span class="title">{{ page.previous.title }}</span>
-        </a>
-        {% endif %}
-        </div>
-        <div class="small-6 columns">
-            {% if page.next.url %}
-        <a class="next" href='{{ page.next.url }}'>
-          <i class='fa fa-angle-right'></i>
-          <span class="sub-title">Next post</span>
-          <span class="title">{{ page.next.title }}</span>
-        </a>
-        {% endif %}
-        </div>
-
-      </nav>-->
-
     {% include footer.html %}
     <script src="/assets/bower_components/jquery/dist/jquery.js"></script>
     <script src="/assets/bower_components/foundation-sites/dist/js/foundation.js"></script>
@@ -87,6 +191,196 @@
     <script src="/assets/js/slick.min.js" type="text/javascript"></script>
     <script src="/assets/js/app.js"></script>
     <script src="https://use.fontawesome.com/e83b4447db.js"></script>
+
+    <script>
+    (function () {
+        var wrap    = document.getElementById('pp-wrap');
+        var btn     = document.getElementById('pp-btn');
+        var fill    = document.getElementById('pp-fill');
+        var meta    = document.getElementById('pp-meta');
+        var track   = document.getElementById('pp-track');
+
+        // Hide player if Speech Synthesis not supported
+        if (!window.speechSynthesis) {
+            wrap.classList.add('pp-unsupported');
+            return;
+        }
+
+        var synth = window.speechSynthesis;
+
+        // ── Extract post text ──────────────────────────
+        var contentEl = document.querySelector('.post-content');
+        var rawText   = contentEl ? contentEl.innerText.trim() : '';
+        var totalChars = rawText.length;
+
+        // Estimate reading time (~150 wpm at 0.95 rate ≈ 900 chars/min)
+        var estMinutes = Math.max(1, Math.round(rawText.split(/\s+/).length / 140));
+        meta.textContent = '∼' + estMinutes + ' min';
+
+        // ── Voice selection ────────────────────────────
+        var chosenVoice = null;
+
+        function pickVoice() {
+            var voices = synth.getVoices();
+            if (!voices.length) return;
+
+            var preferred = [
+                'Google UK English Male',
+                'Microsoft David Desktop',
+                'Microsoft David - English (United States)',
+                'Daniel',
+                'Alex'
+            ];
+
+            for (var p = 0; p < preferred.length; p++) {
+                for (var v = 0; v < voices.length; v++) {
+                    if (voices[v].name === preferred[p]) {
+                        chosenVoice = voices[v];
+                        return;
+                    }
+                }
+            }
+
+            // Fallback: any voice with 'male' / common male names in the name
+            var maleHints = ['male', 'david', 'daniel', 'alex', 'james', 'mark', 'fred', 'tom', 'guy'];
+            for (var v = 0; v < voices.length; v++) {
+                var n = voices[v].name.toLowerCase();
+                for (var h = 0; h < maleHints.length; h++) {
+                    if (n.indexOf(maleHints[h]) !== -1) {
+                        chosenVoice = voices[v];
+                        return;
+                    }
+                }
+            }
+
+            // Last resort: first English voice
+            for (var v = 0; v < voices.length; v++) {
+                if (voices[v].lang.indexOf('en') === 0) {
+                    chosenVoice = voices[v];
+                    return;
+                }
+            }
+            chosenVoice = voices[0];
+        }
+
+        if (synth.getVoices().length) {
+            pickVoice();
+        } else {
+            synth.addEventListener('voiceschanged', pickVoice);
+        }
+
+        // ── State ──────────────────────────────────────
+        var utterance  = null;
+        var isPlaying  = false;
+        var charOffset = 0;   // chars spoken so far (accumulated across chunks)
+
+        // Chrome has a bug where long utterances silently stop.
+        // Work around by chunking at sentence boundaries.
+        var CHUNK_SIZE = 2000; // chars
+        var chunks     = [];
+        var chunkIndex = 0;
+
+        function buildChunks(text) {
+            chunks = [];
+            var sentences = text.split(/(?<=[.!?])\s+/);
+            var current = '';
+            for (var i = 0; i < sentences.length; i++) {
+                if ((current + sentences[i]).length > CHUNK_SIZE && current.length) {
+                    chunks.push(current.trim());
+                    current = sentences[i] + ' ';
+                } else {
+                    current += sentences[i] + ' ';
+                }
+            }
+            if (current.trim()) chunks.push(current.trim());
+        }
+
+        function speakChunk(index) {
+            if (index >= chunks.length) {
+                finishPlaying();
+                return;
+            }
+            utterance = new SpeechSynthesisUtterance(chunks[index]);
+            utterance.rate  = 0.92;
+            utterance.pitch = 0.95;
+            if (chosenVoice) utterance.voice = chosenVoice;
+
+            utterance.onboundary = function (e) {
+                if (e.name === 'word') {
+                    var spoken  = charOffset + e.charIndex;
+                    var progress = Math.min((spoken / totalChars) * 100, 100);
+                    fill.style.width = progress + '%';
+                }
+            };
+
+            utterance.onend = function () {
+                if (!isPlaying) return;
+                charOffset += chunks[index].length + 1;
+                chunkIndex++;
+                speakChunk(chunkIndex);
+            };
+
+            utterance.onerror = function (e) {
+                if (e.error === 'interrupted' || e.error === 'canceled') return;
+                finishPlaying();
+            };
+
+            synth.speak(utterance);
+        }
+
+        function finishPlaying() {
+            isPlaying  = false;
+            charOffset = 0;
+            chunkIndex = 0;
+            fill.style.width = '0%';
+            wrap.classList.remove('is-playing');
+        }
+
+        // ── Controls ───────────────────────────────────
+        btn.addEventListener('click', function () {
+            if (!isPlaying) {
+                // Start / resume
+                if (synth.paused) {
+                    synth.resume();
+                } else {
+                    synth.cancel();
+                    charOffset = 0;
+                    chunkIndex = 0;
+                    fill.style.width = '0%';
+                    buildChunks(rawText);
+                    speakChunk(0);
+                }
+                isPlaying = true;
+                wrap.classList.add('is-playing');
+            } else {
+                // Pause
+                synth.pause();
+                isPlaying = false;
+                wrap.classList.remove('is-playing');
+            }
+        });
+
+        // Click on track to seek (best-effort — restart from that position)
+        track.addEventListener('click', function (e) {
+            var rect     = track.getBoundingClientRect();
+            var pct      = (e.clientX - rect.left) / rect.width;
+            var seekChar = Math.floor(pct * totalChars);
+
+            synth.cancel();
+            charOffset = seekChar;
+            chunkIndex = 0;
+            var seekText = rawText.slice(seekChar);
+            buildChunks(seekText);
+            fill.style.width = (pct * 100) + '%';
+            if (isPlaying) {
+                speakChunk(0);
+            }
+        });
+
+        // Stop if user navigates away
+        window.addEventListener('beforeunload', function () { synth.cancel(); });
+    })();
+    </script>
 </body>
 
 </html>

@@ -33,17 +33,29 @@ permalink: /cornerstone-analytics/
             font-family: montserrat, sans-serif;
             font-size: 11px; font-weight: 800;
             letter-spacing: 3px; text-transform: uppercase;
-            color: #fff; text-decoration: none;
+            color: #fff; text-decoration: none; flex-shrink: 0;
         }
         .ca-brand:hover { color: #fff; }
+        .ca-topbar-nav {
+            display: flex; align-items: center; gap: 32px;
+        }
+        .ca-topbar-nav a {
+            font-family: montserrat, sans-serif;
+            font-size: 9px; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: rgba(255,255,255,0.38); text-decoration: none;
+            transition: color 0.15s;
+        }
+        .ca-topbar-nav a:hover { color: rgba(255,255,255,0.85); }
         .ca-back {
             font-family: montserrat, sans-serif;
             font-size: 10px; font-weight: 600;
             letter-spacing: 2px; text-transform: uppercase;
-            color: rgba(255,255,255,0.35); text-decoration: none;
-            transition: color 0.15s;
+            color: rgba(255,255,255,0.25); text-decoration: none;
+            transition: color 0.15s; flex-shrink: 0;
         }
         .ca-back:hover { color: rgba(255,255,255,0.75); }
+        @media (max-width: 860px) { .ca-topbar-nav { display: none; } }
 
         /* ── Section eyebrow label ───────── */
         .ca-label {
@@ -272,6 +284,13 @@ permalink: /cornerstone-analytics/
 <!-- ── Topbar ─────────────────────────────────────────── -->
 <header class="ca-topbar">
     <a href="/cornerstone-analytics/" class="ca-brand">Cornerstone Analytics</a>
+    <nav class="ca-topbar-nav">
+        <a href="#services">Services</a>
+        <a href="#expertise">About the Founder</a>
+        <a href="#projects">Projects</a>
+        <a href="#insights">Insights</a>
+        <a href="#contact">Contact</a>
+    </nav>
     <a href="/" class="ca-back"><i class="fa fa-close"></i>&nbsp; Portfolio</a>
 </header>
 
