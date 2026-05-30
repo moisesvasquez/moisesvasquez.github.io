@@ -62,8 +62,6 @@ The shepherd noticed. That noticing is love in motion.
 
 The people in your church are not metrics. They are image-bearers of God, entrusted to your leadership. That stewardship demands attention.
 
-Paul kept track of his people. He knew who was in prison (Philippians 1:7), who needed to be reconciled (Philippians 4:2), who was struggling and needed to be gently restored (Galatians 6:1). He paid close attention. That attentiveness was the gospel working through him, not a distraction from it.
-
 Done well, an analytics system gives leaders the visibility to actually see their congregation. To notice who is growing and who is drifting. To find the people falling through the cracks before the cracks become chasms.
 
 ---
