@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Livestream Studio — Keyboard Control Schematic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ece3d2;
+    --paper:#f4ede0;
+    --ink:#181818;
+    --ink-dim:#9c937f;
+    --live:#a8281c;
+    --preview:#1f6b3a;
+    --transition:#8a5a10;
+    --graphics1:#1d4ed8;
+    --graphics2:#7c2d9e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    padding:36px;
+  }
+  .sheet{
+    max-width:1180px;
+    margin:0 auto;
+    background:var(--paper);
+    border:1.5px solid var(--ink);
+    padding:32px 36px 24px;
+    position:relative;
+  }
+  .sheet::before{
+    content:"";
+    position:absolute; inset:8px;
+    border:1px solid var(--ink-dim);
+    pointer-events:none;
+  }
+  h1{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    font-size:34px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin:0 0 2px;
+  }
+  .subtitle{
+    font-size:12.5px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--ink);
+    border-bottom:1px solid var(--ink);
+    padding-bottom:16px;
+    margin-bottom:28px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .section-label{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:600;
+    font-size:16px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--ink);
+    margin:34px 0 10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section-label .n{
+    width:22px; height:22px;
+    border:1.5px solid var(--ink);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px;
+    flex:none;
+  }
+  .callout{
+    font-size:11.5px;
+    color:var(--ink);
+    letter-spacing:0.3px;
+    margin-bottom:14px;
+    padding-left:32px;
+  }
+  .callout b{font-weight:600;}
+
+  .row{
+    display:flex;
+    gap:6px;
+    margin-bottom:6px;
+  }
+  .key{
+    border:1.3px solid var(--ink);
+    border-radius:4px;
+    min-width:46px;
+    height:46px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    font-size:12.5px;
+    color:var(--ink);
+    position:relative;
+    background:transparent;
+    flex:1;
+  }
+  .key .cap{font-weight:600;}
+  .key .tag{
+    font-size:8.5px;
+    letter-spacing:0.5px;
+    margin-top:2px;
+    text-transform:uppercase;
+  }
+  .key.wide{flex:2;}
+  .key.xwide{flex:5;}
+  .key.dim{
+    opacity:0.5;
+    border-color:var(--ink-dim);
+    color:var(--ink-dim);
+    border-style:dashed;
+  }
+
+  .key.live{ border-color:var(--live); color:var(--live); border-width:2.5px;}
+  .key.live .tag{color:var(--live);}
+  .key.preview{ border-color:var(--preview); color:var(--preview); border-width:2.5px;}
+  .key.preview .tag{color:var(--preview);}
+  .key.transition{ border-color:var(--transition); color:var(--transition); border-width:2.5px;}
+  .key.transition .tag{color:var(--transition);}
+  .key.graphics1{ border-color:var(--graphics1); color:var(--graphics1); border-width:2.5px;}
+  .key.graphics1 .tag{color:var(--graphics1);}
+  .key.graphics2{ border-color:var(--graphics2); color:var(--graphics2); border-width:2.5px;}
+  .key.graphics2 .tag{color:var(--graphics2);}
+
+  .legend{
+    display:flex; gap:28px; flex-wrap:wrap;
+    margin-top:26px; padding-top:18px;
+    border-top:1px solid var(--ink);
+    font-size:11.5px;
+  }
+  .legend .item{display:flex; align-items:center; gap:8px;}
+  .legend .swatch{width:14px;height:14px;border-radius:2px;border:2px solid;background:transparent;}
+
+  .pad-wrap{display:flex; gap:40px; align-items:flex-start; flex-wrap:wrap;}
+  .pad-grid{
+    display:grid;
+    grid-template-columns:70px repeat(3, 64px);
+    grid-template-rows:34px repeat(3, 54px);
+    gap:6px;
+    align-items:center;
+  }
+  .pad-grid .head{
+    font-size:9.5px; text-align:center; color:var(--ink);
+    letter-spacing:0.5px; text-transform:uppercase;
+  }
+  .pad-grid .rowlabel{
+    font-size:10px; color:var(--ink);
+    text-transform:uppercase; letter-spacing:0.5px;
+    text-align:right; padding-right:6px;
+  }
+  .pad-note{
+    max-width:340px;
+    font-size:11.5px;
+    color:var(--ink);
+    line-height:1.6;
+    border-left:2px solid var(--ink);
+    padding-left:14px;
+  }
+  .pad-note b{font-weight:600;}
+
+  .titleblock{
+    margin-top:40px;
+    border-top:1.5px solid var(--ink);
+    padding-top:14px;
+    display:flex;
+    justify-content:space-between;
+    font-size:10.5px;
+    color:var(--ink);
+    letter-spacing:0.5px;
+  }
+  .titleblock span b{font-weight:700;}
+
+  @media print{
+    body{padding:0;background:var(--paper);}
+    .sheet{border:none;}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <h1>Keyboard Control Schematic</h1>
+  <div class="subtitle">
+    <span>Livestream Studio — Live Switching Reference</span>
+    <span>MX Keys Keyboard · MX Master 3 Bundle</span>
+  </div>
+
+  <!-- MAIN DECK -->
+  <div class="section-label"><span class="n">1</span>MAIN DECK — CAMERA SWITCHING</div>
+  <div class="callout"><b style="color:var(--live)">F1–F6</b> select cameras 1–6 and cut them straight to Program (live). <b style="color:var(--preview)">1–6</b> load cameras 1–6 to Preview only.</div>
+
+  <div class="row">
+    <div class="key dim"><span class="cap">Esc</span></div>
+    <div class="key live"><span class="cap">F1</span><span class="tag">Cam 1 · Live</span></div>
+    <div class="key live"><span class="cap">F2</span><span class="tag">Cam 2 · Live</span></div>
+    <div class="key live"><span class="cap">F3</span><span class="tag">Cam 3 · Live</span></div>
+    <div class="key live"><span class="cap">F4</span><span class="tag">Cam 4 · Live</span></div>
+    <div class="key live"><span class="cap">F5</span><span class="tag">Cam 5 · Live</span></div>
+    <div class="key live"><span class="cap">F6</span><span class="tag">Cam 6 · Live</span></div>
+    <div class="key dim"><span class="cap">F7</span></div>
+    <div class="key dim"><span class="cap">F8</span></div>
+    <div class="key dim"><span class="cap">F9</span></div>
+    <div class="key dim"><span class="cap">F10</span></div>
+    <div class="key dim"><span class="cap">F11</span></div>
+    <div class="key dim"><span class="cap">F12</span></div>
+  </div>
+
+  <div class="row">
+    <div class="key dim"><span class="cap">~</span></div>
+    <div class="key preview"><span class="cap">1</span><span class="tag">Cam 1 · Prev</span></div>
+    <div class="key preview"><span class="cap">2</span><span class="tag">Cam 2 · Prev</span></div>
+    <div class="key preview"><span class="cap">3</span><span class="tag">Cam 3 · Prev</span></div>
+    <div class="key preview"><span class="cap">4</span><span class="tag">Cam 4 · Prev</span></div>
+    <div class="key preview"><span class="cap">5</span><span class="tag">Cam 5 · Prev</span></div>
+    <div class="key preview"><span class="cap">6</span><span class="tag">Cam 6 · Prev</span></div>
+    <div class="key dim"><span class="cap">7</span></div>
+    <div class="key dim"><span class="cap">8</span></div>
+    <div class="key dim"><span class="cap">9</span></div>
+    <div class="key dim"><span class="cap">0</span></div>
+    <div class="key dim"><span class="cap">-</span></div>
+    <div class="key dim wide"><span class="cap">⌫</span></div>
+  </div>
+
+  <div class="row">
+    <div class="key dim wide"><span class="cap">Tab</span></div>
+    <div class="key dim"><span class="cap">Q</span></div>
+    <div class="key dim"><span class="cap">W</span></div>
+    <div class="key dim"><span class="cap">E</span></div>
+    <div class="key dim"><span class="cap">R</span></div>
+    <div class="key dim"><span class="cap">T</span></div>
+    <div class="key dim"><span class="cap">Y</span></div>
+    <div class="key dim"><span class="cap">U</span></div>
+    <div class="key dim"><span class="cap">I</span></div>
+    <div class="key dim"><span class="cap">O</span></div>
+    <div class="key dim"><span class="cap">P</span></div>
+  </div>
+
+  <div class="row">
+    <div class="key dim wide"><span class="cap">Caps</span></div>
+    <div class="key dim"><span class="cap">A</span></div>
+    <div class="key dim"><span class="cap">S</span></div>
+    <div class="key dim"><span class="cap">D</span></div>
+    <div class="key dim"><span class="cap">F</span></div>
+    <div class="key dim"><span class="cap">G</span></div>
+    <div class="key dim"><span class="cap">H</span></div>
+    <div class="key dim"><span class="cap">J</span></div>
+    <div class="key dim"><span class="cap">K</span></div>
+    <div class="key dim"><span class="cap">L</span></div>
+    <div class="key transition wide"><span class="cap">Enter ⏎</span><span class="tag">Take / Switch</span></div>
+  </div>
+
+  <div class="row">
+    <div class="key dim wide"><span class="cap">Shift</span></div>
+    <div class="key dim"><span class="cap">Z</span></div>
+    <div class="key dim"><span class="cap">X</span></div>
+    <div class="key dim"><span class="cap">C</span></div>
+    <div class="key dim"><span class="cap">V</span></div>
+    <div class="key dim"><span class="cap">B</span></div>
+    <div class="key dim"><span class="cap">N</span></div>
+    <div class="key dim"><span class="cap">M</span></div>
+    <div class="key dim wide"><span class="cap">Shift</span></div>
+  </div>
+
+  <div class="row">
+    <div class="key dim"><span class="cap">Ctrl</span></div>
+    <div class="key dim"><span class="cap">Alt</span></div>
+    <div class="key transition xwide"><span class="cap">Space</span><span class="tag">Slow Fade Transition</span></div>
+    <div class="key dim"><span class="cap">Alt</span></div>
+    <div class="key dim"><span class="cap">Ctrl</span></div>
+  </div>
+
+  <!-- GRAPHICS PAD -->
+  <div class="section-label"><span class="n">2</span>GRAPHICS PAD — NUMPAD (RIGHT SIDE)</div>
+  <div class="callout">Only two columns are used: <b style="color:var(--graphics1)">7 / 4 / 1 → Graphics 1</b> and <b style="color:var(--graphics2)">8 / 5 / 2 → Graphics 2</b>. The 9 / 6 / 3 column isn't used. Rows set the action; <b>Enter</b> takes/switches, same color as Space because it's a transition too.</div>
+
+  <div class="pad-wrap">
+    <div class="pad-grid">
+      <div class="head"></div>
+      <div class="head" style="color:var(--graphics1)">Graphics 1</div>
+      <div class="head" style="color:var(--graphics2)">Graphics 2</div>
+      <div class="head" style="color:var(--ink-dim)">Not used</div>
+
+      <div class="rowlabel">Pull</div>
+      <div class="key graphics1"><span class="cap">7</span></div>
+      <div class="key graphics2"><span class="cap">8</span></div>
+      <div class="key dim"><span class="cap">9</span></div>
+
+      <div class="rowlabel">Push</div>
+      <div class="key graphics1"><span class="cap">4</span></div>
+      <div class="key graphics2"><span class="cap">5</span></div>
+      <div class="key dim"><span class="cap">6</span></div>
+
+      <div class="rowlabel">Preview<br>On/Off</div>
+      <div class="key graphics1"><span class="cap">1</span></div>
+      <div class="key graphics2"><span class="cap">2</span></div>
+      <div class="key dim"><span class="cap">3</span></div>
+    </div>
+
+    <div class="pad-note">
+      <b>Reading the grid:</b> pick the column for the graphics channel &mdash; Graphics 1 or Graphics 2 &mdash; then the row for the action: Pull it in, Push it out, or toggle it on Preview. Numpad <b>Enter</b> and <b>0</b> aren't mapped; use the main <b>Enter</b> key to take.
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="item"><span class="swatch" style="border-color:var(--live)"></span>Program / Live</div>
+    <div class="item"><span class="swatch" style="border-color:var(--preview)"></span>Preview</div>
+    <div class="item"><span class="swatch" style="border-color:var(--transition)"></span>Transition (Space + Enter)</div>
+    <div class="item"><span class="swatch" style="border-color:var(--graphics1)"></span>Graphics 1</div>
+    <div class="item"><span class="swatch" style="border-color:var(--graphics2)"></span>Graphics 2</div>
+    <div class="item"><span class="swatch" style="border-color:var(--ink-dim);border-style:dashed"></span>Not assigned</div>
+  </div>
+
+  <div class="titleblock">
+    <span>DWG: <b>LSS-KEYS-01</b></span>
+    <span>SCALE: <b>N.T.S.</b></span>
+    <span>REV: <b>B</b></span>
+    <span>FOR: <b>TSC Production Team</b></span>
+    <span>DATE: <b>07/11/2026</b></span>
+  </div>
+
+</div>
+</body>
+</html>

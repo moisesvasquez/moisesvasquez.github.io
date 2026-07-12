@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>TSC Production Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: oklch(96% 0.008 255);
+    --card: oklch(99% 0.004 255);
+    --card-tint: oklch(94% 0.012 255);
+    --line: oklch(89% 0.012 255);
+    --ink: oklch(23% 0.02 255);
+    --muted: oklch(55% 0.02 255);
+    --accent: oklch(60% 0.17 255);
+    --accent-tint: oklch(93% 0.035 255);
+    --danger: oklch(56% 0.19 25);
+    --radius:18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Poppins',system-ui,sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  .app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    position:relative;
+    padding:22px 18px 40px;
+  }
+
+  /* topbar */
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:26px;}
+  .logo-row{display:flex; align-items:center; gap:9px;}
+  .logo-mark{width:28px; height:28px; border-radius:8px; background:var(--accent); position:relative; flex:0 0 auto;}
+  .logo-mark::before, .logo-mark::after{content:""; position:absolute; left:5px; right:5px; height:3.5px; background:oklch(99% 0.004 255 / .6); border-radius:2px;}
+  .logo-mark::before{top:7.5px;}
+  .logo-mark::after{top:15px;}
+  .logo-word{font-weight:700; font-size:15.5px; color:var(--ink); letter-spacing:.01em;}
+  .logo-word span{color:var(--muted); font-weight:500;}
+  .burger-btn{
+    width:38px; height:38px; border-radius:11px;
+    background:var(--card); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; color:var(--ink);
+    cursor:pointer;
+  }
+
+  /* hero */
+  .hero{margin-bottom:30px;}
+  .hero h1{font-weight:800; font-size:32px; margin:0; line-height:1.05; color:var(--ink); letter-spacing:-0.01em;}
+  .hero .meta{color:var(--muted); font-size:13.5px; margin-top:9px;}
+  .hero .meta b{color:var(--accent); font-weight:700;}
+
+  /* screens */
+  .screen{display:none;}
+  .screen.active{display:block; animation:fade .18s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  /* section groups */
+  .group{margin-bottom:28px;}
+  .group-label{
+    display:flex; align-items:baseline; justify-content:space-between;
+    font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:10px; padding:0 2px;
+  }
+  .group-label b{color:var(--accent); font-weight:700; text-transform:none; letter-spacing:0; font-size:12.5px;}
+
+  /* camera cluster */
+  .cam-row{display:grid; grid-template-columns:repeat(3,1fr); gap:9px;}
+  .cam-row-4{grid-template-columns:repeat(2,1fr);}
+  .cam-tile{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:14px 8px 12px; text-align:center; cursor:pointer;
+  }
+  .cam-tile .ci{font-size:19px; margin-bottom:6px;}
+  .cam-tile .cn{font-size:11.5px; font-weight:600; line-height:1.2; color:var(--ink);}
+  .cam-tile .cc{font-size:10.5px; color:var(--muted); margin-top:4px;}
+  .cam-tile .cc.done{color:var(--accent); font-weight:700;}
+  .cam-tile.done{background:var(--accent-tint); border-color:var(--accent);}
+
+  /* row list (shared by Show Control / Audio / detail checklists) */
+  .row-list{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  .row-item{display:flex; align-items:center; gap:12px; padding:14px 15px; cursor:pointer; border-bottom:1px solid var(--line);}
+  .row-item:last-child{border-bottom:none;}
+  .row-item .ri-icon{width:34px; height:34px; border-radius:10px; background:var(--accent-tint); display:flex; align-items:center; justify-content:center; font-size:15px; flex:0 0 auto;}
+  .row-item .ri-body{flex:1; min-width:0;}
+  .row-item .ri-name{font-weight:600; font-size:14px; color:var(--ink);}
+  .row-item .ri-count{font-size:11.5px; color:var(--muted); margin-top:1px;}
+  .row-item .ri-count.done{color:var(--accent); font-weight:700;}
+  .row-item .ri-dot{width:8px; height:8px; border-radius:50%; border:2px solid var(--line); flex:0 0 auto;}
+  .row-item .ri-dot.done{background:var(--accent); border-color:var(--accent);}
+
+  /* position detail */
+  .backrow{display:flex; align-items:center; gap:10px; margin-bottom:18px; cursor:pointer;}
+  .backrow .arrow{color:var(--accent); font-size:20px;}
+  .backrow .lab{font-size:14px; color:var(--muted); font-weight:600;}
+  .pos-title{font-weight:800; font-size:26px; color:var(--ink); margin-bottom:2px; line-height:1.1;}
+  .pos-progress{color:var(--muted); font-size:13px; margin-bottom:18px;}
+  .pos-progress b{color:var(--accent);}
+
+  .card-list{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  .item-row{display:flex; align-items:center; gap:13px; padding:15px 16px; cursor:pointer; border-bottom:1px solid var(--line);}
+  .item-row:last-child{border-bottom:none;}
+  .idx{width:25px; height:25px; border-radius:50%; background:var(--card-tint); color:var(--muted); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .idx .chk{display:none;}
+  .item-row.toggled .idx{background:var(--accent); color:var(--card);}
+  .item-row.toggled .idx .num{display:none;}
+  .item-row.toggled .idx .chk{display:inline;}
+  .txt{font-size:13.5px; line-height:1.4; color:var(--ink); flex:1; font-weight:400;}
+  .item-row.toggled .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:oklch(55% 0.02 255 / .5);}
+
+  /* master view */
+  .legend{display:flex; gap:16px; margin-bottom:16px;}
+  .legend .lg{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); font-weight:600;}
+  .legend .dot{width:8px; height:8px; border-radius:50%;}
+  .legend .dot.on{background:var(--accent);}
+  .legend .dot.off{background:transparent; border:2px solid var(--line);}
+
+  .m-group{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:10px;}
+  .m-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .m-head-left{display:flex; align-items:center; gap:9px;}
+  .m-dot{width:8px; height:8px; border-radius:50%; background:var(--line); border:2px solid var(--line);}
+  .m-dot.done{background:var(--accent); border-color:var(--accent);}
+  .m-name{font-weight:600; font-size:14.5px; color:var(--ink);}
+  .m-count{font-size:12px; font-weight:700; color:var(--muted);}
+  .m-count.done{color:var(--accent);}
+  .m-remaining{margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);}
+  .m-remaining .rline{font-size:12.5px; color:var(--muted); padding:3px 0; display:flex; gap:6px;}
+  .m-remaining .rline::before{content:"•"; color:var(--accent);}
+  .m-clear{font-size:13px; color:var(--accent); font-weight:600; padding-top:2px;}
+
+  .wide-screen-title{font-weight:800; font-size:24px; color:var(--ink); margin-bottom:14px;}
+
+  /* burger dropdown menu */
+  .menu-panel{
+    position:absolute; top:60px; right:18px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:7px;
+    display:none;
+    flex-direction:column;
+    min-width:198px;
+    z-index:50;
+  }
+  .menu-panel.open{display:flex;}
+  .menu-item{padding:9px 11px; border-radius:8px; font-size:13.5px; cursor:pointer; color:var(--ink); font-weight:500;}
+  .menu-item:hover{background:var(--card-tint);}
+  .menu-item.danger{color:var(--danger);}
+  .menu-divider{height:1px; background:var(--line); margin:4px 5px;}
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--ink); color:var(--card);
+    padding:10px 18px; border-radius:12px; font-size:13px;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+    z-index:60;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="logo-row">
+      <div class="logo-mark"></div>
+      <div class="logo-word">tsc <span>production</span></div>
+    </div>
+    <div class="burger-btn" onclick="toggleMenu()">☰</div>
+  </div>
+
+  <div class="hero">
+    <h1>Sunday Morning</h1>
+    <div class="meta" id="heroMeta">Loading checklist…</div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+
+    <div class="group">
+      <div class="group-label">Cameras &amp; Switcher <b id="grp-cam"></b></div>
+      <div class="cam-row cam-row-4">
+        <div class="cam-tile" id="tile-cam1" onclick="goTo('cam1')">
+          <div class="ci">🎥</div><div class="cn">Camera 1</div><div class="cc" id="count-cam1">0/0</div>
+        </div>
+        <div class="cam-tile" id="tile-cam2" onclick="goTo('cam2')">
+          <div class="ci">🎥</div><div class="cn">Camera 2</div><div class="cc" id="count-cam2">0/0</div>
+        </div>
+        <div class="cam-tile" id="tile-cam3" onclick="goTo('cam3')">
+          <div class="ci">🎥</div><div class="cn">Cam 3 + Transl.</div><div class="cc" id="count-cam3">0/0</div>
+        </div>
+        <div class="cam-tile" id="tile-switcher" onclick="goTo('switcher')">
+          <div class="ci">🎛️</div><div class="cn">Switcher</div><div class="cc" id="count-switcher">0/0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-label">ProPresenter &amp; Lights <b id="grp-show"></b></div>
+      <div class="row-list">
+        <div class="row-item" onclick="goTo('pro')">
+          <div class="ri-icon">📽️</div>
+          <div class="ri-body"><div class="ri-name">ProPresenter</div><div class="ri-count" id="count-pro">0/0 done</div></div>
+          <div class="ri-dot" id="dot-pro"></div>
+        </div>
+        <div class="row-item" onclick="goTo('lights')">
+          <div class="ri-icon">💡</div>
+          <div class="ri-body"><div class="ri-name">Lights</div><div class="ri-count" id="count-lights">0/0 done</div></div>
+          <div class="ri-dot" id="dot-lights"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-label">Audio <b id="grp-audio"></b></div>
+      <div class="row-list">
+        <div class="row-item" onclick="goTo('fohaudio')">
+          <div class="ri-icon">🔊</div>
+          <div class="ri-body"><div class="ri-name">FOH Audio</div><div class="ri-count" id="count-fohaudio">0/0 done</div></div>
+          <div class="ri-dot" id="dot-fohaudio"></div>
+        </div>
+        <div class="row-item" onclick="goTo('lsaudio')">
+          <div class="ri-icon">📡</div>
+          <div class="ri-body"><div class="ri-name">Livestream Audio</div><div class="ri-count" id="count-lsaudio">0/0 done</div></div>
+          <div class="ri-dot" id="dot-lsaudio"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CAMERA 1 -->
+  <div class="screen" id="screen-cam1">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">Camera 1</div>
+    <div class="pos-progress" data-progress-for="cam1"></div>
+    <div class="card-list" id="list-cam1">
+      <div id="cam1-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Camera powered on and connected to the switcher</span></div>
+      <div id="cam1-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Exposure looks correct, shot is not overexposed</span></div>
+      <div id="cam1-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">All vocalists on stage are clearly visible in frame</span></div>
+      <div id="cam1-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Shot is level, not crooked</span></div>
+      <div id="cam1-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
+      <div id="cam1-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="cam1-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- CAMERA 2 -->
+  <div class="screen" id="screen-cam2">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">Camera 2</div>
+    <div class="pos-progress" data-progress-for="cam2"></div>
+    <div class="card-list" id="list-cam2">
+      <div id="cam2-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Camera powered on and connected to the switcher</span></div>
+      <div id="cam2-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Exposure looks correct, shot is not overexposed</span></div>
+      <div id="cam2-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">All vocalists on stage are clearly visible in frame</span></div>
+      <div id="cam2-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Shot is level, not crooked</span></div>
+      <div id="cam2-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
+      <div id="cam2-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="cam2-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- CAMERA 3 -->
+  <div class="screen" id="screen-cam3">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">Camera 3</div>
+    <div class="pos-progress" data-progress-for="cam3"></div>
+    <div class="card-list" id="list-cam3">
+      <div id="cam3-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Camera powered on and connected to the switcher</span></div>
+      <div id="cam3-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Exposure looks correct, shot is not overexposed</span></div>
+      <div id="cam3-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">All vocalists on stage are clearly visible in frame</span></div>
+      <div id="cam3-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Shot is level, not crooked</span></div>
+      <div id="cam3-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Translation feed turned on and confirmed working</span></div>
+      <div id="cam3-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
+      <div id="cam3-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="cam3-8" can-toggle class="item-row"><span class="idx"><span class="num">8</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- SWITCHER -->
+  <div class="screen" id="screen-switcher">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">Switcher</div>
+    <div class="pos-progress" data-progress-for="switcher"></div>
+    <div class="card-list" id="list-switcher">
+      <div id="switcher-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">All camera feeds are visible on the switcher</span></div>
+      <div id="switcher-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Sermon title updated on the church website</span></div>
+      <div id="switcher-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Sermon title updated in Livestream Studio</span></div>
+      <div id="switcher-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Sermon added in Subsplash with notes so it shows in the app</span></div>
+      <div id="switcher-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Tested the video feed for Livestream Studio and it plays correctly</span></div>
+      <div id="switcher-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="switcher-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- PROPRESENTER -->
+  <div class="screen" id="screen-pro">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">ProPresenter</div>
+    <div class="pos-progress" data-progress-for="pro"></div>
+    <div class="card-list" id="list-pro">
+      <div id="pro-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">All songs added for today</span></div>
+      <div id="pro-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Each song has the correct font set</span></div>
+      <div id="pro-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Each song has a background chosen</span></div>
+      <div id="pro-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Verses to be read between songs are added</span></div>
+      <div id="pro-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Announcements added, in order, only the ones needed today</span></div>
+      <div id="pro-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Sermon outline added</span></div>
+      <div id="pro-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Sermon slides have the correct actions for livestream</span></div>
+      <div id="pro-8" can-toggle class="item-row"><span class="idx"><span class="num">8</span><span class="chk">✓</span></span><span class="txt">Tested the video feed for Livestream Studio and it plays correctly</span></div>
+      <div id="pro-9" can-toggle class="item-row"><span class="idx"><span class="num">9</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="pro-10" can-toggle class="item-row"><span class="idx"><span class="num">10</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- LIGHTS -->
+  <div class="screen" id="screen-lights">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">Lights</div>
+    <div class="pos-progress" data-progress-for="lights"></div>
+    <div class="card-list" id="list-lights">
+      <div id="lights-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Everyone on stage is properly lit</span></div>
+      <div id="lights-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Light scene created for each song</span></div>
+      <div id="lights-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Light changes set for each song</span></div>
+      <div id="lights-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="lights-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- FOH AUDIO -->
+  <div class="screen" id="screen-fohaudio">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">FOH Audio</div>
+    <div class="pos-progress" data-progress-for="fohaudio"></div>
+    <div class="card-list" id="list-fohaudio">
+      <div id="fohaudio-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Turn on the amps</span></div>
+      <div id="fohaudio-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Turn on the outdoor speaker and confirm it is connected</span></div>
+      <div id="fohaudio-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Turn on the FOH board</span></div>
+      <div id="fohaudio-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Mic check on FOH and BOH</span></div>
+      <div id="fohaudio-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Lapel mics have batteries and are working</span></div>
+      <div id="fohaudio-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Test announcement mics</span></div>
+      <div id="fohaudio-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Run through with the singing and instrument team</span></div>
+      <div id="fohaudio-8" can-toggle class="item-row"><span class="idx"><span class="num">8</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
+      <div id="fohaudio-9" can-toggle class="item-row"><span class="idx"><span class="num">9</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="fohaudio-10" can-toggle class="item-row"><span class="idx"><span class="num">10</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- LIVESTREAM AUDIO -->
+  <div class="screen" id="screen-lsaudio">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="pos-title">Livestream Audio</div>
+    <div class="pos-progress" data-progress-for="lsaudio"></div>
+    <div class="card-list" id="list-lsaudio">
+      <div id="lsaudio-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Turn on livestream audio</span></div>
+      <div id="lsaudio-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Set livestream to record</span></div>
+      <div id="lsaudio-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Confirm levels during run through with the singing and instrument team</span></div>
+      <div id="lsaudio-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Livestream audio levels checked and balanced</span></div>
+      <div id="lsaudio-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
+      <div id="lsaudio-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
+      <div id="lsaudio-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
+    </div>
+  </div>
+
+  <!-- MASTER VIEW -->
+  <div class="screen" id="screen-master">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="wide-screen-title">Master View</div>
+    <div class="legend">
+      <div class="lg"><span class="dot on"></span>Complete</div>
+      <div class="lg"><span class="dot off"></span>Remaining</div>
+    </div>
+    <div id="masterContent"></div>
+  </div>
+
+  <div class="menu-panel" id="menuPanel">
+    <div class="menu-item" onclick="goTo('home'); toggleMenu();">Home</div>
+    <div class="menu-item" onclick="goTo('master'); toggleMenu();">Master View</div>
+    <div class="menu-divider"></div>
+    <div class="menu-item danger" id="resetBtn" onclick="handleResetClick()">Reset all checklists</div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const POSITIONS = [
+    {id:"cam1", name:"Camera 1", group:"cam"},
+    {id:"cam2", name:"Camera 2", group:"cam"},
+    {id:"cam3", name:"Camera 3 + Translation", group:"cam"},
+    {id:"switcher", name:"Switcher", group:"cam"},
+    {id:"pro", name:"ProPresenter", group:"show"},
+    {id:"lights", name:"Lights", group:"show"},
+    {id:"fohaudio", name:"FOH Audio", group:"audio"},
+    {id:"lsaudio", name:"Livestream Audio", group:"audio"},
+  ];
+
+  function goTo(screenId){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('screen-'+screenId).classList.add('active');
+    window.scrollTo(0,0);
+    if(screenId === 'master') renderMaster();
+  }
+
+  // reliable local toggle, works even if the sync library can't load (offline, blocked CDN, etc.)
+  document.querySelectorAll('[can-toggle]').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      if(e.shiftKey) return; // shift-click is reserved for the reset action
+      el.classList.toggle('toggled');
+    });
+  });
+
+  function getGroupStats(id){
+    const items = document.querySelectorAll('#list-'+id+' [can-toggle]');
+    const total = items.length;
+    let done = 0;
+    items.forEach(el=>{ if(el.classList.contains('toggled')) done++; });
+    return {total, done, items};
+  }
+
+  function updateAllProgress(){
+    let grand={done:0,total:0};
+    const bucket={cam:{done:0,total:0}, show:{done:0,total:0}, audio:{done:0,total:0}};
+
+    POSITIONS.forEach(p=>{
+      const {total, done} = getGroupStats(p.id);
+      grand.done+=done; grand.total+=total;
+      bucket[p.group].done+=done; bucket[p.group].total+=total;
+
+      const allDone = total>0 && done===total;
+      const countEl = document.getElementById('count-'+p.id);
+      if(countEl){
+        countEl.textContent = (p.group==='cam') ? (done+'/'+total) : (done+'/'+total+' done');
+        countEl.classList.toggle('done', allDone);
+      }
+      const dotEl = document.getElementById('dot-'+p.id);
+      if(dotEl){ dotEl.classList.toggle('done', allDone); }
+      const tileEl = document.getElementById('tile-'+p.id);
+      if(tileEl){ tileEl.classList.toggle('done', allDone); }
+      const progLine = document.querySelector('[data-progress-for="'+p.id+'"]');
+      if(progLine){ progLine.innerHTML = '<b>'+done+' of '+total+'</b> complete'; }
+    });
+
+    document.getElementById('grp-cam').textContent = bucket.cam.done+'/'+bucket.cam.total+' ready';
+    document.getElementById('grp-show').textContent = bucket.show.done+'/'+bucket.show.total+' ready';
+    document.getElementById('grp-audio').textContent = bucket.audio.done+'/'+bucket.audio.total+' ready';
+    document.getElementById('heroMeta').innerHTML = '<b>'+grand.done+' of '+grand.total+'</b> tasks ready across the team';
+
+    if(document.getElementById('screen-master').classList.contains('active')){
+      renderMaster();
+    }
+  }
+
+  function renderMaster(){
+    const container = document.getElementById('masterContent');
+    container.innerHTML = POSITIONS.map(p=>{
+      const {total, done, items} = getGroupStats(p.id);
+      const allDone = total>0 && done===total;
+      let remainingHtml = '';
+      if(allDone){
+        remainingHtml = '<div class="m-clear">All done ✓</div>';
+      } else {
+        const remaining = Array.from(items)
+          .filter(el=>!el.classList.contains('toggled'))
+          .map(el=>el.querySelector('.txt').textContent);
+        remainingHtml = '<div class="m-remaining">' +
+          remaining.map(t=>'<div class="rline">'+t+'</div>').join('') +
+          '</div>';
+      }
+      return '<div class="m-group">' +
+        '<div class="m-head"><div class="m-head-left"><span class="m-dot'+(allDone?' done':'')+'"></span><span class="m-name">'+p.name+'</span></div>' +
+        '<span class="m-count'+(allDone?' done':'')+'">'+done+'/'+total+'</span></div>' +
+        remainingHtml +
+        '</div>';
+    }).join('');
+  }
+
+  function toggleMenu(){
+    document.getElementById('menuPanel').classList.toggle('open');
+  }
+  document.addEventListener('click', (e)=>{
+    const panel = document.getElementById('menuPanel');
+    const burgerBtn = document.querySelector('.burger-btn');
+    if(panel.classList.contains('open') && !panel.contains(e.target) && e.target!==burgerBtn){
+      panel.classList.remove('open');
+      resetConfirmState = false;
+      document.getElementById('resetBtn').textContent = 'Reset all checklists';
+    }
+  });
+
+  let resetConfirmState = false;
+  let resetConfirmTimer = null;
+  function handleResetClick(){
+    const btn = document.getElementById('resetBtn');
+    if(!resetConfirmState){
+      resetConfirmState = true;
+      btn.textContent = 'Tap again to confirm';
+      resetConfirmTimer = setTimeout(()=>{
+        resetConfirmState = false;
+        btn.textContent = 'Reset all checklists';
+      }, 5000);
+    } else {
+      clearTimeout(resetConfirmTimer);
+      resetConfirmState = false;
+      btn.textContent = 'Reset all checklists';
+      resetAllChecklists();
+      document.getElementById('menuPanel').classList.remove('open');
+    }
+  }
+
+  function resetAllChecklists(){
+    document.querySelectorAll('[can-toggle]').forEach(el=>{
+      if(el.classList.contains('toggled')){
+        el.classList.remove('toggled');
+        el.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, shiftKey:true}));
+      }
+    });
+    showToast('Cleared for next Sunday');
+  }
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  const observer = new MutationObserver(updateAllProgress);
+  observer.observe(document.body, {attributes:true, attributeFilter:['class'], subtree:true});
+
+  setTimeout(updateAllProgress, 300);
+</script>
+
+<script type="module">
+  // best-effort cross-device sync layer; the checklist works locally even if this fails to load
+  import { playhtml } from "https://unpkg.com/playhtml";
+  playhtml.init({ room: "tsc-sunday-production-checklist" });
+</script>
+
+</body>
+</html>
