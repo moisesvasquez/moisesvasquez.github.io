@@ -76,8 +76,7 @@
   .group-label b{color:var(--accent); font-weight:700; text-transform:none; letter-spacing:0; font-size:12.5px;}
 
   /* camera cluster */
-  .cam-row{display:grid; grid-template-columns:repeat(3,1fr); gap:9px;}
-  .cam-row-4{grid-template-columns:repeat(2,1fr);}
+  .cam-row{display:grid; gap:9px;}
   .cam-tile{
     background:var(--card); border:1px solid var(--line); border-radius:16px;
     padding:14px 8px 12px; text-align:center; cursor:pointer;
@@ -158,6 +157,7 @@
   .menu-item:hover{background:var(--card-tint);}
   .menu-item.danger{color:var(--danger);}
   .menu-divider{height:1px; background:var(--line); margin:4px 5px;}
+
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
     background:var(--ink); color:var(--card);
@@ -166,6 +166,27 @@
     z-index:60;
   }
   .toast.show{opacity:1;}
+
+  /* loading / error states */
+  .loading-state{
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; padding:60px 20px; gap:16px;
+    color:var(--muted); font-size:14px;
+  }
+  .spinner{
+    width:28px; height:28px;
+    border:3px solid var(--line);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .error-state{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:24px 20px;
+    color:var(--muted); font-size:13.5px; line-height:1.7;
+  }
+  .error-state strong{color:var(--danger); display:block; margin-bottom:6px;}
 </style>
 </head>
 <body>
@@ -184,203 +205,12 @@
     <div class="meta" id="heroMeta">Loading checklist…</div>
   </div>
 
-  <!-- HOME -->
-  <div class="screen active" id="screen-home">
-
-    <div class="group">
-      <div class="group-label">Cameras &amp; Switcher <b id="grp-cam"></b></div>
-      <div class="cam-row cam-row-4">
-        <div class="cam-tile" id="tile-cam1" onclick="goTo('cam1')">
-          <div class="ci">🎥</div><div class="cn">Camera 1</div><div class="cc" id="count-cam1">0/0</div>
-        </div>
-        <div class="cam-tile" id="tile-cam2" onclick="goTo('cam2')">
-          <div class="ci">🎥</div><div class="cn">Camera 2</div><div class="cc" id="count-cam2">0/0</div>
-        </div>
-        <div class="cam-tile" id="tile-cam3" onclick="goTo('cam3')">
-          <div class="ci">🎥</div><div class="cn">Cam 3 + Transl.</div><div class="cc" id="count-cam3">0/0</div>
-        </div>
-        <div class="cam-tile" id="tile-switcher" onclick="goTo('switcher')">
-          <div class="ci">🎛️</div><div class="cn">Switcher</div><div class="cc" id="count-switcher">0/0</div>
-        </div>
-      </div>
+  <!-- all screens injected here by JS -->
+  <div id="screens-root">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <span>Loading from sheet…</span>
     </div>
-
-    <div class="group">
-      <div class="group-label">ProPresenter &amp; Lights <b id="grp-show"></b></div>
-      <div class="row-list">
-        <div class="row-item" onclick="goTo('pro')">
-          <div class="ri-icon">📽️</div>
-          <div class="ri-body"><div class="ri-name">ProPresenter</div><div class="ri-count" id="count-pro">0/0 done</div></div>
-          <div class="ri-dot" id="dot-pro"></div>
-        </div>
-        <div class="row-item" onclick="goTo('lights')">
-          <div class="ri-icon">💡</div>
-          <div class="ri-body"><div class="ri-name">Lights</div><div class="ri-count" id="count-lights">0/0 done</div></div>
-          <div class="ri-dot" id="dot-lights"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="group">
-      <div class="group-label">Audio <b id="grp-audio"></b></div>
-      <div class="row-list">
-        <div class="row-item" onclick="goTo('fohaudio')">
-          <div class="ri-icon">🔊</div>
-          <div class="ri-body"><div class="ri-name">FOH Audio</div><div class="ri-count" id="count-fohaudio">0/0 done</div></div>
-          <div class="ri-dot" id="dot-fohaudio"></div>
-        </div>
-        <div class="row-item" onclick="goTo('lsaudio')">
-          <div class="ri-icon">📡</div>
-          <div class="ri-body"><div class="ri-name">Livestream Audio</div><div class="ri-count" id="count-lsaudio">0/0 done</div></div>
-          <div class="ri-dot" id="dot-lsaudio"></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- CAMERA 1 -->
-  <div class="screen" id="screen-cam1">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">Camera 1</div>
-    <div class="pos-progress" data-progress-for="cam1"></div>
-    <div class="card-list" id="list-cam1">
-      <div id="cam1-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Camera powered on and connected to the switcher</span></div>
-      <div id="cam1-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Exposure looks correct, shot is not overexposed</span></div>
-      <div id="cam1-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">All vocalists on stage are clearly visible in frame</span></div>
-      <div id="cam1-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Shot is level, not crooked</span></div>
-      <div id="cam1-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
-      <div id="cam1-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="cam1-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- CAMERA 2 -->
-  <div class="screen" id="screen-cam2">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">Camera 2</div>
-    <div class="pos-progress" data-progress-for="cam2"></div>
-    <div class="card-list" id="list-cam2">
-      <div id="cam2-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Camera powered on and connected to the switcher</span></div>
-      <div id="cam2-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Exposure looks correct, shot is not overexposed</span></div>
-      <div id="cam2-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">All vocalists on stage are clearly visible in frame</span></div>
-      <div id="cam2-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Shot is level, not crooked</span></div>
-      <div id="cam2-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
-      <div id="cam2-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="cam2-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- CAMERA 3 -->
-  <div class="screen" id="screen-cam3">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">Camera 3</div>
-    <div class="pos-progress" data-progress-for="cam3"></div>
-    <div class="card-list" id="list-cam3">
-      <div id="cam3-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Camera powered on and connected to the switcher</span></div>
-      <div id="cam3-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Exposure looks correct, shot is not overexposed</span></div>
-      <div id="cam3-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">All vocalists on stage are clearly visible in frame</span></div>
-      <div id="cam3-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Shot is level, not crooked</span></div>
-      <div id="cam3-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Translation feed turned on and confirmed working</span></div>
-      <div id="cam3-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
-      <div id="cam3-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="cam3-8" can-toggle class="item-row"><span class="idx"><span class="num">8</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- SWITCHER -->
-  <div class="screen" id="screen-switcher">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">Switcher</div>
-    <div class="pos-progress" data-progress-for="switcher"></div>
-    <div class="card-list" id="list-switcher">
-      <div id="switcher-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">All camera feeds are visible on the switcher</span></div>
-      <div id="switcher-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Sermon title updated on the church website</span></div>
-      <div id="switcher-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Sermon title updated in Livestream Studio</span></div>
-      <div id="switcher-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Sermon added in Subsplash with notes so it shows in the app</span></div>
-      <div id="switcher-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Tested the video feed for Livestream Studio and it plays correctly</span></div>
-      <div id="switcher-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="switcher-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- PROPRESENTER -->
-  <div class="screen" id="screen-pro">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">ProPresenter</div>
-    <div class="pos-progress" data-progress-for="pro"></div>
-    <div class="card-list" id="list-pro">
-      <div id="pro-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">All songs added for today</span></div>
-      <div id="pro-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Each song has the correct font set</span></div>
-      <div id="pro-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Each song has a background chosen</span></div>
-      <div id="pro-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Verses to be read between songs are added</span></div>
-      <div id="pro-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Announcements added, in order, only the ones needed today</span></div>
-      <div id="pro-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Sermon outline added</span></div>
-      <div id="pro-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Sermon slides have the correct actions for livestream</span></div>
-      <div id="pro-8" can-toggle class="item-row"><span class="idx"><span class="num">8</span><span class="chk">✓</span></span><span class="txt">Tested the video feed for Livestream Studio and it plays correctly</span></div>
-      <div id="pro-9" can-toggle class="item-row"><span class="idx"><span class="num">9</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="pro-10" can-toggle class="item-row"><span class="idx"><span class="num">10</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- LIGHTS -->
-  <div class="screen" id="screen-lights">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">Lights</div>
-    <div class="pos-progress" data-progress-for="lights"></div>
-    <div class="card-list" id="list-lights">
-      <div id="lights-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Everyone on stage is properly lit</span></div>
-      <div id="lights-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Light scene created for each song</span></div>
-      <div id="lights-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Light changes set for each song</span></div>
-      <div id="lights-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="lights-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- FOH AUDIO -->
-  <div class="screen" id="screen-fohaudio">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">FOH Audio</div>
-    <div class="pos-progress" data-progress-for="fohaudio"></div>
-    <div class="card-list" id="list-fohaudio">
-      <div id="fohaudio-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Turn on the amps</span></div>
-      <div id="fohaudio-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Turn on the outdoor speaker and confirm it is connected</span></div>
-      <div id="fohaudio-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Turn on the FOH board</span></div>
-      <div id="fohaudio-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Mic check on FOH and BOH</span></div>
-      <div id="fohaudio-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Lapel mics have batteries and are working</span></div>
-      <div id="fohaudio-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Test announcement mics</span></div>
-      <div id="fohaudio-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Run through with the singing and instrument team</span></div>
-      <div id="fohaudio-8" can-toggle class="item-row"><span class="idx"><span class="num">8</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
-      <div id="fohaudio-9" can-toggle class="item-row"><span class="idx"><span class="num">9</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="fohaudio-10" can-toggle class="item-row"><span class="idx"><span class="num">10</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- LIVESTREAM AUDIO -->
-  <div class="screen" id="screen-lsaudio">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="pos-title">Livestream Audio</div>
-    <div class="pos-progress" data-progress-for="lsaudio"></div>
-    <div class="card-list" id="list-lsaudio">
-      <div id="lsaudio-1" can-toggle class="item-row"><span class="idx"><span class="num">1</span><span class="chk">✓</span></span><span class="txt">Turn on livestream audio</span></div>
-      <div id="lsaudio-2" can-toggle class="item-row"><span class="idx"><span class="num">2</span><span class="chk">✓</span></span><span class="txt">Set livestream to record</span></div>
-      <div id="lsaudio-3" can-toggle class="item-row"><span class="idx"><span class="num">3</span><span class="chk">✓</span></span><span class="txt">Confirm levels during run through with the singing and instrument team</span></div>
-      <div id="lsaudio-4" can-toggle class="item-row"><span class="idx"><span class="num">4</span><span class="chk">✓</span></span><span class="txt">Livestream audio levels checked and balanced</span></div>
-      <div id="lsaudio-5" can-toggle class="item-row"><span class="idx"><span class="num">5</span><span class="chk">✓</span></span><span class="txt">Know who is speaking to open the service and who is leading each song</span></div>
-      <div id="lsaudio-6" can-toggle class="item-row"><span class="idx"><span class="num">6</span><span class="chk">✓</span></span><span class="txt">Reviewed the service order</span></div>
-      <div id="lsaudio-7" can-toggle class="item-row"><span class="idx"><span class="num">7</span><span class="chk">✓</span></span><span class="txt">Questions ready for the huddle</span></div>
-    </div>
-  </div>
-
-  <!-- MASTER VIEW -->
-  <div class="screen" id="screen-master">
-    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
-    <div class="wide-screen-title">Master View</div>
-    <div class="legend">
-      <div class="lg"><span class="dot on"></span>Complete</div>
-      <div class="lg"><span class="dot off"></span>Remaining</div>
-    </div>
-    <div id="masterContent"></div>
   </div>
 
   <div class="menu-panel" id="menuPanel">
@@ -395,158 +225,340 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const POSITIONS = [
-    {id:"cam1", name:"Camera 1", group:"cam"},
-    {id:"cam2", name:"Camera 2", group:"cam"},
-    {id:"cam3", name:"Camera 3 + Translation", group:"cam"},
-    {id:"switcher", name:"Switcher", group:"cam"},
-    {id:"pro", name:"ProPresenter", group:"show"},
-    {id:"lights", name:"Lights", group:"show"},
-    {id:"fohaudio", name:"FOH Audio", group:"audio"},
-    {id:"lsaudio", name:"Livestream Audio", group:"audio"},
-  ];
+// ── Config ──────────────────────────────────────────────────
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSFcIZzBYJbXuVrxe4l_INJK-m-9stjUe-9G9BsBdGtVQsOZclVBL0CSRRzZCzn_xjlPQp0wZ8lpqsc/pub?gid=0&single=true&output=csv';
 
-  function goTo(screenId){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    document.getElementById('screen-'+screenId).classList.add('active');
-    window.scrollTo(0,0);
-    if(screenId === 'master') renderMaster();
+// Display labels and stat-element IDs for each group key.
+// Add new rows here if you ever create a new group in the sheet.
+const GROUP_META = {
+  cam:   { label: 'Cameras &amp; Switcher', statId: 'grp-cam' },
+  show:  { label: 'ProPresenter &amp; Lights', statId: 'grp-show' },
+  audio: { label: 'Audio', statId: 'grp-audio' },
+};
+
+// ── State ───────────────────────────────────────────────────
+let POSITIONS = [];
+
+// ── CSV parsing ─────────────────────────────────────────────
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) {
+      result.push(cur); cur = '';
+    } else {
+      cur += ch;
+    }
   }
+  result.push(cur);
+  return result;
+}
 
-  // reliable local toggle, works even if the sync library can't load (offline, blocked CDN, etc.)
-  document.querySelectorAll('[can-toggle]').forEach(el=>{
-    el.addEventListener('click', (e)=>{
-      if(e.shiftKey) return; // shift-click is reserved for the reset action
+function parseCSV(text) {
+  const cleaned = text.replace(/^﻿/, ''); // strip BOM if present
+  const lines = cleaned.trim().split(/\r?\n/);
+  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+  return lines.slice(1)
+    .filter(l => l.trim())
+    .map(line => {
+      const vals = parseCSVLine(line);
+      return Object.fromEntries(headers.map((h, i) => [h, (vals[i] || '').trim()]));
+    });
+}
+
+// ── HTML escaping ────────────────────────────────────────────
+function esc(s) {
+  return (s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── Build app from parsed CSV rows ───────────────────────────
+function buildApp(rows) {
+  // Aggregate rows into position objects
+  const posMap = new Map();
+  rows.forEach(r => {
+    if (!r.position_id) return;
+    if (!posMap.has(r.position_id)) {
+      posMap.set(r.position_id, {
+        id: r.position_id,
+        name: r.position_name || r.position_id,
+        tileLabel: r.tile_label || r.position_name || r.position_id,
+        group: r.group || 'other',
+        icon: r.icon || '📋',
+        sort: parseInt(r.position_sort) || 99,
+        tasks: []
+      });
+    }
+    const taskNum = parseInt(r.task_number);
+    if (r.task_text && !isNaN(taskNum)) {
+      posMap.get(r.position_id).tasks.push({ num: taskNum, text: r.task_text });
+    }
+  });
+
+  POSITIONS = [...posMap.values()].sort((a, b) => a.sort - b.sort);
+  POSITIONS.forEach(p => p.tasks.sort((a, b) => a.num - b.num));
+
+  // Inject all screens into the DOM
+  const root = document.getElementById('screens-root');
+  root.innerHTML = buildHomeHtml() + buildDetailScreensHtml() + buildMasterHtml();
+
+  // Wire up local toggle clicks
+  root.querySelectorAll('[can-toggle]').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.shiftKey) return;
       el.classList.toggle('toggled');
     });
   });
 
-  function getGroupStats(id){
-    const items = document.querySelectorAll('#list-'+id+' [can-toggle]');
-    const total = items.length;
-    let done = 0;
-    items.forEach(el=>{ if(el.classList.contains('toggled')) done++; });
-    return {total, done, items};
-  }
+  // Progress tracking via MutationObserver
+  const obs = new MutationObserver(updateAllProgress);
+  obs.observe(root, { attributes: true, attributeFilter: ['class'], subtree: true });
+  setTimeout(updateAllProgress, 100);
 
-  function updateAllProgress(){
-    let grand={done:0,total:0};
-    const bucket={cam:{done:0,total:0}, show:{done:0,total:0}, audio:{done:0,total:0}};
+  // Best-effort cross-device sync (works offline too — just degrades gracefully)
+  import('https://unpkg.com/playhtml').then(({ playhtml }) => {
+    playhtml.init({ room: 'tsc-sunday-production-checklist' });
+  }).catch(() => {});
+}
 
-    POSITIONS.forEach(p=>{
-      const {total, done} = getGroupStats(p.id);
-      grand.done+=done; grand.total+=total;
-      bucket[p.group].done+=done; bucket[p.group].total+=total;
-
-      const allDone = total>0 && done===total;
-      const countEl = document.getElementById('count-'+p.id);
-      if(countEl){
-        countEl.textContent = (p.group==='cam') ? (done+'/'+total) : (done+'/'+total+' done');
-        countEl.classList.toggle('done', allDone);
-      }
-      const dotEl = document.getElementById('dot-'+p.id);
-      if(dotEl){ dotEl.classList.toggle('done', allDone); }
-      const tileEl = document.getElementById('tile-'+p.id);
-      if(tileEl){ tileEl.classList.toggle('done', allDone); }
-      const progLine = document.querySelector('[data-progress-for="'+p.id+'"]');
-      if(progLine){ progLine.innerHTML = '<b>'+done+' of '+total+'</b> complete'; }
-    });
-
-    document.getElementById('grp-cam').textContent = bucket.cam.done+'/'+bucket.cam.total+' ready';
-    document.getElementById('grp-show').textContent = bucket.show.done+'/'+bucket.show.total+' ready';
-    document.getElementById('grp-audio').textContent = bucket.audio.done+'/'+bucket.audio.total+' ready';
-    document.getElementById('heroMeta').innerHTML = '<b>'+grand.done+' of '+grand.total+'</b> tasks ready across the team';
-
-    if(document.getElementById('screen-master').classList.contains('active')){
-      renderMaster();
-    }
-  }
-
-  function renderMaster(){
-    const container = document.getElementById('masterContent');
-    container.innerHTML = POSITIONS.map(p=>{
-      const {total, done, items} = getGroupStats(p.id);
-      const allDone = total>0 && done===total;
-      let remainingHtml = '';
-      if(allDone){
-        remainingHtml = '<div class="m-clear">All done ✓</div>';
-      } else {
-        const remaining = Array.from(items)
-          .filter(el=>!el.classList.contains('toggled'))
-          .map(el=>el.querySelector('.txt').textContent);
-        remainingHtml = '<div class="m-remaining">' +
-          remaining.map(t=>'<div class="rline">'+t+'</div>').join('') +
-          '</div>';
-      }
-      return '<div class="m-group">' +
-        '<div class="m-head"><div class="m-head-left"><span class="m-dot'+(allDone?' done':'')+'"></span><span class="m-name">'+p.name+'</span></div>' +
-        '<span class="m-count'+(allDone?' done':'')+'">'+done+'/'+total+'</span></div>' +
-        remainingHtml +
-        '</div>';
-    }).join('');
-  }
-
-  function toggleMenu(){
-    document.getElementById('menuPanel').classList.toggle('open');
-  }
-  document.addEventListener('click', (e)=>{
-    const panel = document.getElementById('menuPanel');
-    const burgerBtn = document.querySelector('.burger-btn');
-    if(panel.classList.contains('open') && !panel.contains(e.target) && e.target!==burgerBtn){
-      panel.classList.remove('open');
-      resetConfirmState = false;
-      document.getElementById('resetBtn').textContent = 'Reset all checklists';
-    }
+// ── Home screen HTML ─────────────────────────────────────────
+function buildHomeHtml() {
+  const groupOrder = [];
+  const groups = {};
+  POSITIONS.forEach(p => {
+    if (!groups[p.group]) { groups[p.group] = []; groupOrder.push(p.group); }
+    groups[p.group].push(p);
   });
 
-  let resetConfirmState = false;
-  let resetConfirmTimer = null;
-  function handleResetClick(){
-    const btn = document.getElementById('resetBtn');
-    if(!resetConfirmState){
-      resetConfirmState = true;
-      btn.textContent = 'Tap again to confirm';
-      resetConfirmTimer = setTimeout(()=>{
-        resetConfirmState = false;
-        btn.textContent = 'Reset all checklists';
-      }, 5000);
+  let sections = '';
+  groupOrder.forEach(g => {
+    const meta = GROUP_META[g] || { label: esc(g), statId: 'grp-' + g };
+    const gPos = groups[g];
+    let inner = '';
+
+    if (g === 'cam') {
+      // Camera tiles: 3-across for 3 items, 2-across otherwise
+      const cols = gPos.length === 3 ? 3 : 2;
+      inner = `<div class="cam-row" style="grid-template-columns:repeat(${cols},1fr)">` +
+        gPos.map(p =>
+          `<div class="cam-tile" id="tile-${p.id}" onclick="goTo('${p.id}')">
+            <div class="ci">${p.icon}</div>
+            <div class="cn">${esc(p.tileLabel)}</div>
+            <div class="cc" id="count-${p.id}">0/0</div>
+          </div>`
+        ).join('') + `</div>`;
     } else {
-      clearTimeout(resetConfirmTimer);
+      inner = `<div class="row-list">` +
+        gPos.map(p =>
+          `<div class="row-item" onclick="goTo('${p.id}')">
+            <div class="ri-icon">${p.icon}</div>
+            <div class="ri-body">
+              <div class="ri-name">${esc(p.name)}</div>
+              <div class="ri-count" id="count-${p.id}">0/0 done</div>
+            </div>
+            <div class="ri-dot" id="dot-${p.id}"></div>
+          </div>`
+        ).join('') + `</div>`;
+    }
+
+    sections += `<div class="group">
+      <div class="group-label">${meta.label} <b id="${meta.statId}"></b></div>
+      ${inner}
+    </div>`;
+  });
+
+  return `<div class="screen active" id="screen-home">${sections}</div>`;
+}
+
+// ── Per-position detail screen HTML ──────────────────────────
+function buildDetailScreensHtml() {
+  return POSITIONS.map(p => {
+    const tasks = p.tasks.map(t =>
+      `<div id="${p.id}-${t.num}" can-toggle class="item-row">
+        <span class="idx"><span class="num">${t.num}</span><span class="chk">✓</span></span>
+        <span class="txt">${esc(t.text)}</span>
+      </div>`
+    ).join('');
+    return `<div class="screen" id="screen-${p.id}">
+      <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+      <div class="pos-title">${esc(p.name)}</div>
+      <div class="pos-progress" data-progress-for="${p.id}"></div>
+      <div class="card-list" id="list-${p.id}">${tasks}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Master screen HTML (static shell, content rendered live) ─
+function buildMasterHtml() {
+  return `<div class="screen" id="screen-master">
+    <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
+    <div class="wide-screen-title">Master View</div>
+    <div class="legend">
+      <div class="lg"><span class="dot on"></span>Complete</div>
+      <div class="lg"><span class="dot off"></span>Remaining</div>
+    </div>
+    <div id="masterContent"></div>
+  </div>`;
+}
+
+// ── Navigation ───────────────────────────────────────────────
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + screenId);
+  if (target) { target.classList.add('active'); window.scrollTo(0, 0); }
+  if (screenId === 'master') renderMaster();
+}
+
+// ── Progress helpers ─────────────────────────────────────────
+function getGroupStats(id) {
+  const items = document.querySelectorAll('#list-' + id + ' [can-toggle]');
+  let done = 0;
+  items.forEach(el => { if (el.classList.contains('toggled')) done++; });
+  return { total: items.length, done, items };
+}
+
+function updateAllProgress() {
+  let grand = { done: 0, total: 0 };
+  const bucket = {};
+
+  POSITIONS.forEach(p => {
+    if (!bucket[p.group]) bucket[p.group] = { done: 0, total: 0 };
+    const { total, done } = getGroupStats(p.id);
+    grand.done += done; grand.total += total;
+    bucket[p.group].done += done; bucket[p.group].total += total;
+
+    const allDone = total > 0 && done === total;
+
+    const countEl = document.getElementById('count-' + p.id);
+    if (countEl) {
+      countEl.textContent = (p.group === 'cam') ? (done + '/' + total) : (done + '/' + total + ' done');
+      countEl.classList.toggle('done', allDone);
+    }
+    const dotEl = document.getElementById('dot-' + p.id);
+    if (dotEl) dotEl.classList.toggle('done', allDone);
+    const tileEl = document.getElementById('tile-' + p.id);
+    if (tileEl) tileEl.classList.toggle('done', allDone);
+    const progEl = document.querySelector('[data-progress-for="' + p.id + '"]');
+    if (progEl) progEl.innerHTML = '<b>' + done + ' of ' + total + '</b> complete';
+  });
+
+  Object.entries(bucket).forEach(([g, stats]) => {
+    const el = document.getElementById((GROUP_META[g] || {}).statId || 'grp-' + g);
+    if (el) el.textContent = stats.done + '/' + stats.total + ' ready';
+  });
+
+  const heroMeta = document.getElementById('heroMeta');
+  if (heroMeta) heroMeta.innerHTML = '<b>' + grand.done + ' of ' + grand.total + '</b> tasks ready across the team';
+
+  if (document.getElementById('screen-master')?.classList.contains('active')) renderMaster();
+}
+
+// ── Master view renderer ─────────────────────────────────────
+function renderMaster() {
+  const container = document.getElementById('masterContent');
+  if (!container) return;
+  container.innerHTML = POSITIONS.map(p => {
+    const { total, done, items } = getGroupStats(p.id);
+    const allDone = total > 0 && done === total;
+    const remainingHtml = allDone
+      ? '<div class="m-clear">All done ✓</div>'
+      : '<div class="m-remaining">' +
+          Array.from(items)
+            .filter(el => !el.classList.contains('toggled'))
+            .map(el => '<div class="rline">' + esc(el.querySelector('.txt').textContent) + '</div>')
+            .join('') +
+        '</div>';
+    return `<div class="m-group">
+      <div class="m-head">
+        <div class="m-head-left">
+          <span class="m-dot${allDone ? ' done' : ''}"></span>
+          <span class="m-name">${esc(p.name)}</span>
+        </div>
+        <span class="m-count${allDone ? ' done' : ''}">${done}/${total}</span>
+      </div>
+      ${remainingHtml}
+    </div>`;
+  }).join('');
+}
+
+// ── Menu ─────────────────────────────────────────────────────
+function toggleMenu() { document.getElementById('menuPanel').classList.toggle('open'); }
+
+document.addEventListener('click', e => {
+  const panel = document.getElementById('menuPanel');
+  const burger = document.querySelector('.burger-btn');
+  if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== burger) {
+    panel.classList.remove('open');
+    resetConfirmState = false;
+    document.getElementById('resetBtn').textContent = 'Reset all checklists';
+  }
+});
+
+let resetConfirmState = false, resetConfirmTimer = null;
+function handleResetClick() {
+  const btn = document.getElementById('resetBtn');
+  if (!resetConfirmState) {
+    resetConfirmState = true;
+    btn.textContent = 'Tap again to confirm';
+    resetConfirmTimer = setTimeout(() => {
       resetConfirmState = false;
       btn.textContent = 'Reset all checklists';
-      resetAllChecklists();
-      document.getElementById('menuPanel').classList.remove('open');
+    }, 5000);
+  } else {
+    clearTimeout(resetConfirmTimer);
+    resetConfirmState = false;
+    btn.textContent = 'Reset all checklists';
+    resetAllChecklists();
+    document.getElementById('menuPanel').classList.remove('open');
+  }
+}
+
+function resetAllChecklists() {
+  document.querySelectorAll('[can-toggle]').forEach(el => {
+    if (el.classList.contains('toggled')) {
+      el.classList.remove('toggled');
+      // shift-click notifies playhtml of the reset without re-toggling locally
+      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, shiftKey: true }));
     }
+  });
+  showToast('Cleared for next Sunday');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── Bootstrap ────────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await fetch(SHEET_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (!rows.length) throw new Error('Sheet returned no rows');
+    buildApp(rows);
+  } catch (err) {
+    document.getElementById('screens-root').innerHTML =
+      `<div class="error-state">
+        <strong>Could not load checklist</strong>
+        Could not fetch the Google Sheet (${esc(err.message)}).<br><br>
+        Make sure the sheet is published to the web via File → Share → Publish to web, then reload.
+      </div>`;
+    document.getElementById('heroMeta').textContent = 'Sheet unavailable';
   }
+}
 
-  function resetAllChecklists(){
-    document.querySelectorAll('[can-toggle]').forEach(el=>{
-      if(el.classList.contains('toggled')){
-        el.classList.remove('toggled');
-        el.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, shiftKey:true}));
-      }
-    });
-    showToast('Cleared for next Sunday');
-  }
-
-  function showToast(msg){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 2200);
-  }
-
-  const observer = new MutationObserver(updateAllProgress);
-  observer.observe(document.body, {attributes:true, attributeFilter:['class'], subtree:true});
-
-  setTimeout(updateAllProgress, 300);
+init();
 </script>
-
-<script type="module">
-  // best-effort cross-device sync layer; the checklist works locally even if this fails to load
-  import { playhtml } from "https://unpkg.com/playhtml";
-  playhtml.init({ room: "tsc-sunday-production-checklist" });
-</script>
-
 </body>
 </html>
