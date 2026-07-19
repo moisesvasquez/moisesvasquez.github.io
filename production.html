@@ -19,7 +19,6 @@
     --ink:           rgba(20,12,4,0.90);
     --ink-mid:       rgba(20,12,4,0.58);
     --ink-soft:      rgba(20,12,4,0.36);
-    --danger:        #c0392b;
     --radius:        18px;
   }
 
@@ -114,32 +113,21 @@
   }
   .pos-card:active { background: var(--glass-hi); }
   .pos-card.done { border-color: var(--accent-mid); background: rgba(232,114,26,0.08); }
-  .pos-card-body { flex: 1; min-width: 0; }
-  .pos-card-name { font-weight: 700; font-size: 14.5px; color: var(--ink); }
-  .pos-card-person { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
-  .pos-card-person.needed { color: var(--accent); font-weight: 600; }
+  .pos-card-name { flex: 1; font-weight: 700; font-size: 14.5px; color: var(--ink); min-width: 0; }
   .pos-card-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 12px; }
   .pos-card-count { font-size: 12px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
   .pos-card-count.done { color: var(--accent); }
   .pos-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--glass-border); flex-shrink: 0; }
   .pos-dot.done { background: var(--accent); border-color: var(--accent); }
 
-  /* ── Detail screen header ───────────────────────────────── */
+  /* ── Detail screen ──────────────────────────────────────── */
   .backrow {
     display: flex; align-items: center; gap: 10px;
     margin-bottom: 16px; cursor: pointer;
   }
   .backrow .arrow { color: var(--accent); font-size: 20px; }
   .backrow .lab { font-size: 14px; color: var(--ink-mid); font-weight: 600; }
-  .pos-title { font-weight: 800; font-size: 26px; color: var(--ink); line-height: 1.1; margin-bottom: 8px; }
-  .pos-person-badge {
-    display: inline-block; font-size: 11.5px; font-weight: 600;
-    padding: 3px 13px; border-radius: 20px; margin-bottom: 14px;
-    background: var(--glass); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    color: var(--ink-mid);
-  }
-  .pos-person-badge.needed { color: var(--accent); border-color: var(--accent-mid); background: var(--accent-soft); }
+  .pos-title { font-weight: 800; font-size: 26px; color: var(--ink); line-height: 1.1; margin-bottom: 14px; }
   .pos-progress { color: var(--ink-soft); font-size: 13px; margin-bottom: 16px; }
   .pos-progress b { color: var(--accent); }
 
@@ -187,7 +175,7 @@
     border-radius: var(--radius);
     padding: 16px 18px; margin-bottom: 10px;
   }
-  .m-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .m-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .m-head-left { display: flex; align-items: center; gap: 9px; }
   .m-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); flex-shrink: 0; }
   .m-dot.done { background: var(--accent); border-color: var(--accent); }
@@ -195,24 +183,7 @@
   .m-count { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); }
   .m-count.done { color: var(--accent); }
 
-  .m-person-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 11px; border-radius: 10px; margin-bottom: 10px;
-    background: rgba(255,255,255,0.50); border: 1px solid rgba(255,255,255,0.68);
-  }
-  .m-person-label { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; letter-spacing: .04em; text-transform: uppercase; }
-  .m-person-input {
-    flex: 1; background: transparent; outline: none;
-    font-family: 'Poppins', system-ui, sans-serif;
-    font-size: 13px; font-weight: 600; color: var(--ink); min-width: 0;
-    cursor: text; word-break: break-word;
-  }
-  .m-person-input:empty::before {
-    content: 'Enter name…';
-    color: var(--ink-soft); font-weight: 400; pointer-events: none;
-  }
-
-  .m-remaining { border-top: 1px solid rgba(255,255,255,0.50); padding-top: 8px; margin-top: 4px; }
+  .m-remaining { border-top: 1px solid rgba(255,255,255,0.50); padding-top: 8px; margin-top: 10px; }
   .m-remaining .rline { font-size: 12px; color: var(--ink-mid); padding: 2px 0; display: flex; gap: 6px; }
   .m-remaining .rline::before { content: "•"; color: var(--accent); }
   .m-clear { font-size: 13px; color: var(--accent); font-weight: 600; }
@@ -232,18 +203,6 @@
   .menu-panel.open { display: flex; }
   .menu-item { padding: 9px 11px; border-radius: 8px; font-size: 13.5px; cursor: pointer; color: var(--ink); font-weight: 500; }
   .menu-item:hover { background: rgba(255,255,255,0.28); }
-  .menu-item.danger { color: var(--danger); }
-  .menu-divider { height: 1px; background: rgba(255,255,255,0.38); margin: 4px 5px; }
-
-  /* ── Toast ──────────────────────────────────────────────── */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--accent); color: #fff;
-    padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
-    opacity: 0; pointer-events: none; transition: opacity .25s ease;
-    z-index: 400; white-space: nowrap;
-  }
-  .toast.show { opacity: 1; }
 
   /* ── Loading / error ────────────────────────────────────── */
   .loading-state {
@@ -265,7 +224,7 @@
     border-radius: var(--radius); padding: 24px;
     color: var(--ink-mid); font-size: 13.5px; line-height: 1.7;
   }
-  .error-state strong { color: var(--danger); display: block; margin-bottom: 6px; }
+  .error-state strong { color: #c0392b; display: block; margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -292,13 +251,9 @@
   <div class="menu-panel" id="menuPanel">
     <div class="menu-item" onclick="goTo('home'); toggleMenu();">Home</div>
     <div class="menu-item" onclick="goTo('master'); toggleMenu();">Master View</div>
-    <div class="menu-divider"></div>
-    <div class="menu-item danger" id="resetBtn" onclick="handleResetClick()">Reset all checklists</div>
   </div>
 
 </div>
-
-<div class="toast" id="toast"></div>
 
 <script>
 // ── Config ───────────────────────────────────────────────────
@@ -311,7 +266,6 @@ const GROUP_META = {
   audio: { label: 'Audio', statId: 'grp-audio' },
 };
 
-// ── State ────────────────────────────────────────────────────
 let POSITIONS = [];
 
 // ── Utilities ─────────────────────────────────────────────────
@@ -355,20 +309,6 @@ function parseCSV(text) {
   });
 }
 
-// ── Person name display (reads from the can-type contenteditable) ─
-function refreshNameDisplays(posId) {
-  const srcEl = document.getElementById('name-' + posId);
-  const name = srcEl ? srcEl.textContent.trim() : '';
-  const label = name || 'Needed';
-  const needed = !name;
-
-  const homeEl = document.getElementById('person-display-' + posId);
-  if (homeEl) { homeEl.textContent = label; homeEl.classList.toggle('needed', needed); }
-
-  const badgeEl = document.getElementById('person-badge-' + posId);
-  if (badgeEl) { badgeEl.textContent = label; badgeEl.classList.toggle('needed', needed); }
-}
-
 // ── Build app ─────────────────────────────────────────────────
 function buildApp(rows) {
   const posMap = new Map();
@@ -397,35 +337,19 @@ function buildApp(rows) {
   const root = document.getElementById('screens-root');
   root.innerHTML = buildHomeHtml() + buildDetailScreensHtml() + buildMasterHtml();
 
-  // Wire can-toggle elements
-  root.querySelectorAll('[can-toggle]').forEach(wireToggle);
+  root.querySelectorAll('[can-toggle]').forEach(el => {
+    el.addEventListener('click', e => {
+      if (!e.shiftKey) el.classList.toggle('toggled');
+    });
+  });
 
-  // Progress observer (watches class changes for toggled state)
   const obs = new MutationObserver(updateAllProgress);
   obs.observe(root, { attributes: true, attributeFilter: ['class'], subtree: true });
   setTimeout(updateAllProgress, 100);
 
-  // Load playhtml for cross-device sync (checkboxes via can-toggle, names via can-type)
   import('https://unpkg.com/playhtml').then(({ playhtml }) => {
     playhtml.init({ room: 'tsc-sunday-production-checklist-v3' });
-
-    // Watch each name contenteditable for changes — covers both user typing
-    // and updates pushed by playhtml from other devices
-    POSITIONS.forEach(p => {
-      const el = document.getElementById('name-' + p.id);
-      if (!el) return;
-      el.addEventListener('input', () => refreshNameDisplays(p.id));
-      new MutationObserver(() => refreshNameDisplays(p.id))
-        .observe(el, { characterData: true, childList: true, subtree: true });
-    });
   }).catch(() => {});
-}
-
-function wireToggle(el) {
-  el.addEventListener('click', e => {
-    if (e.shiftKey) return;
-    el.classList.toggle('toggled');
-  });
 }
 
 // ── Home screen ───────────────────────────────────────────────
@@ -441,10 +365,7 @@ function buildHomeHtml() {
     const meta = GROUP_META[g] || { label: esc(g), statId: 'grp-' + g };
     const cards = groups[g].map(p =>
       `<div class="pos-card" id="tile-${p.id}" onclick="goTo('${p.id}')">
-        <div class="pos-card-body">
-          <div class="pos-card-name">${esc(p.name)}</div>
-          <div class="pos-card-person needed" id="person-display-${p.id}">Needed</div>
-        </div>
+        <div class="pos-card-name">${esc(p.name)}</div>
         <div class="pos-card-right">
           <span class="pos-card-count" id="count-${p.id}">0/0</span>
           <span class="pos-dot" id="dot-${p.id}"></span>
@@ -472,7 +393,6 @@ function buildDetailScreensHtml() {
     return `<div class="screen" id="screen-${p.id}">
       <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
       <div class="pos-title">${esc(p.name)}</div>
-      <div class="pos-person-badge needed" id="person-badge-${p.id}">Needed</div>
       <div class="pos-progress" data-progress-for="${p.id}"></div>
       <div class="card-list" id="list-${p.id}">${tasks}</div>
     </div>`;
@@ -489,14 +409,6 @@ function buildMasterHtml() {
           <span class="m-name">${esc(p.name)}</span>
         </div>
         <span class="m-count" id="m-count-${p.id}">0/0</span>
-      </div>
-      <div class="m-person-row">
-        <span class="m-person-label">Assigned</span>
-        <div contenteditable="true" can-type
-             id="name-${p.id}"
-             class="m-person-input"
-             role="textbox"
-             aria-label="Assigned person for ${esc(p.name)}"></div>
       </div>
       <div id="m-remaining-${p.id}"></div>
     </div>`
@@ -522,38 +434,32 @@ function goTo(screenId) {
 }
 
 // ── Progress tracking ──────────────────────────────────────────
-function getGroupStats(id) {
-  const items = document.querySelectorAll('#list-' + id + ' [can-toggle]');
-  let done = 0;
-  items.forEach(el => { if (el.classList.contains('toggled')) done++; });
-  return { total: items.length, done, items };
-}
-
 function updateAllProgress() {
   let grand = { done: 0, total: 0 };
   const bucket = {};
 
   POSITIONS.forEach(p => {
     if (!bucket[p.group]) bucket[p.group] = { done: 0, total: 0 };
-    const { total, done, items } = getGroupStats(p.id);
+    const items = document.querySelectorAll('#list-' + p.id + ' [can-toggle]');
+    let done = 0;
+    items.forEach(el => { if (el.classList.contains('toggled')) done++; });
+    const total = items.length;
     grand.done += done; grand.total += total;
     bucket[p.group].done += done; bucket[p.group].total += total;
     const allDone = total > 0 && done === total;
 
     const countEl = document.getElementById('count-' + p.id);
     if (countEl) { countEl.textContent = done + '/' + total; countEl.classList.toggle('done', allDone); }
-    const dotEl = document.getElementById('dot-' + p.id);
-    if (dotEl) dotEl.classList.toggle('done', allDone);
-    const tileEl = document.getElementById('tile-' + p.id);
-    if (tileEl) tileEl.classList.toggle('done', allDone);
+    document.getElementById('dot-' + p.id)?.classList.toggle('done', allDone);
+    document.getElementById('tile-' + p.id)?.classList.toggle('done', allDone);
 
     const progEl = document.querySelector('[data-progress-for="' + p.id + '"]');
     if (progEl) progEl.innerHTML = '<b>' + done + ' of ' + total + '</b> complete';
 
-    const mDot = document.getElementById('m-dot-' + p.id);
-    if (mDot) mDot.classList.toggle('done', allDone);
+    document.getElementById('m-dot-' + p.id)?.classList.toggle('done', allDone);
     const mCount = document.getElementById('m-count-' + p.id);
     if (mCount) { mCount.textContent = done + '/' + total; mCount.classList.toggle('done', allDone); }
+
     const mRem = document.getElementById('m-remaining-' + p.id);
     if (mRem) {
       if (allDone) {
@@ -562,9 +468,7 @@ function updateAllProgress() {
         const lines = Array.from(items)
           .filter(el => !el.classList.contains('toggled'))
           .map(el => '<div class="rline">' + esc(el.querySelector('.txt').textContent) + '</div>');
-        mRem.innerHTML = lines.length
-          ? '<div class="m-remaining">' + lines.join('') + '</div>'
-          : '';
+        mRem.innerHTML = lines.length ? '<div class="m-remaining">' + lines.join('') + '</div>' : '';
       }
     }
   });
@@ -587,53 +491,8 @@ document.addEventListener('click', e => {
   const burger = document.querySelector('.burger-btn');
   if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== burger) {
     panel.classList.remove('open');
-    resetConfirmState = false;
-    document.getElementById('resetBtn').textContent = 'Reset all checklists';
   }
 });
-
-// ── Reset (double-tap confirms) ────────────────────────────────
-let resetConfirmState = false, resetConfirmTimer = null;
-
-function handleResetClick() {
-  const btn = document.getElementById('resetBtn');
-  if (!resetConfirmState) {
-    resetConfirmState = true;
-    btn.textContent = 'Tap again to confirm';
-    resetConfirmTimer = setTimeout(() => {
-      resetConfirmState = false;
-      btn.textContent = 'Reset all checklists';
-    }, 5000);
-  } else {
-    clearTimeout(resetConfirmTimer);
-    resetConfirmState = false;
-    btn.textContent = 'Reset all checklists';
-    document.getElementById('menuPanel').classList.remove('open');
-    resetAll();
-  }
-}
-
-function resetAll() {
-  // Clear checkbox states
-  document.querySelectorAll('[can-toggle].toggled').forEach(el => el.classList.remove('toggled'));
-  // Clear person names — dispatch input so playhtml syncs the clear to other devices
-  POSITIONS.forEach(p => {
-    const el = document.getElementById('name-' + p.id);
-    if (!el) return;
-    el.textContent = '';
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-    refreshNameDisplays(p.id);
-  });
-  showToast('All clear — ready for Sunday');
-}
-
-// ── Toast ─────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
 
 // ── Bootstrap ─────────────────────────────────────────────────
 async function init() {
