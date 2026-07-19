@@ -1,0 +1,62 @@
+position_name,task_text,task_number,group,position_sort
+Camera 1,Camera powered on and connected to the switcher,1,cam,1
+Camera 1,"Exposure looks correct, shot is not overexposed",2,cam,1
+Camera 1,All vocalists on stage are clearly visible in frame,3,cam,1
+Camera 1,"Shot is level, not crooked",4,cam,1
+Camera 1,Know who is speaking to open the service and who is leading each song,5,cam,1
+Camera 1,Reviewed the service order,6,cam,1
+Camera 1,Questions ready for the huddle,7,cam,1
+Camera 2,Camera powered on and connected to the switcher,1,cam,2
+Camera 2,"Exposure looks correct, shot is not overexposed",2,cam,2
+Camera 2,All vocalists on stage are clearly visible in frame,3,cam,2
+Camera 2,"Shot is level, not crooked",4,cam,2
+Camera 2,Know who is speaking to open the service and who is leading each song,5,cam,2
+Camera 2,Reviewed the service order,6,cam,2
+Camera 2,Questions ready for the huddle,7,cam,2
+Camera 3 + Translation,Camera powered on and connected to the switcher,1,cam,3
+Camera 3 + Translation,"Exposure looks correct, shot is not overexposed",2,cam,3
+Camera 3 + Translation,All vocalists on stage are clearly visible in frame,3,cam,3
+Camera 3 + Translation,"Shot is level, not crooked",4,cam,3
+Camera 3 + Translation,Translation feed turned on and confirmed working,5,cam,3
+Camera 3 + Translation,Know who is speaking to open the service and who is leading each song,6,cam,3
+Camera 3 + Translation,Reviewed the service order,7,cam,3
+Camera 3 + Translation,Questions ready for the huddle,8,cam,3
+Switcher,All camera feeds are visible on the switcher,1,cam,4
+Switcher,Sermon title updated on the church website,2,cam,4
+Switcher,Sermon title updated in Livestream Studio,3,cam,4
+Switcher,"Sermon added in Subsplash with notes, so it shows in the app",4,cam,4
+Switcher,Tested the video feed for Livestream Studio and it plays correctly,5,cam,4
+Switcher,Reviewed the service order,6,cam,4
+Switcher,Questions ready for the huddle,7,cam,4
+ProPresenter,All songs added for today,1,show,5
+ProPresenter,Each song has the correct font set,2,show,5
+ProPresenter,Each song has a background chosen,3,show,5
+ProPresenter,Verses to be read between songs are added,4,show,5
+ProPresenter,"Announcements added, in order, only the ones needed today",5,show,5
+ProPresenter,Sermon outline added,6,show,5
+ProPresenter,Sermon slides have the correct actions for livestream,7,show,5
+ProPresenter,Tested the video feed for Livestream Studio and it plays correctly,8,show,5
+ProPresenter,Reviewed the service order,9,show,5
+ProPresenter,Questions ready for the huddle,10,show,5
+Lights,Everyone on stage is properly lit,1,show,6
+Lights,Light scene created for each song,2,show,6
+Lights,Light changes set for each song,3,show,6
+Lights,Reviewed the service order,4,show,6
+Lights,Questions ready for the huddle,5,show,6
+FOH Audio,Turn on the amps,1,audio,7
+FOH Audio,Turn on the outdoor speaker and confirm it is connected,2,audio,7
+FOH Audio,Turn on the FOH board,3,audio,7
+FOH Audio,Mic check on FOH and BOH,4,audio,7
+FOH Audio,Lapel mics have batteries and are working,5,audio,7
+FOH Audio,Test announcement mics,6,audio,7
+FOH Audio,Run through with the singing and instrument team,7,audio,7
+FOH Audio,Know who is speaking to open the service and who is leading each song,8,audio,7
+FOH Audio,Reviewed the service order,9,audio,7
+FOH Audio,Questions ready for the huddle,10,audio,7
+Livestream Audio,Turn on livestream audio,1,audio,8
+Livestream Audio,Set livestream to record,2,audio,8
+Livestream Audio,Confirm levels during run through with the singing and instrument team,3,audio,8
+Livestream Audio,Livestream audio levels checked and balanced,4,audio,8
+Livestream Audio,Know who is speaking to open the service and who is leading each song,5,audio,8
+Livestream Audio,Reviewed the service order,6,audio,8
+Livestream Audio,Questions ready for the huddle,7,audio,8

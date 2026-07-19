@@ -8,208 +8,324 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg: oklch(96% 0.008 255);
-    --card: oklch(99% 0.004 255);
-    --card-tint: oklch(94% 0.012 255);
-    --line: oklch(89% 0.012 255);
-    --ink: oklch(23% 0.02 255);
-    --muted: oklch(55% 0.02 255);
-    --accent: oklch(60% 0.17 255);
-    --accent-tint: oklch(93% 0.035 255);
-    --danger: oklch(56% 0.19 25);
-    --radius:18px;
-  }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; padding:0;}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Poppins',system-ui,sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-  }
-  .app{
-    width:100%;
-    max-width:480px;
-    min-height:100vh;
-    position:relative;
-    padding:22px 18px 40px;
+  :root {
+    --accent:        #E8721A;
+    --accent-soft:   rgba(232,114,26,0.12);
+    --accent-mid:    rgba(232,114,26,0.32);
+    --glass:         rgba(255,255,255,0.48);
+    --glass-hi:      rgba(255,255,255,0.64);
+    --glass-border:  rgba(255,255,255,0.70);
+    --blur:          28px;
+    --ink:           rgba(20,12,4,0.90);
+    --ink-mid:       rgba(20,12,4,0.58);
+    --ink-soft:      rgba(20,12,4,0.36);
+    --danger:        #c0392b;
+    --radius:        18px;
   }
 
-  /* topbar */
-  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:26px;}
-  .logo-row{display:flex; align-items:center; gap:9px;}
-  .logo-mark{width:28px; height:28px; border-radius:8px; background:var(--accent); position:relative; flex:0 0 auto;}
-  .logo-mark::before, .logo-mark::after{content:""; position:absolute; left:5px; right:5px; height:3.5px; background:oklch(99% 0.004 255 / .6); border-radius:2px;}
-  .logo-mark::before{top:7.5px;}
-  .logo-mark::after{top:15px;}
-  .logo-word{font-weight:700; font-size:15.5px; color:var(--ink); letter-spacing:.01em;}
-  .logo-word span{color:var(--muted); font-weight:500;}
-  .burger-btn{
-    width:38px; height:38px; border-radius:11px;
-    background:var(--card); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center;
-    font-size:15px; color:var(--ink);
-    cursor:pointer;
+  *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+
+  /* Fixed background via pseudo-element — works on iOS Safari */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url('/production_background.jpg') center/cover no-repeat;
+    z-index: -1;
   }
 
-  /* hero */
-  .hero{margin-bottom:30px;}
-  .hero h1{font-weight:800; font-size:32px; margin:0; line-height:1.05; color:var(--ink); letter-spacing:-0.01em;}
-  .hero .meta{color:var(--muted); font-size:13.5px; margin-top:9px;}
-  .hero .meta b{color:var(--accent); font-weight:700;}
-
-  /* screens */
-  .screen{display:none;}
-  .screen.active{display:block; animation:fade .18s ease;}
-  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
-
-  /* section groups */
-  .group{margin-bottom:28px;}
-  .group-label{
-    display:flex; align-items:baseline; justify-content:space-between;
-    font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--muted); margin-bottom:10px; padding:0 2px;
+  body {
+    color: var(--ink);
+    font-family: 'Poppins', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
   }
-  .group-label b{color:var(--accent); font-weight:700; text-transform:none; letter-spacing:0; font-size:12.5px;}
 
-  /* camera cluster */
-  .cam-row{display:grid; gap:9px;}
-  .cam-tile{
-    background:var(--card); border:1px solid var(--line); border-radius:16px;
-    padding:14px 8px 12px; text-align:center; cursor:pointer;
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    padding: 0 18px 72px;
+    position: relative;
   }
-  .cam-tile .ci{font-size:19px; margin-bottom:6px;}
-  .cam-tile .cn{font-size:11.5px; font-weight:600; line-height:1.2; color:var(--ink);}
-  .cam-tile .cc{font-size:10.5px; color:var(--muted); margin-top:4px;}
-  .cam-tile .cc.done{color:var(--accent); font-weight:700;}
-  .cam-tile.done{background:var(--accent-tint); border-color:var(--accent);}
 
-  /* row list (shared by Show Control / Audio / detail checklists) */
-  .row-list{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
-  .row-item{display:flex; align-items:center; gap:12px; padding:14px 15px; cursor:pointer; border-bottom:1px solid var(--line);}
-  .row-item:last-child{border-bottom:none;}
-  .row-item .ri-icon{width:34px; height:34px; border-radius:10px; background:var(--accent-tint); display:flex; align-items:center; justify-content:center; font-size:15px; flex:0 0 auto;}
-  .row-item .ri-body{flex:1; min-width:0;}
-  .row-item .ri-name{font-weight:600; font-size:14px; color:var(--ink);}
-  .row-item .ri-count{font-size:11.5px; color:var(--muted); margin-top:1px;}
-  .row-item .ri-count.done{color:var(--accent); font-weight:700;}
-  .row-item .ri-dot{width:8px; height:8px; border-radius:50%; border:2px solid var(--line); flex:0 0 auto;}
-  .row-item .ri-dot.done{background:var(--accent); border-color:var(--accent);}
-
-  /* position detail */
-  .backrow{display:flex; align-items:center; gap:10px; margin-bottom:18px; cursor:pointer;}
-  .backrow .arrow{color:var(--accent); font-size:20px;}
-  .backrow .lab{font-size:14px; color:var(--muted); font-weight:600;}
-  .pos-title{font-weight:800; font-size:26px; color:var(--ink); margin-bottom:2px; line-height:1.1;}
-  .pos-progress{color:var(--muted); font-size:13px; margin-bottom:18px;}
-  .pos-progress b{color:var(--accent);}
-
-  .card-list{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
-  .item-row{display:flex; align-items:center; gap:13px; padding:15px 16px; cursor:pointer; border-bottom:1px solid var(--line);}
-  .item-row:last-child{border-bottom:none;}
-  .idx{width:25px; height:25px; border-radius:50%; background:var(--card-tint); color:var(--muted); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
-  .idx .chk{display:none;}
-  .item-row.toggled .idx{background:var(--accent); color:var(--card);}
-  .item-row.toggled .idx .num{display:none;}
-  .item-row.toggled .idx .chk{display:inline;}
-  .txt{font-size:13.5px; line-height:1.4; color:var(--ink); flex:1; font-weight:400;}
-  .item-row.toggled .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:oklch(55% 0.02 255 / .5);}
-
-  /* master view */
-  .legend{display:flex; gap:16px; margin-bottom:16px;}
-  .legend .lg{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); font-weight:600;}
-  .legend .dot{width:8px; height:8px; border-radius:50%;}
-  .legend .dot.on{background:var(--accent);}
-  .legend .dot.off{background:transparent; border:2px solid var(--line);}
-
-  .m-group{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:10px;}
-  .m-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
-  .m-head-left{display:flex; align-items:center; gap:9px;}
-  .m-dot{width:8px; height:8px; border-radius:50%; background:var(--line); border:2px solid var(--line);}
-  .m-dot.done{background:var(--accent); border-color:var(--accent);}
-  .m-name{font-weight:600; font-size:14.5px; color:var(--ink);}
-  .m-count{font-size:12px; font-weight:700; color:var(--muted);}
-  .m-count.done{color:var(--accent);}
-  .m-remaining{margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);}
-  .m-remaining .rline{font-size:12.5px; color:var(--muted); padding:3px 0; display:flex; gap:6px;}
-  .m-remaining .rline::before{content:"•"; color:var(--accent);}
-  .m-clear{font-size:13px; color:var(--accent); font-weight:600; padding-top:2px;}
-
-  .wide-screen-title{font-weight:800; font-size:24px; color:var(--ink); margin-bottom:14px;}
-
-  /* burger dropdown menu */
-  .menu-panel{
-    position:absolute; top:60px; right:18px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:7px;
-    display:none;
-    flex-direction:column;
-    min-width:198px;
-    z-index:50;
+  /* ── Topbar ─────────────────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 18px;
+    margin: 0 -18px 28px;
+    background: rgba(255,255,255,0.46);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border-bottom: 1px solid var(--glass-border);
   }
-  .menu-panel.open{display:flex;}
-  .menu-item{padding:9px 11px; border-radius:8px; font-size:13.5px; cursor:pointer; color:var(--ink); font-weight:500;}
-  .menu-item:hover{background:var(--card-tint);}
-  .menu-item.danger{color:var(--danger);}
-  .menu-divider{height:1px; background:var(--line); margin:4px 5px;}
+  .logo-word { font-weight: 700; font-size: 15px; color: var(--ink); letter-spacing: .01em; }
+  .logo-word span { color: var(--ink-mid); font-weight: 500; }
+  .burger-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: var(--ink); cursor: pointer;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
 
-  .toast{
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:var(--ink); color:var(--card);
-    padding:10px 18px; border-radius:12px; font-size:13px;
-    opacity:0; pointer-events:none; transition:opacity .25s ease;
-    z-index:60;
+  /* ── Hero ───────────────────────────────────────────────── */
+  .hero { margin-bottom: 34px; padding-top: 4px; }
+  .hero h1 {
+    font-weight: 800; font-size: 26px; margin: 0 0 4px;
+    line-height: 1.1; color: var(--ink); letter-spacing: -0.01em;
   }
-  .toast.show{opacity:1;}
+  .hero-date {
+    font-size: 13.5px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.02em; margin-bottom: 5px;
+  }
+  .hero-meta { color: var(--ink-mid); font-size: 13px; }
+  .hero-meta b { color: var(--accent); font-weight: 700; }
 
-  /* loading / error states */
-  .loading-state{
-    display:flex; flex-direction:column; align-items:center;
-    justify-content:center; padding:60px 20px; gap:16px;
-    color:var(--muted); font-size:14px;
+  /* ── Screens ────────────────────────────────────────────── */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fade .18s ease; }
+  @keyframes fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Section labels ─────────────────────────────────────── */
+  .group { margin-bottom: 26px; }
+  .group-label {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-mid); margin-bottom: 10px; padding: 0 2px;
   }
-  .spinner{
-    width:28px; height:28px;
-    border:3px solid var(--line);
-    border-top-color:var(--accent);
-    border-radius:50%;
-    animation:spin .7s linear infinite;
+  .group-label b {
+    color: var(--accent); font-weight: 700; text-transform: none;
+    letter-spacing: 0; font-size: 12px;
   }
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .error-state{
-    background:var(--card); border:1px solid var(--line);
-    border-radius:var(--radius); padding:24px 20px;
-    color:var(--muted); font-size:13.5px; line-height:1.7;
+
+  /* ── Home position cards ────────────────────────────────── */
+  .pos-card {
+    display: flex; align-items: center;
+    padding: 16px 18px; margin-bottom: 9px;
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur)) saturate(1.3);
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(1.3);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    cursor: pointer; transition: background 0.15s;
   }
-  .error-state strong{color:var(--danger); display:block; margin-bottom:6px;}
+  .pos-card:active { background: var(--glass-hi); }
+  .pos-card.done { border-color: var(--accent-mid); background: rgba(232,114,26,0.08); }
+  .pos-card-body { flex: 1; min-width: 0; }
+  .pos-card-name { font-weight: 700; font-size: 14.5px; color: var(--ink); }
+  .pos-card-person { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+  .pos-card-person.needed { color: var(--accent); font-weight: 600; }
+  .pos-card-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 12px; }
+  .pos-card-count { font-size: 12px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
+  .pos-card-count.done { color: var(--accent); }
+  .pos-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--glass-border); flex-shrink: 0; }
+  .pos-dot.done { background: var(--accent); border-color: var(--accent); }
+
+  /* ── Detail screen header ───────────────────────────────── */
+  .backrow {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; cursor: pointer;
+  }
+  .backrow .arrow { color: var(--accent); font-size: 20px; }
+  .backrow .lab { font-size: 14px; color: var(--ink-mid); font-weight: 600; }
+  .pos-title { font-weight: 800; font-size: 26px; color: var(--ink); line-height: 1.1; margin-bottom: 8px; }
+  .pos-person-badge {
+    display: inline-block; font-size: 11.5px; font-weight: 600;
+    padding: 3px 13px; border-radius: 20px; margin-bottom: 14px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: var(--ink-mid);
+  }
+  .pos-person-badge.needed { color: var(--accent); border-color: var(--accent-mid); background: var(--accent-soft); }
+  .pos-progress { color: var(--ink-soft); font-size: 13px; margin-bottom: 16px; }
+  .pos-progress b { color: var(--accent); }
+
+  /* ── Task card list ─────────────────────────────────────── */
+  .card-list {
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur)) saturate(1.3);
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(1.3);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .item-row {
+    display: flex; align-items: center; gap: 13px;
+    padding: 14px 16px; cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.50);
+  }
+  .item-row:last-child { border-bottom: none; }
+  .idx {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(255,255,255,0.52); border: 1px solid rgba(255,255,255,0.70);
+    color: var(--ink-soft); font-size: 10.5px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .idx .chk { display: none; }
+  .item-row.toggled .idx { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .item-row.toggled .idx .num { display: none; }
+  .item-row.toggled .idx .chk { display: inline; }
+  .txt { font-size: 13.5px; line-height: 1.4; color: var(--ink); flex: 1; font-weight: 400; }
+  .item-row.toggled .txt { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--ink-soft); }
+
+  /* custom task remove button */
+  .remove-btn {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(192,57,43,0.10); border: none;
+    color: var(--danger); font-size: 14px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0; transition: background 0.15s;
+  }
+  .remove-btn:hover { background: rgba(192,57,43,0.20); }
+
+  /* add task inline input */
+  .add-task-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-top: 1px solid rgba(255,255,255,0.50);
+  }
+  .add-task-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 13.5px; color: var(--ink); min-width: 0;
+  }
+  .add-task-input::placeholder { color: var(--ink-soft); }
+  .add-task-confirm, .add-task-cancel {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    border: none; cursor: pointer; font-size: 12px;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .add-task-confirm { background: var(--accent); color: #fff; }
+  .add-task-cancel { background: rgba(0,0,0,0.08); color: var(--ink-mid); }
+
+  /* + button below task list */
+  .add-task-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; border-radius: 50%; margin: 20px auto 0;
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1.5px solid var(--glass-border);
+    color: var(--accent); font-size: 24px; line-height: 1;
+    cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 2px 14px rgba(232,114,26,0.18);
+  }
+  .add-task-btn:active { background: var(--glass-hi); }
+
+  /* ── Master view ────────────────────────────────────────── */
+  .wide-screen-title { font-weight: 800; font-size: 24px; color: var(--ink); margin-bottom: 14px; }
+  .legend { display: flex; gap: 16px; margin-bottom: 16px; }
+  .legend .lg { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-mid); font-weight: 600; }
+  .legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend .dot.on { background: var(--accent); }
+  .legend .dot.off { background: transparent; border: 2px solid rgba(255,255,255,0.5); }
+
+  .m-card {
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur)) saturate(1.3);
+    -webkit-backdrop-filter: blur(var(--blur)) saturate(1.3);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 16px 18px; margin-bottom: 10px;
+  }
+  .m-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .m-head-left { display: flex; align-items: center; gap: 9px; }
+  .m-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); flex-shrink: 0; }
+  .m-dot.done { background: var(--accent); border-color: var(--accent); }
+  .m-name { font-weight: 700; font-size: 14.5px; color: var(--ink); }
+  .m-count { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); }
+  .m-count.done { color: var(--accent); }
+
+  .m-person-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 11px; border-radius: 10px; margin-bottom: 10px;
+    background: rgba(255,255,255,0.50); border: 1px solid rgba(255,255,255,0.68);
+  }
+  .m-person-label { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; letter-spacing: .04em; text-transform: uppercase; }
+  .m-person-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--ink); min-width: 0;
+  }
+  .m-person-input::placeholder { color: var(--ink-soft); font-weight: 400; }
+
+  .m-remaining { border-top: 1px solid rgba(255,255,255,0.50); padding-top: 8px; margin-top: 4px; }
+  .m-remaining .rline { font-size: 12px; color: var(--ink-mid); padding: 2px 0; display: flex; gap: 6px; }
+  .m-remaining .rline::before { content: "•"; color: var(--accent); }
+  .m-clear { font-size: 13px; color: var(--accent); font-weight: 600; }
+
+  /* ── Menu ───────────────────────────────────────────────── */
+  .menu-panel {
+    position: fixed; top: 58px; right: 18px;
+    background: var(--glass-hi);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 14px; padding: 7px;
+    display: none; flex-direction: column;
+    min-width: 206px; z-index: 300;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  .menu-panel.open { display: flex; }
+  .menu-item { padding: 9px 11px; border-radius: 8px; font-size: 13.5px; cursor: pointer; color: var(--ink); font-weight: 500; }
+  .menu-item:hover { background: rgba(255,255,255,0.28); }
+  .menu-item.danger { color: var(--danger); }
+  .menu-divider { height: 1px; background: rgba(255,255,255,0.38); margin: 4px 5px; }
+
+  /* ── Toast ──────────────────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff;
+    padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    z-index: 400; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ── Loading / error ────────────────────────────────────── */
+  .loading-state {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 70px 20px; gap: 16px;
+    color: var(--ink-mid); font-size: 14px;
+  }
+  .spinner {
+    width: 28px; height: 28px;
+    border: 3px solid rgba(255,255,255,0.4);
+    border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-state {
+    background: var(--glass); backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius); padding: 24px;
+    color: var(--ink-mid); font-size: 13.5px; line-height: 1.7;
+  }
+  .error-state strong { color: var(--danger); display: block; margin-bottom: 6px; }
 </style>
 </head>
 <body>
 <div class="app">
 
   <div class="topbar">
-    <div class="logo-row">
-      <div class="logo-mark"></div>
-      <div class="logo-word">tsc <span>production</span></div>
-    </div>
+    <div class="logo-word">tsc <span>production</span></div>
     <div class="burger-btn" onclick="toggleMenu()">☰</div>
   </div>
 
   <div class="hero">
-    <h1>Sunday Morning</h1>
-    <div class="meta" id="heroMeta">Loading checklist…</div>
+    <h1>Sunday Morning Checklist</h1>
+    <div class="hero-date" id="nextSundayDate"></div>
+    <div class="hero-meta" id="heroMeta">Loading checklist…</div>
   </div>
 
-  <!-- all screens injected here by JS -->
   <div id="screens-root">
     <div class="loading-state">
       <div class="spinner"></div>
-      <span>Loading from sheet…</span>
+      <span>Loading checklist…</span>
     </div>
   </div>
 
@@ -225,113 +341,168 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Config ──────────────────────────────────────────────────
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSFcIZzBYJbXuVrxe4l_INJK-m-9stjUe-9G9BsBdGtVQsOZclVBL0CSRRzZCzn_xjlPQp0wZ8lpqsc/pub?gid=0&single=true&output=csv';
+// ── Config ───────────────────────────────────────────────────
+// Local fallback: '/production-checklist.csv'
+const DATA_SOURCE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSFcIZzBYJbXuVrxe4l_INJK-m-9stjUe-9G9BsBdGtVQsOZclVBL0CSRRzZCzn_xjlPQp0wZ8lpqsc/pub?gid=0&single=true&output=csv';
 
-// Display labels and stat-element IDs for each group key.
-// Add new rows here if you ever create a new group in the sheet.
 const GROUP_META = {
   cam:   { label: 'Cameras &amp; Switcher', statId: 'grp-cam' },
   show:  { label: 'ProPresenter &amp; Lights', statId: 'grp-show' },
   audio: { label: 'Audio', statId: 'grp-audio' },
 };
 
-// ── State ───────────────────────────────────────────────────
+// ── State ────────────────────────────────────────────────────
 let POSITIONS = [];
+const NAMES = {};        // { posId: string }
+const CUSTOM_TASKS = {}; // { posId: [{id, text}] }
 
-// ── CSV parsing ─────────────────────────────────────────────
+// ── Utilities ─────────────────────────────────────────────────
+function toId(name) {
+  return 'p_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function getNextSunday() {
+  const now = new Date();
+  const daysUntil = (7 - now.getDay()) % 7; // 0 when today is Sunday
+  const sun = new Date(now);
+  sun.setDate(now.getDate() + daysUntil);
+  return `${sun.getMonth()+1}.${sun.getDate()}.${String(sun.getFullYear()).slice(2)}`;
+}
+
+// ── CSV parser ────────────────────────────────────────────────
 function parseCSVLine(line) {
-  const result = [];
-  let cur = '', inQ = false;
+  const res = []; let cur = '', inQ = false;
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') {
-      if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
       else inQ = !inQ;
-    } else if (ch === ',' && !inQ) {
-      result.push(cur); cur = '';
-    } else {
-      cur += ch;
-    }
+    } else if (ch === ',' && !inQ) { res.push(cur); cur = ''; }
+    else cur += ch;
   }
-  result.push(cur);
-  return result;
+  res.push(cur);
+  return res;
 }
 
 function parseCSV(text) {
-  const cleaned = text.replace(/^﻿/, ''); // strip BOM if present
-  const lines = cleaned.trim().split(/\r?\n/);
-  const headers = parseCSVLine(lines[0]).map(h => h.trim());
-  return lines.slice(1)
-    .filter(l => l.trim())
-    .map(line => {
-      const vals = parseCSVLine(line);
-      return Object.fromEntries(headers.map((h, i) => [h, (vals[i] || '').trim()]));
-    });
+  const lines = text.replace(/^﻿/, '').trim().split(/\r?\n/);
+  const hdrs = parseCSVLine(lines[0]).map(h => h.trim());
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    const vals = parseCSVLine(line);
+    return Object.fromEntries(hdrs.map((h, i) => [h, (vals[i] || '').trim()]));
+  });
 }
 
-// ── HTML escaping ────────────────────────────────────────────
-function esc(s) {
-  return (s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+// ── Local storage (names + custom tasks persist per device) ───
+function loadLocalData() {
+  try {
+    const n = localStorage.getItem('tsc-names-v3');
+    if (n) Object.assign(NAMES, JSON.parse(n));
+    const c = localStorage.getItem('tsc-custom-v3');
+    if (c) Object.assign(CUSTOM_TASKS, JSON.parse(c));
+  } catch(e) {}
+}
+function saveNames()  { localStorage.setItem('tsc-names-v3',  JSON.stringify(NAMES)); }
+function saveCustom() { localStorage.setItem('tsc-custom-v3', JSON.stringify(CUSTOM_TASKS)); }
+
+// ── Person name assignment ────────────────────────────────────
+function assignPerson(posId, value) {
+  const name = value.trim();
+  if (name) NAMES[posId] = name; else delete NAMES[posId];
+  saveNames();
+  refreshNameDisplays(posId);
 }
 
-// ── Build app from parsed CSV rows ───────────────────────────
+function refreshNameDisplays(posId) {
+  const name = NAMES[posId] || '';
+  const label = name || 'Needed';
+  const needed = !name;
+
+  const homeEl = document.getElementById('person-display-' + posId);
+  if (homeEl) { homeEl.textContent = label; homeEl.classList.toggle('needed', needed); }
+
+  const badgeEl = document.getElementById('person-badge-' + posId);
+  if (badgeEl) { badgeEl.textContent = label; badgeEl.classList.toggle('needed', needed); }
+
+  // don't overwrite master input while the user is typing in it
+  const inp = document.getElementById('person-input-' + posId);
+  if (inp && document.activeElement !== inp) inp.value = name;
+}
+
+// ── Build app ─────────────────────────────────────────────────
 function buildApp(rows) {
   // Aggregate rows into position objects
   const posMap = new Map();
   rows.forEach(r => {
-    if (!r.position_id) return;
-    if (!posMap.has(r.position_id)) {
-      posMap.set(r.position_id, {
-        id: r.position_id,
-        name: r.position_name || r.position_id,
-        tileLabel: r.tile_label || r.position_name || r.position_id,
+    if (!r.position_name) return;
+    const id = toId(r.position_name);
+    if (!posMap.has(id)) {
+      posMap.set(id, {
+        id, name: r.position_name,
         group: r.group || 'other',
-        icon: r.icon || '📋',
         sort: parseInt(r.position_sort) || 99,
         tasks: []
       });
     }
-    const taskNum = parseInt(r.task_number);
-    if (r.task_text && !isNaN(taskNum)) {
-      posMap.get(r.position_id).tasks.push({ num: taskNum, text: r.task_text });
+    const num = parseInt(r.task_number);
+    if (r.task_text && !isNaN(num)) {
+      posMap.get(id).tasks.push({ num, text: r.task_text });
     }
   });
 
   POSITIONS = [...posMap.values()].sort((a, b) => a.sort - b.sort);
   POSITIONS.forEach(p => p.tasks.sort((a, b) => a.num - b.num));
 
-  // Inject all screens into the DOM
+  // Date
+  document.getElementById('nextSundayDate').textContent = getNextSunday();
+
+  // Inject all screens
   const root = document.getElementById('screens-root');
   root.innerHTML = buildHomeHtml() + buildDetailScreensHtml() + buildMasterHtml();
 
-  // Wire up local toggle clicks
-  root.querySelectorAll('[can-toggle]').forEach(el => {
-    el.addEventListener('click', e => {
-      if (e.shiftKey) return;
-      el.classList.toggle('toggled');
-    });
+  // Restore names in display elements
+  POSITIONS.forEach(p => refreshNameDisplays(p.id));
+
+  // Restore custom tasks into the DOM
+  POSITIONS.forEach(p => {
+    (CUSTOM_TASKS[p.id] || []).forEach(task => appendCustomTaskEl(p.id, task));
   });
 
-  // Progress tracking via MutationObserver
+  // Wire master view name inputs
+  POSITIONS.forEach(p => {
+    const inp = document.getElementById('person-input-' + p.id);
+    if (inp) inp.addEventListener('input', () => assignPerson(p.id, inp.value));
+  });
+
+  // Wire can-toggle elements
+  root.querySelectorAll('[can-toggle]').forEach(wireToggle);
+
+  // Progress observer
   const obs = new MutationObserver(updateAllProgress);
   obs.observe(root, { attributes: true, attributeFilter: ['class'], subtree: true });
   setTimeout(updateAllProgress, 100);
 
-  // Best-effort cross-device sync (works offline too — just degrades gracefully)
+  // Best-effort cross-device checkbox sync via playhtml
   import('https://unpkg.com/playhtml').then(({ playhtml }) => {
-    playhtml.init({ room: 'tsc-sunday-production-checklist' });
+    playhtml.init({ room: 'tsc-sunday-production-checklist-v3' });
   }).catch(() => {});
 }
 
-// ── Home screen HTML ─────────────────────────────────────────
+function wireToggle(el) {
+  el.addEventListener('click', e => {
+    if (e.shiftKey) return;
+    if (e.target.closest('.remove-btn, .add-task-confirm, .add-task-cancel')) return;
+    el.classList.toggle('toggled');
+  });
+}
+
+// ── Home screen ───────────────────────────────────────────────
 function buildHomeHtml() {
-  const groupOrder = [];
-  const groups = {};
+  const groupOrder = [], groups = {};
   POSITIONS.forEach(p => {
     if (!groups[p.group]) { groups[p.group] = []; groupOrder.push(p.group); }
     groups[p.group].push(p);
@@ -340,44 +511,28 @@ function buildHomeHtml() {
   let sections = '';
   groupOrder.forEach(g => {
     const meta = GROUP_META[g] || { label: esc(g), statId: 'grp-' + g };
-    const gPos = groups[g];
-    let inner = '';
-
-    if (g === 'cam') {
-      // Camera tiles: 3-across for 3 items, 2-across otherwise
-      const cols = gPos.length === 3 ? 3 : 2;
-      inner = `<div class="cam-row" style="grid-template-columns:repeat(${cols},1fr)">` +
-        gPos.map(p =>
-          `<div class="cam-tile" id="tile-${p.id}" onclick="goTo('${p.id}')">
-            <div class="ci">${p.icon}</div>
-            <div class="cn">${esc(p.tileLabel)}</div>
-            <div class="cc" id="count-${p.id}">0/0</div>
-          </div>`
-        ).join('') + `</div>`;
-    } else {
-      inner = `<div class="row-list">` +
-        gPos.map(p =>
-          `<div class="row-item" onclick="goTo('${p.id}')">
-            <div class="ri-icon">${p.icon}</div>
-            <div class="ri-body">
-              <div class="ri-name">${esc(p.name)}</div>
-              <div class="ri-count" id="count-${p.id}">0/0 done</div>
-            </div>
-            <div class="ri-dot" id="dot-${p.id}"></div>
-          </div>`
-        ).join('') + `</div>`;
-    }
-
+    const cards = groups[g].map(p =>
+      `<div class="pos-card" id="tile-${p.id}" onclick="goTo('${p.id}')">
+        <div class="pos-card-body">
+          <div class="pos-card-name">${esc(p.name)}</div>
+          <div class="pos-card-person needed" id="person-display-${p.id}">Needed</div>
+        </div>
+        <div class="pos-card-right">
+          <span class="pos-card-count" id="count-${p.id}">0/0</span>
+          <span class="pos-dot" id="dot-${p.id}"></span>
+        </div>
+      </div>`
+    ).join('');
     sections += `<div class="group">
       <div class="group-label">${meta.label} <b id="${meta.statId}"></b></div>
-      ${inner}
+      ${cards}
     </div>`;
   });
 
   return `<div class="screen active" id="screen-home">${sections}</div>`;
 }
 
-// ── Per-position detail screen HTML ──────────────────────────
+// ── Detail screens ─────────────────────────────────────────────
 function buildDetailScreensHtml() {
   return POSITIONS.map(p => {
     const tasks = p.tasks.map(t =>
@@ -389,14 +544,35 @@ function buildDetailScreensHtml() {
     return `<div class="screen" id="screen-${p.id}">
       <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
       <div class="pos-title">${esc(p.name)}</div>
+      <div class="pos-person-badge needed" id="person-badge-${p.id}">Needed</div>
       <div class="pos-progress" data-progress-for="${p.id}"></div>
       <div class="card-list" id="list-${p.id}">${tasks}</div>
+      <button class="add-task-btn" onclick="showAddTaskInput('${p.id}')" title="Add a task">+</button>
     </div>`;
   }).join('');
 }
 
-// ── Master screen HTML (static shell, content rendered live) ─
+// ── Master screen (built once; only counts/remaining update) ───
 function buildMasterHtml() {
+  const cards = POSITIONS.map(p => {
+    const savedName = NAMES[p.id] || '';
+    return `<div class="m-card">
+      <div class="m-head">
+        <div class="m-head-left">
+          <span class="m-dot" id="m-dot-${p.id}"></span>
+          <span class="m-name">${esc(p.name)}</span>
+        </div>
+        <span class="m-count" id="m-count-${p.id}">0/0</span>
+      </div>
+      <div class="m-person-row">
+        <span class="m-person-label">Assigned</span>
+        <input class="m-person-input" id="person-input-${p.id}"
+               placeholder="Enter name…" value="${esc(savedName)}">
+      </div>
+      <div id="m-remaining-${p.id}"></div>
+    </div>`;
+  }).join('');
+
   return `<div class="screen" id="screen-master">
     <div class="backrow" onclick="goTo('home')"><span class="arrow">←</span><span class="lab">All positions</span></div>
     <div class="wide-screen-title">Master View</div>
@@ -404,19 +580,19 @@ function buildMasterHtml() {
       <div class="lg"><span class="dot on"></span>Complete</div>
       <div class="lg"><span class="dot off"></span>Remaining</div>
     </div>
-    <div id="masterContent"></div>
+    <div id="masterContent">${cards}</div>
   </div>`;
 }
 
-// ── Navigation ───────────────────────────────────────────────
+// ── Navigation ────────────────────────────────────────────────
 function goTo(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById('screen-' + screenId);
-  if (target) { target.classList.add('active'); window.scrollTo(0, 0); }
-  if (screenId === 'master') renderMaster();
+  const t = document.getElementById('screen-' + screenId);
+  if (t) { t.classList.add('active'); window.scrollTo(0, 0); }
+  updateAllProgress();
 }
 
-// ── Progress helpers ─────────────────────────────────────────
+// ── Progress tracking ──────────────────────────────────────────
 function getGroupStats(id) {
   const items = document.querySelectorAll('#list-' + id + ' [can-toggle]');
   let done = 0;
@@ -430,65 +606,118 @@ function updateAllProgress() {
 
   POSITIONS.forEach(p => {
     if (!bucket[p.group]) bucket[p.group] = { done: 0, total: 0 };
-    const { total, done } = getGroupStats(p.id);
+    const { total, done, items } = getGroupStats(p.id);
     grand.done += done; grand.total += total;
     bucket[p.group].done += done; bucket[p.group].total += total;
-
     const allDone = total > 0 && done === total;
 
+    // Home card
     const countEl = document.getElementById('count-' + p.id);
-    if (countEl) {
-      countEl.textContent = (p.group === 'cam') ? (done + '/' + total) : (done + '/' + total + ' done');
-      countEl.classList.toggle('done', allDone);
-    }
+    if (countEl) { countEl.textContent = done + '/' + total; countEl.classList.toggle('done', allDone); }
     const dotEl = document.getElementById('dot-' + p.id);
     if (dotEl) dotEl.classList.toggle('done', allDone);
     const tileEl = document.getElementById('tile-' + p.id);
     if (tileEl) tileEl.classList.toggle('done', allDone);
+
+    // Detail progress line
     const progEl = document.querySelector('[data-progress-for="' + p.id + '"]');
     if (progEl) progEl.innerHTML = '<b>' + done + ' of ' + total + '</b> complete';
+
+    // Master card — update counts and remaining list without touching the input
+    const mDot = document.getElementById('m-dot-' + p.id);
+    if (mDot) mDot.classList.toggle('done', allDone);
+    const mCount = document.getElementById('m-count-' + p.id);
+    if (mCount) { mCount.textContent = done + '/' + total; mCount.classList.toggle('done', allDone); }
+    const mRem = document.getElementById('m-remaining-' + p.id);
+    if (mRem) {
+      if (allDone) {
+        mRem.innerHTML = '<div class="m-clear">All done ✓</div>';
+      } else {
+        const lines = Array.from(items)
+          .filter(el => !el.classList.contains('toggled'))
+          .map(el => '<div class="rline">' + esc(el.querySelector('.txt').textContent) + '</div>');
+        mRem.innerHTML = lines.length
+          ? '<div class="m-remaining">' + lines.join('') + '</div>'
+          : '';
+      }
+    }
   });
 
-  Object.entries(bucket).forEach(([g, stats]) => {
-    const el = document.getElementById((GROUP_META[g] || {}).statId || 'grp-' + g);
-    if (el) el.textContent = stats.done + '/' + stats.total + ' ready';
+  // Group totals
+  Object.entries(bucket).forEach(([g, s]) => {
+    const meta = GROUP_META[g] || { statId: 'grp-' + g };
+    const el = document.getElementById(meta.statId);
+    if (el) el.textContent = s.done + '/' + s.total + ' ready';
   });
 
+  // Hero meta
   const heroMeta = document.getElementById('heroMeta');
-  if (heroMeta) heroMeta.innerHTML = '<b>' + grand.done + ' of ' + grand.total + '</b> tasks ready across the team';
-
-  if (document.getElementById('screen-master')?.classList.contains('active')) renderMaster();
+  if (heroMeta) heroMeta.innerHTML = '<b>' + grand.done + ' of ' + grand.total + '</b> tasks complete across the team';
 }
 
-// ── Master view renderer ─────────────────────────────────────
-function renderMaster() {
-  const container = document.getElementById('masterContent');
-  if (!container) return;
-  container.innerHTML = POSITIONS.map(p => {
-    const { total, done, items } = getGroupStats(p.id);
-    const allDone = total > 0 && done === total;
-    const remainingHtml = allDone
-      ? '<div class="m-clear">All done ✓</div>'
-      : '<div class="m-remaining">' +
-          Array.from(items)
-            .filter(el => !el.classList.contains('toggled'))
-            .map(el => '<div class="rline">' + esc(el.querySelector('.txt').textContent) + '</div>')
-            .join('') +
-        '</div>';
-    return `<div class="m-group">
-      <div class="m-head">
-        <div class="m-head-left">
-          <span class="m-dot${allDone ? ' done' : ''}"></span>
-          <span class="m-name">${esc(p.name)}</span>
-        </div>
-        <span class="m-count${allDone ? ' done' : ''}">${done}/${total}</span>
-      </div>
-      ${remainingHtml}
-    </div>`;
-  }).join('');
+// ── Custom tasks ───────────────────────────────────────────────
+function showAddTaskInput(posId) {
+  const listEl = document.getElementById('list-' + posId);
+  if (!listEl || document.getElementById('add-task-row-' + posId)) return;
+  const row = document.createElement('div');
+  row.id = 'add-task-row-' + posId;
+  row.className = 'add-task-row';
+  row.innerHTML = `
+    <input class="add-task-input" placeholder="Type a task and press Enter…">
+    <button class="add-task-confirm" onclick="confirmAddTask('${posId}')">✓</button>
+    <button class="add-task-cancel" onclick="cancelAddTask('${posId}')">✕</button>
+  `;
+  row.querySelector('input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmAddTask(posId);
+    if (e.key === 'Escape') cancelAddTask(posId);
+  });
+  listEl.appendChild(row);
+  row.querySelector('input').focus();
 }
 
-// ── Menu ─────────────────────────────────────────────────────
+function confirmAddTask(posId) {
+  const row = document.getElementById('add-task-row-' + posId);
+  if (!row) return;
+  const text = row.querySelector('input').value.trim();
+  row.remove();
+  if (!text) return;
+  const task = { id: 'custom-' + posId + '-' + Date.now(), text };
+  if (!CUSTOM_TASKS[posId]) CUSTOM_TASKS[posId] = [];
+  CUSTOM_TASKS[posId].push(task);
+  saveCustom();
+  appendCustomTaskEl(posId, task);
+}
+
+function cancelAddTask(posId) {
+  const row = document.getElementById('add-task-row-' + posId);
+  if (row) row.remove();
+}
+
+function appendCustomTaskEl(posId, task) {
+  const listEl = document.getElementById('list-' + posId);
+  if (!listEl) return;
+  const num = listEl.querySelectorAll('[can-toggle]').length + 1;
+  const el = document.createElement('div');
+  el.id = task.id;
+  el.setAttribute('can-toggle', '');
+  el.className = 'item-row custom-task';
+  el.innerHTML = `
+    <span class="idx"><span class="num">${num}</span><span class="chk">✓</span></span>
+    <span class="txt">${esc(task.text)}</span>
+    <button class="remove-btn" onclick="removeCustomTask('${posId}','${task.id}',event)">×</button>
+  `;
+  wireToggle(el);
+  listEl.appendChild(el);
+}
+
+function removeCustomTask(posId, taskId, event) {
+  event.stopPropagation();
+  CUSTOM_TASKS[posId] = (CUSTOM_TASKS[posId] || []).filter(t => t.id !== taskId);
+  saveCustom();
+  document.getElementById(taskId)?.remove();
+}
+
+// ── Menu ──────────────────────────────────────────────────────
 function toggleMenu() { document.getElementById('menuPanel').classList.toggle('open'); }
 
 document.addEventListener('click', e => {
@@ -501,7 +730,9 @@ document.addEventListener('click', e => {
   }
 });
 
+// ── Reset (double-tap confirms) ────────────────────────────────
 let resetConfirmState = false, resetConfirmTimer = null;
+
 function handleResetClick() {
   const btn = document.getElementById('resetBtn');
   if (!resetConfirmState) {
@@ -515,46 +746,55 @@ function handleResetClick() {
     clearTimeout(resetConfirmTimer);
     resetConfirmState = false;
     btn.textContent = 'Reset all checklists';
-    resetAllChecklists();
     document.getElementById('menuPanel').classList.remove('open');
+    resetAll();
   }
 }
 
-function resetAllChecklists() {
-  document.querySelectorAll('[can-toggle]').forEach(el => {
-    if (el.classList.contains('toggled')) {
-      el.classList.remove('toggled');
-      // shift-click notifies playhtml of the reset without re-toggling locally
-      el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, shiftKey: true }));
-    }
+function resetAll() {
+  // Clear checkbox states
+  document.querySelectorAll('[can-toggle].toggled').forEach(el => {
+    el.classList.remove('toggled');
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, shiftKey: true }));
   });
-  showToast('Cleared for next Sunday');
+  // Clear person names
+  for (const k in NAMES) delete NAMES[k];
+  localStorage.removeItem('tsc-names-v3');
+  POSITIONS.forEach(p => refreshNameDisplays(p.id));
+  document.querySelectorAll('[id^="person-input-"]').forEach(inp => { inp.value = ''; });
+  // Clear custom tasks
+  for (const k in CUSTOM_TASKS) delete CUSTOM_TASKS[k];
+  localStorage.removeItem('tsc-custom-v3');
+  document.querySelectorAll('.custom-task').forEach(el => el.remove());
+  showToast('All clear — ready for Sunday');
 }
 
+// ── Toast ─────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── Bootstrap ────────────────────────────────────────────────
+// ── Bootstrap ─────────────────────────────────────────────────
 async function init() {
+  loadLocalData();
   try {
-    const res = await fetch(SHEET_URL);
+    const res = await fetch(DATA_SOURCE);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
     const rows = parseCSV(text);
-    if (!rows.length) throw new Error('Sheet returned no rows');
+    if (!rows.length) throw new Error('No rows found in CSV');
     buildApp(rows);
   } catch (err) {
     document.getElementById('screens-root').innerHTML =
       `<div class="error-state">
         <strong>Could not load checklist</strong>
-        Could not fetch the Google Sheet (${esc(err.message)}).<br><br>
-        Make sure the sheet is published to the web via File → Share → Publish to web, then reload.
+        ${esc(err.message)}<br><br>
+        Make sure <code>production-checklist.csv</code> is in the site root and Jekyll is serving it.
       </div>`;
-    document.getElementById('heroMeta').textContent = 'Sheet unavailable';
+    document.getElementById('heroMeta').textContent = 'Error loading data';
   }
 }
 
