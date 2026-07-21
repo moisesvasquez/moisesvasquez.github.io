@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>8-BIT WORKOUT TIMER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --work: #00FF41;
+    --rest: #FF6600;
+    --blockrest: #FF0000;
+    --done: #FFFFFF;
+    --bg: #000000;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Silkscreen', monospace;
+    font-weight: 700;
+    -webkit-font-smoothing: none;
+    image-rendering: pixelated;
+    overflow-x: hidden;
+  }
+
+  button, input{
+    font-family: 'Silkscreen', monospace;
+    font-weight: 700;
+  }
+
+  /* ---------- BUILDER ---------- */
+  #builder{
+    max-width: 720px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  #builder h1{
+    font-size: 18px;
+    text-align: center;
+    color: var(--work);
+    line-height: 1.6;
+    margin: 0 0 24px;
+    letter-spacing: 1px;
+  }
+
+  .block-card{
+    border: 4px solid #fff;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: #000;
+    position: relative;
+  }
+
+  .block-card .block-title{
+    font-size: 11px;
+    color: var(--rest);
+    margin-bottom: 14px;
+  }
+
+  .field-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .field{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label{
+    font-size: 8px;
+    color: #aaa;
+    line-height: 1.5;
+  }
+
+  .field input{
+    background: #000;
+    border: 3px solid #fff;
+    color: var(--work);
+    font-size: 14px;
+    padding: 10px 8px;
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .field input:focus{
+    outline: none;
+    border-color: var(--work);
+  }
+
+  .remove-btn{
+    margin-top: 8px;
+    width: 100%;
+    background: #000;
+    border: 3px solid var(--blockrest);
+    color: var(--blockrest);
+    padding: 12px;
+    font-size: 10px;
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  .remove-btn:active{ background: var(--blockrest); color: #000; }
+
+  #addBlockBtn{
+    display: block;
+    width: 100%;
+    background: #000;
+    border: 4px solid var(--work);
+    color: var(--work);
+    padding: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 24px;
+    min-height: 52px;
+  }
+
+  #addBlockBtn:active{ background: var(--work); color: #000; }
+
+  #startBtn{
+    display: block;
+    width: 100%;
+    background: var(--work);
+    border: 4px solid var(--work);
+    color: #000;
+    padding: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    min-height: 60px;
+  }
+
+  #startBtn:active{ background: #000; color: var(--work); }
+
+  #startBtn:disabled{
+    background: #222;
+    border-color: #444;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  .empty-msg{
+    text-align: center;
+    font-size: 10px;
+    color: #666;
+    padding: 24px 0;
+    line-height: 1.8;
+  }
+
+  #totalTime{
+    text-align: center;
+    font-size: 12px;
+    color: var(--work);
+    letter-spacing: 1px;
+    padding: 10px 0 16px;
+    border-top: 2px dashed #333;
+    margin-top: 4px;
+  }
+
+  /* ---------- PLAYER ---------- */
+  #player{
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: #000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px;
+    --ink: #000;
+    color: var(--ink);
+  }
+
+  #player.active{ display: flex; }
+
+  /* Whole-screen phase colors. WORK/REST/DONE stay color + black ink.
+     BLOCK_REST (move to next station) is pure black & white. */
+  #player.phase-work{ background: var(--work); --ink: #000; }
+  #player.phase-rest{ background: var(--rest); --ink: #000; }
+  #player.phase-blockrest{ background: #000; --ink: #fff; }
+  #player.phase-done{ background: var(--done); --ink: #000; }
+
+  #phaseLabel{
+    font-size: clamp(28px, 9vw, 68px);
+    line-height: 1.25;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    padding: 0 8px;
+    color: var(--ink);
+    text-shadow: 3px 3px 0 rgba(128,128,128,0.15);
+  }
+
+  #tracker{
+    font-size: clamp(10px, 2.5vw, 14px);
+    color: var(--ink);
+    margin-bottom: 32px;
+    letter-spacing: 1px;
+  }
+
+  #countdownWrap{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52vh;
+    width: 100%;
+  }
+
+  #countdown{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3vw;
+    width: 100%;
+  }
+
+  #countdown.text-mode{
+    font-family: 'Silkscreen', monospace;
+    font-weight: 700;
+    font-size: clamp(30px, 9vw, 68px);
+    line-height: 1.4;
+    letter-spacing: 2px;
+    padding: 0 16px;
+    color: var(--ink);
+  }
+
+  .seg-digit{
+    height: min(56vh, calc(92vw / var(--num-digits, 1) / 0.56));
+    width: auto;
+    display: block;
+  }
+
+  .seg{ fill: var(--ink); }
+  .seg.off{ opacity: 0.08; }
+  .seg.on{ opacity: 1; }
+
+  .flash{
+    animation: flashAnim 0.5s steps(1) infinite;
+  }
+
+  @keyframes flashAnim{
+    0%, 49%{ opacity: 1; }
+    50%, 100%{ opacity: 0.15; }
+  }
+
+  #progressBarOuter{
+    width: 100%;
+    max-width: 900px;
+    height: 6px;
+    background: transparent;
+    border: 2px solid var(--ink);
+    margin-top: 32px;
+  }
+
+  #progressBarInner{
+    height: 100%;
+    width: 100%;
+    background: var(--ink);
+    transition: width 1s linear;
+  }
+
+  #controls{
+    margin-top: 28px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  #controls button{
+    background: transparent;
+    border: 3px solid var(--ink);
+    color: var(--ink);
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  #controls button:active{ background: var(--ink); color: #808080; }
+
+  #pauseOverlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(128,128,128,0.15);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  #pauseOverlay.show{ display: flex; }
+
+  #pauseOverlay span{
+    font-size: clamp(28px, 8vw, 60px);
+    color: var(--ink);
+    letter-spacing: 6px;
+    animation: flashAnim 0.8s steps(1) infinite;
+  }
+
+  #playerContent{
+    transition: opacity 0.2s linear;
+  }
+
+  #playerContent.dimmed{ opacity: 0.4; }
+
+  @media (max-width: 480px){
+    .field-row{ grid-template-columns: 1fr 1fr; gap: 8px; }
+    #builder h1{ font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="builder">
+  <h1>F3 SOFL<br>WORKOUT SEQUENCE BUILDER</h1>
+  <div id="blockList"></div>
+  <button id="addBlockBtn">+ ADD BLOCK</button>
+  <div id="totalTime">TOTAL TIME: 0 MIN</div>
+  <button id="startBtn">&#9654; START WORKOUT</button>
+</div>
+
+<div id="player">
+  <div id="pauseOverlay"><span>PAUSED</span></div>
+  <div id="playerContent">
+    <div id="phaseLabel">WORK</div>
+    <div id="tracker">BLOCK 1/1 &mdash; ROUND 1/1</div>
+    <div id="countdownWrap"><div id="countdown"></div></div>
+    <div id="progressBarOuter"><div id="progressBarInner"></div></div>
+    <div id="controls">
+      <button id="pauseBtn" aria-label="Pause" title="Pause">&#10073;&#10073;</button>
+      <button id="resetBtn" aria-label="Reset" title="Reset">&#8635;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- STATE ----------------
+  let blocks = [];
+  let blockIdCounter = 0;
+  let sequence = [];
+  let currentIndex = -1;
+  let remaining = 0;
+  let paused = false;
+
+  let timerHandle = null;
+  let timerMode = null; // 'tick' | 'hold'
+  let holdRemainingMs = 0;
+  let holdStartedAt = 0;
+
+  const MIN_ROUNDS = 1;
+  const MIN_WORK = 5;
+  const MIN_REST = 0;
+  const MIN_BLOCK_REST = 0;
+
+  // ---------------- DOM ----------------
+  const blockListEl = document.getElementById('blockList');
+  const addBlockBtn = document.getElementById('addBlockBtn');
+  const startBtn = document.getElementById('startBtn');
+  const builderEl = document.getElementById('builder');
+  const playerEl = document.getElementById('player');
+  const playerContentEl = document.getElementById('playerContent');
+  const phaseLabelEl = document.getElementById('phaseLabel');
+  const trackerEl = document.getElementById('tracker');
+  const countdownEl = document.getElementById('countdown');
+  const progressInnerEl = document.getElementById('progressBarInner');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const pauseOverlayEl = document.getElementById('pauseOverlay');
+  const totalTimeEl = document.getElementById('totalTime');
+
+  // ---------------- AUDIO ENGINE ----------------
+  let audioCtx = null;
+
+  function getAudioCtx(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx.state === 'suspended'){
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playTone(freq, durationMs, delaySec, type, gainValue){
+    delaySec = delaySec || 0;
+    type = type || 'sine';
+    gainValue = gainValue === undefined ? 0.3 : gainValue;
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.value = gainValue;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const t = ctx.currentTime + delaySec;
+    osc.start(t);
+    osc.stop(t + durationMs / 1000);
+  }
+
+  function playShortBeep(){
+    playTone(880, 80, 0);
+  }
+
+  function playTripleBeep(){
+    playTone(880, 80, 0);
+    playTone(880, 80, 0.2);
+    playTone(880, 80, 0.4);
+  }
+
+  function playDoneTone(){
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    gain.gain.value = 0.3;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const now = ctx.currentTime;
+    osc.frequency.setValueAtTime(440, now);
+    osc.frequency.linearRampToValueAtTime(220, now + 0.8);
+    osc.start(now);
+    osc.stop(now + 0.8);
+  }
+
+  // ---------------- SEVEN-SEGMENT DIGIT ENGINE ----------------
+  // Classic digital-clock style: every digit is carved from the full "8"
+  // shape -- unlit segments stay faintly visible, lit segments go solid.
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  const SEG_DEFS = {
+    a: { x: 10, y: 0,   w: 80, h: 16, o: 'h' },
+    b: { x: 84, y: 8,   w: 16, h: 80, o: 'v' },
+    c: { x: 84, y: 92,  w: 16, h: 80, o: 'v' },
+    d: { x: 10, y: 164, w: 80, h: 16, o: 'h' },
+    e: { x: 0,  y: 92,  w: 16, h: 80, o: 'v' },
+    f: { x: 0,  y: 8,   w: 16, h: 80, o: 'v' },
+    g: { x: 10, y: 82,  w: 80, h: 16, o: 'h' }
+  };
+
+  const DIGIT_SEGMENTS = {
+    '0': 'abcdef',
+    '1': 'bc',
+    '2': 'abged',
+    '3': 'abgcd',
+    '4': 'fgbc',
+    '5': 'afgcd',
+    '6': 'afgecd',
+    '7': 'abc',
+    '8': 'abcdefg',
+    '9': 'abcdfg',
+    'F': 'afge'
+  };
+
+  function segPolygonPoints(def){
+    const x = def.x, y = def.y, w = def.w, h = def.h;
+    if(def.o === 'h'){
+      const n = h / 2;
+      return [
+        [x + n, y], [x + w - n, y], [x + w, y + h / 2],
+        [x + w - n, y + h], [x + n, y + h], [x, y + h / 2]
+      ].map(function(p){ return p.join(','); }).join(' ');
+    }
+    const n = w / 2;
+    return [
+      [x, y + n], [x + w / 2, y], [x + w, y + n],
+      [x + w, y + h - n], [x + w / 2, y + h], [x, y + h - n]
+    ].map(function(p){ return p.join(','); }).join(' ');
+  }
+
+  function buildDigitSVG(ch){
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 100 180');
+    svg.setAttribute('class', 'seg-digit');
+    const activeSegs = DIGIT_SEGMENTS[ch] || '';
+    Object.keys(SEG_DEFS).forEach(function(key){
+      const poly = document.createElementNS(SVG_NS, 'polygon');
+      poly.setAttribute('points', segPolygonPoints(SEG_DEFS[key]));
+      poly.setAttribute('class', 'seg ' + (activeSegs.indexOf(key) > -1 ? 'on' : 'off'));
+      svg.appendChild(poly);
+    });
+    return svg;
+  }
+
+  function renderDigits(container, str){
+    container.classList.remove('text-mode');
+    container.innerHTML = '';
+    const chars = str.split('');
+    container.style.setProperty('--num-digits', chars.length);
+    chars.forEach(function(ch){
+      container.appendChild(buildDigitSVG(ch));
+    });
+  }
+
+  function renderCountdownText(container, text){
+    container.classList.add('text-mode');
+    container.innerHTML = '';
+    container.textContent = text;
+  }
+
+  // ---------------- BUILDER ----------------
+  function addBlock(){
+    blocks.push({
+      id: blockIdCounter++,
+      rounds: 5,
+      work: 45,
+      rest: 15,
+      blockRest: 30
+    });
+    renderBuilder();
+  }
+
+  function removeBlock(id){
+    blocks = blocks.filter(function(b){ return b.id !== id; });
+    renderBuilder();
+  }
+
+  function updateBlockField(id, field, value){
+    const block = blocks.find(function(b){ return b.id === id; });
+    if(!block) return;
+    let num = parseInt(value, 10);
+    if(isNaN(num)) num = 0;
+    block[field] = num;
+    updateStartBtnState();
+    updateTotalTimeDisplay();
+  }
+
+  function computeTotalSeconds(){
+    let total = 0;
+    blocks.forEach(function(rawBlock){
+      const block = clampBlock(rawBlock);
+      total += block.rounds * block.work;
+      if(block.rest > 0) total += (block.rounds - 1) * block.rest;
+      total += block.blockRest;
+    });
+    return total;
+  }
+
+  function updateTotalTimeDisplay(){
+    const totalSeconds = computeTotalSeconds();
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    totalTimeEl.textContent = 'TOTAL TIME: ' + minutes + ' MIN' + (seconds > 0 ? ' ' + seconds + ' SEC' : '');
+  }
+
+  function renderBuilder(){
+    blockListEl.innerHTML = '';
+
+    if(blocks.length === 0){
+      const msg = document.createElement('div');
+      msg.className = 'empty-msg';
+      msg.textContent = 'NO BLOCKS YET. TAP "+ ADD BLOCK" TO BEGIN.';
+      blockListEl.appendChild(msg);
+    }
+
+    blocks.forEach(function(block, i){
+      const card = document.createElement('div');
+      card.className = 'block-card';
+
+      const title = document.createElement('div');
+      title.className = 'block-title';
+      title.textContent = 'BLOCK ' + (i + 1);
+      card.appendChild(title);
+
+      const row1 = document.createElement('div');
+      row1.className = 'field-row';
+      row1.appendChild(makeField('ROUNDS', block.rounds, function(v){ updateBlockField(block.id, 'rounds', v); }));
+      row1.appendChild(makeField('WORK (SEC)', block.work, function(v){ updateBlockField(block.id, 'work', v); }));
+      card.appendChild(row1);
+
+      const row2 = document.createElement('div');
+      row2.className = 'field-row';
+      row2.appendChild(makeField('REST BETWEEN ROUNDS (SEC)', block.rest, function(v){ updateBlockField(block.id, 'rest', v); }));
+      row2.appendChild(makeField('BLOCK REST (SEC)', block.blockRest, function(v){ updateBlockField(block.id, 'blockRest', v); }));
+      card.appendChild(row2);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.textContent = 'REMOVE BLOCK';
+      removeBtn.addEventListener('click', function(){ removeBlock(block.id); });
+      card.appendChild(removeBtn);
+
+      blockListEl.appendChild(card);
+    });
+
+    updateStartBtnState();
+    updateTotalTimeDisplay();
+  }
+
+  function makeField(labelText, value, onChange){
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.inputMode = 'numeric';
+    input.min = '0';
+    input.value = value;
+    input.addEventListener('input', function(){ onChange(input.value); });
+    wrap.appendChild(label);
+    wrap.appendChild(input);
+    return wrap;
+  }
+
+  function updateStartBtnState(){
+    startBtn.disabled = blocks.length === 0;
+  }
+
+  // ---------------- SEQUENCE GENERATION ----------------
+  function clampBlock(block){
+    return {
+      rounds: Math.max(MIN_ROUNDS, block.rounds || 0),
+      work: Math.max(MIN_WORK, block.work || 0),
+      rest: Math.max(MIN_REST, block.rest || 0),
+      blockRest: Math.max(MIN_BLOCK_REST, block.blockRest || 0)
+    };
+  }
+
+  function buildSequence(){
+    const seq = [];
+    const totalBlocks = blocks.length;
+
+    blocks.forEach(function(rawBlock, blockIdx){
+      const block = clampBlock(rawBlock);
+      const blockNum = blockIdx + 1;
+
+      for(let r = 1; r <= block.rounds; r++){
+        seq.push({
+          type: 'WORK',
+          duration: block.work,
+          blockIndex: blockNum,
+          totalBlocks: totalBlocks,
+          roundIndex: r,
+          totalRounds: block.rounds
+        });
+
+        const isLastRound = (r === block.rounds);
+        if(!isLastRound && block.rest > 0){
+          seq.push({
+            type: 'ROUND_REST',
+            duration: block.rest,
+            blockIndex: blockNum,
+            totalBlocks: totalBlocks,
+            roundIndex: r,
+            totalRounds: block.rounds
+          });
+        }
+      }
+
+      if(block.blockRest > 0){
+        seq.push({
+          type: 'BLOCK_REST',
+          duration: block.blockRest,
+          blockIndex: blockNum,
+          totalBlocks: totalBlocks,
+          roundIndex: block.rounds,
+          totalRounds: block.rounds
+        });
+      }
+    });
+
+    return seq;
+  }
+
+  // ---------------- TIMER ENGINE ----------------
+  function clearActiveTimer(){
+    if(timerHandle){
+      if(timerMode === 'tick') clearInterval(timerHandle);
+      else clearTimeout(timerHandle);
+      timerHandle = null;
+    }
+    timerMode = null;
+  }
+
+  function scheduleTick(){
+    clearActiveTimer();
+    timerMode = 'tick';
+    timerHandle = setInterval(onTick, 1000);
+  }
+
+  function scheduleHold(ms){
+    clearActiveTimer();
+    timerMode = 'hold';
+    holdRemainingMs = ms;
+    holdStartedAt = Date.now();
+    timerHandle = setTimeout(function(){
+      startPhase(currentIndex + 1);
+    }, ms);
+  }
+
+  function startPhase(idx){
+    currentIndex = idx;
+    if(idx >= sequence.length){
+      finishWorkout();
+      return;
+    }
+    const phase = sequence[idx];
+    remaining = phase.duration;
+    render(phase);
+    if(phase.type === 'WORK'){
+      playTripleBeep();
+    }
+    scheduleTick();
+  }
+
+  function onTick(){
+    if(paused) return;
+    const phase = sequence[currentIndex];
+    remaining -= 1;
+
+    if((phase.type === 'WORK' || phase.type === 'ROUND_REST') && remaining >= 1 && remaining <= 3){
+      playShortBeep();
+    } else if(phase.type === 'BLOCK_REST' && remaining >= 1 && remaining <= 5){
+      playShortBeep();
+    }
+
+    render(phase);
+
+    if(remaining <= 0){
+      clearActiveTimer();
+      if(phase.type === 'WORK'){
+        startPhase(currentIndex + 1);
+      } else {
+        // rest phase: hold "ZERO EXCUSES" text for 1.5s before advancing
+        scheduleHold(1500);
+      }
+    }
+  }
+
+  function finishWorkout(){
+    clearActiveTimer();
+    setPhaseBgClass('phase-done');
+    phaseLabelEl.textContent = '';
+    trackerEl.textContent = '';
+    renderCountdownText(countdownEl, 'WORKOUT COMPLETE');
+    countdownEl.classList.add('flash');
+    progressInnerEl.style.width = '0%';
+    pauseBtn.style.display = 'none';
+    playDoneTone();
+  }
+
+  // ---------------- RENDER ----------------
+  const PHASE_BG_CLASSES = ['phase-work', 'phase-rest', 'phase-blockrest', 'phase-done'];
+
+  function phaseBgClass(type){
+    if(type === 'WORK') return 'phase-work';
+    if(type === 'ROUND_REST') return 'phase-rest';
+    if(type === 'BLOCK_REST') return 'phase-blockrest';
+    return 'phase-done';
+  }
+
+  function setPhaseBgClass(cls){
+    playerEl.classList.remove.apply(playerEl.classList, PHASE_BG_CLASSES);
+    playerEl.classList.add(cls);
+  }
+
+  function phaseLabelText(type){
+    if(type === 'WORK') return 'WORK';
+    if(type === 'ROUND_REST') return 'REST';
+    if(type === 'BLOCK_REST') return 'MOVE TO THE NEXT STATION';
+    return '';
+  }
+
+  function render(phase){
+    setPhaseBgClass(phaseBgClass(phase.type));
+    phaseLabelEl.textContent = phaseLabelText(phase.type);
+
+    trackerEl.textContent = 'BLOCK ' + phase.blockIndex + '/' + phase.totalBlocks +
+      ' \u2014 ROUND ' + phase.roundIndex + '/' + phase.totalRounds;
+
+    countdownEl.classList.remove('flash');
+
+    const isBlockRest = (phase.type === 'BLOCK_REST');
+
+    if(isBlockRest && remaining === 3){
+      renderDigits(countdownEl, 'F3');
+      countdownEl.classList.add('flash');
+    } else if(isBlockRest && remaining === 2){
+      renderDigits(countdownEl, '2');
+      countdownEl.classList.add('flash');
+    } else if(isBlockRest && remaining === 1){
+      renderCountdownText(countdownEl, 'ONE PERCENT BETTER');
+      countdownEl.classList.add('flash');
+    } else if(isBlockRest && remaining <= 0){
+      renderCountdownText(countdownEl, 'ZERO EXCUSES');
+      countdownEl.classList.add('flash');
+    } else {
+      renderDigits(countdownEl, String(Math.max(remaining, 0)));
+    }
+
+    const pct = phase.duration > 0 ? (Math.max(remaining, 0) / phase.duration) * 100 : 0;
+    progressInnerEl.style.width = pct + '%';
+  }
+
+  // ---------------- PAUSE / RESUME ----------------
+  function togglePause(){
+    if(playerEl.classList.contains('active') === false) return;
+    if(paused) resumeTimer(); else pauseTimer();
+  }
+
+  function pauseTimer(){
+    if(paused) return;
+    paused = true;
+    if(timerMode === 'hold'){
+      const elapsed = Date.now() - holdStartedAt;
+      holdRemainingMs = Math.max(0, holdRemainingMs - elapsed);
+    }
+    clearActiveTimer();
+    playerContentEl.classList.add('dimmed');
+    pauseOverlayEl.classList.add('show');
+    pauseBtn.innerHTML = '&#9654;';
+    pauseBtn.setAttribute('aria-label', 'Resume');
+  }
+
+  function resumeTimer(){
+    if(!paused) return;
+    paused = false;
+    playerContentEl.classList.remove('dimmed');
+    pauseOverlayEl.classList.remove('show');
+    pauseBtn.innerHTML = '&#10073;&#10073;';
+    pauseBtn.setAttribute('aria-label', 'Pause');
+    getAudioCtx();
+    if(currentIndex >= sequence.length) return;
+    const phase = sequence[currentIndex];
+    if(remaining <= 0){
+      scheduleHold(holdRemainingMs);
+    } else {
+      scheduleTick();
+    }
+  }
+
+  // ---------------- WAKE LOCK (keep screen awake during workout) ----------------
+  let wakeLock = null;
+
+  async function requestWakeLock(){
+    if(!('wakeLock' in navigator)) return;
+    try{
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', function(){ wakeLock = null; });
+    }catch(e){
+      wakeLock = null;
+    }
+  }
+
+  function releaseWakeLock(){
+    if(wakeLock){
+      wakeLock.release().catch(function(){});
+      wakeLock = null;
+    }
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible' && playerEl.classList.contains('active') && !wakeLock){
+      requestWakeLock();
+    }
+  });
+
+  // ---------------- RESET ----------------
+  function resetWorkout(){
+    clearActiveTimer();
+    releaseWakeLock();
+    paused = false;
+    currentIndex = -1;
+    sequence = [];
+    remaining = 0;
+    playerEl.classList.remove('active', 'phase-work', 'phase-rest', 'phase-blockrest', 'phase-done');
+    playerContentEl.classList.remove('dimmed');
+    pauseOverlayEl.classList.remove('show');
+    pauseBtn.style.display = '';
+    pauseBtn.innerHTML = '&#10073;&#10073;';
+    pauseBtn.setAttribute('aria-label', 'Pause');
+    builderEl.style.display = '';
+  }
+
+  // ---------------- EVENTS ----------------
+  addBlockBtn.addEventListener('click', addBlock);
+
+  startBtn.addEventListener('click', function(){
+    if(blocks.length === 0) return;
+    getAudioCtx();
+    requestWakeLock();
+    sequence = buildSequence();
+    if(sequence.length === 0) return;
+    builderEl.style.display = 'none';
+    playerEl.classList.add('active');
+    startPhase(0);
+  });
+
+  pauseBtn.addEventListener('click', togglePause);
+  resetBtn.addEventListener('click', resetWorkout);
+
+  document.addEventListener('keydown', function(e){
+    if(e.code === 'Space' && playerEl.classList.contains('active')){
+      e.preventDefault();
+      togglePause();
+    }
+  });
+
+  // ---------------- INIT ----------------
+  addBlock();
+  addBlock();
+  renderBuilder();
+
+})();
+</script>
+</body>
+</html>
