@@ -1,0 +1,651 @@
+---
+layout: null
+permalink: /run/
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>September Run Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:      #00E676;
+  --green-dim:  rgba(0,230,118,0.15);
+  --green-glow: rgba(0,230,118,0.35);
+  --bg:         #050508;
+  --surface:    #0C0C10;
+  --surface2:   #131318;
+  --border:     #1E1E28;
+  --border-hi:  #2E2E3E;
+  --ink:        #FFFFFF;
+  --ink-mid:    #9999AA;
+  --ink-soft:   #444455;
+  --dot-done:   #00E676;
+  --dot-miss:   #1A1A24;
+  --dot-future: #0D0D14;
+  --radius:     2px;
+  --font:       'Pixelify Sans', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); overflow-x: hidden; }
+::selection { background: var(--green); color: #000; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border-hi); }
+
+/* ── Page shell ─────────────────────────────────────── */
+.page { max-width: 860px; margin: 0 auto; padding: 0 16px 80px; }
+
+/* ── Header ─────────────────────────────────────────── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 0 20px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 28px;
+}
+.header-title {
+  font-size: 20px; font-weight: 700; color: var(--green);
+  text-transform: uppercase; letter-spacing: .06em; line-height: 1;
+}
+.header-sub { font-size: 11px; color: var(--ink-mid); margin-top: 4px; letter-spacing: .05em; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border: 2px solid var(--green);
+  background: transparent; color: var(--green);
+  font-family: var(--font); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  cursor: pointer; border-radius: var(--radius);
+  transition: background .15s, color .15s;
+}
+.btn:hover { background: var(--green); color: #000; }
+.btn-solid { background: var(--green); color: #000; }
+.btn-solid:hover { background: #00ff84; border-color: #00ff84; }
+.btn-full { width: 100%; justify-content: center; margin-top: 14px; font-size: 14px; padding: 13px; }
+
+/* ── Form card ───────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 28px;
+}
+.card-title {
+  font-size: 11px; font-weight: 700; color: var(--ink-mid);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px;
+}
+
+.form-row { display: flex; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.form-label { font-size: 10px; color: var(--ink-mid); text-transform: uppercase; letter-spacing: .07em; }
+
+select, input[type="date"], input[type="text"] {
+  width: 100%; padding: 9px 11px;
+  background: var(--bg); border: 2px solid var(--border-hi);
+  color: var(--ink); font-family: var(--font); font-size: 13px;
+  border-radius: var(--radius); outline: none;
+  appearance: none; -webkit-appearance: none;
+  cursor: pointer; transition: border-color .15s;
+}
+select:focus, input:focus { border-color: var(--green); }
+select option { background: #0a0a10; }
+
+.time-pair { display: flex; gap: 8px; align-items: flex-end; }
+.time-pair .form-group { flex: 1; }
+.time-sep { color: var(--ink-mid); font-size: 18px; padding-bottom: 10px; align-self: flex-end; }
+
+/* ── Sign-up modal ───────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.82);
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 2px solid var(--green);
+  border-radius: var(--radius); padding: 28px 24px;
+  width: 100%; max-width: 400px;
+  box-shadow: 0 0 40px var(--green-glow);
+}
+.modal-title { font-size: 16px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.modal-sub { font-size: 11px; color: var(--ink-mid); margin-bottom: 20px; }
+.modal-close {
+  position: absolute; top: 10px; right: 14px;
+  background: none; border: none; color: var(--ink-mid);
+  font-size: 18px; cursor: pointer; font-family: var(--font);
+}
+.modal { position: relative; }
+
+/* ── Tracker ─────────────────────────────────────────── */
+.tracker-title {
+  font-size: 11px; font-weight: 700; color: var(--ink-mid);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+}
+.tracker-title::after {
+  content: ''; flex: 1; height: 2px; background: var(--border);
+}
+
+.runner-row {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 8px;
+  overflow: hidden;
+}
+.runner-row.expanded { border-color: var(--border-hi); }
+
+.runner-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; cursor: pointer;
+  transition: background .12s;
+}
+.runner-head:hover { background: var(--surface2); }
+
+.runner-name {
+  font-size: 13px; font-weight: 700; color: var(--ink);
+  min-width: 120px; flex-shrink: 0;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+
+.cal-scroll { flex: 1; overflow-x: auto; padding-bottom: 2px; }
+.cal-track {
+  display: flex; gap: 5px; align-items: center;
+  min-width: max-content; padding: 2px 0;
+}
+
+.day-dot {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; cursor: default;
+}
+.day-dot.done     { background: var(--dot-done); box-shadow: 0 0 6px var(--green-glow); }
+.day-dot.miss     { background: var(--dot-miss); border: 1px solid var(--ink-soft); }
+.day-dot.future   { background: var(--dot-future); border: 1px solid #1A1A1A; }
+.day-dot.today    { box-shadow: 0 0 0 2px var(--green), 0 0 10px var(--green-glow); }
+.day-dot .day-num {
+  font-size: 7px; font-weight: 700; color: var(--ink-soft);
+  display: none; position: absolute; bottom: -12px; left: 50%;
+  transform: translateX(-50%); white-space: nowrap;
+}
+.cal-track:hover .day-dot .day-num { display: block; }
+
+.runner-stats {
+  font-size: 11px; color: var(--ink-mid); flex-shrink: 0;
+  text-align: right; min-width: 60px;
+}
+.runner-stats .done-count { color: var(--green); font-weight: 700; font-size: 14px; }
+
+.runner-expand {
+  max-height: 0; overflow: hidden;
+  transition: max-height .3s ease, padding .3s ease;
+  border-top: 0px solid var(--border);
+}
+.runner-row.expanded .runner-expand {
+  max-height: 300px;
+  border-top: 2px solid var(--border);
+  padding: 16px;
+}
+
+.expand-grid { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.expand-stat { flex: 0 0 auto; }
+.expand-stat-label { font-size: 9px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+.expand-stat-val { font-size: 18px; font-weight: 700; color: var(--green); }
+.expand-stat-sub { font-size: 10px; color: var(--ink-mid); }
+
+.spark-wrap { flex: 1; min-width: 160px; }
+.spark-wrap svg { display: block; width: 100%; height: 56px; }
+.spark-empty { font-size: 11px; color: var(--ink-soft); padding-top: 20px; }
+
+/* ── Legend ──────────────────────────────────────────── */
+.legend {
+  display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--ink-mid); }
+.leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.leg-dot.done   { background: var(--dot-done); }
+.leg-dot.miss   { background: var(--dot-miss); border: 1px solid var(--ink-soft); }
+.leg-dot.future { background: var(--dot-future); border: 1px solid #1A1A1A; }
+
+/* ── Toast ────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--green); color: #000; padding: 10px 20px;
+  font-family: var(--font); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  border-radius: var(--radius); opacity: 0; pointer-events: none;
+  transition: opacity .25s; z-index: 600; white-space: nowrap;
+}
+.toast.err { background: #FF3B30; color: #fff; }
+.toast.show { opacity: 1; }
+
+/* ── Loading ─────────────────────────────────────────── */
+.loading {
+  text-align: center; padding: 48px 20px;
+  font-size: 12px; color: var(--ink-mid); letter-spacing: .05em;
+}
+.loading::after {
+  content: ''; display: inline-block;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--green); margin-left: 8px;
+  animation: blink .7s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 560px) {
+  .form-row { flex-direction: column; }
+  .runner-name { min-width: 90px; font-size: 11px; }
+  .header-title { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="header-title">September Run Challenge</div>
+      <div class="header-sub">30 days · 1 mile · everyone runs</div>
+    </div>
+    <button class="btn" onclick="openSignup()">+ Sign Up</button>
+  </div>
+
+  <!-- Log form -->
+  <div class="card">
+    <div class="card-title">Log a Run</div>
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
+        <label class="form-label">Runner</label>
+        <select id="logName">
+          <option value="">Loading names…</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1">
+        <label class="form-label">Date</label>
+        <input type="date" id="logDate">
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">Mile Time</label>
+      <div class="time-pair">
+        <div class="form-group">
+          <label class="form-label">Min</label>
+          <select id="logMin"></select>
+        </div>
+        <span class="time-sep">:</span>
+        <div class="form-group">
+          <label class="form-label">Sec</label>
+          <select id="logSec"></select>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-solid btn-full" onclick="submitLog()">Submit Run ▶</button>
+  </div>
+
+  <!-- Tracker -->
+  <div class="tracker-title">Team Progress</div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot done"></div>Completed</div>
+    <div class="leg-item"><div class="leg-dot miss"></div>Not yet</div>
+    <div class="leg-item"><div class="leg-dot future"></div>Upcoming</div>
+  </div>
+
+  <div id="tracker">
+    <div class="loading">Loading team data</div>
+  </div>
+
+</div>
+
+<!-- Sign-up modal -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSignup()">✕</button>
+    <div class="modal-title">Join the Challenge</div>
+    <div class="modal-sub">September 1–30 · One mile a day</div>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" id="signupName" placeholder="Your full name" autocomplete="name">
+    </div>
+    <button class="btn btn-solid btn-full" onclick="submitSignup()">Join Now ▶</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────
+const PEOPLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8ETO2mIlwm18NvoGjDibsqEUBPCarmoZNGXLWRqfwrOXVn2mFc0iEOQAF5dPkJ_iDx8wlMQrSxB63/pub?gid=867620642&single=true&output=csv';
+const LOG_CSV    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8ETO2mIlwm18NvoGjDibsqEUBPCarmoZNGXLWRqfwrOXVn2mFc0iEOQAF5dPkJ_iDx8wlMQrSxB63/pub?gid=1166055896&single=true&output=csv';
+
+// TODO: Replace with actual Google Form action URLs and entry field IDs
+const PEOPLE_FORM_URL   = 'TODO_PEOPLE_FORM_ACTION_URL';
+const PEOPLE_NAME_FIELD = 'TODO_entry.XXXXXXXXX'; // fullName field
+
+const LOG_FORM_URL      = 'TODO_LOG_FORM_ACTION_URL';
+const LOG_PERSON_FIELD  = 'TODO_entry.XXXXXXXXX'; // person field
+const LOG_DATE_FIELD    = 'TODO_entry.XXXXXXXXX'; // date field
+const LOG_MIN_FIELD     = 'TODO_entry.XXXXXXXXX'; // minutes field
+const LOG_SEC_FIELD     = 'TODO_entry.XXXXXXXXX'; // seconds field
+
+const SEPT_YEAR  = 2026;
+const SEPT_MONTH = 8; // 0-indexed
+
+// ── Utilities ─────────────────────────────────────────────────
+function today() {
+  return new Date();
+}
+
+function getSeptDay(dateStr) {
+  if (!dateStr) return null;
+  let d;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    d = new Date(dateStr + 'T12:00:00');
+  } else {
+    d = new Date(dateStr);
+  }
+  if (d.getMonth() === SEPT_MONTH && d.getFullYear() === SEPT_YEAR) return d.getDate();
+  return null;
+}
+
+function toSeconds(min, sec) {
+  return parseInt(min) * 60 + parseInt(sec);
+}
+
+function fmtTime(totalSec) {
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function dateInputToForm(val) {
+  // "2026-09-01" → "9/1/2026"
+  const [y, m, d] = val.split('-');
+  return `${parseInt(m)}/${parseInt(d)}/${y}`;
+}
+
+// ── CSV parser ────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.replace(/^﻿/, '').trim().split(/\r?\n/);
+  const hdrs = csvLine(lines[0]).map(h => h.trim());
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    const vals = csvLine(line);
+    return Object.fromEntries(hdrs.map((h, i) => [h, (vals[i] || '').trim()]));
+  });
+}
+
+function csvLine(line) {
+  const res = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+    else if (ch === ',' && !inQ) { res.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  res.push(cur);
+  return res;
+}
+
+// ── Data layer ────────────────────────────────────────────────
+let PEOPLE = [];
+let RUNS   = {}; // { name: { day: { seconds, timestamp } } }
+
+async function fetchCSV(url) {
+  const r = await fetch(url + '&cachebust=' + Date.now());
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return parseCSV(await r.text());
+}
+
+async function loadData() {
+  const [peopleRows, logRows] = await Promise.all([
+    fetchCSV(PEOPLE_CSV),
+    fetchCSV(LOG_CSV)
+  ]);
+
+  // People: unique names, preserving order of first sign-up
+  const seen = new Set();
+  PEOPLE = [];
+  peopleRows.forEach(r => {
+    const name = r.fullName && r.fullName.trim();
+    if (name && !seen.has(name)) { seen.add(name); PEOPLE.push(name); }
+  });
+
+  // Log: for each person+day keep the latest submission by Timestamp
+  RUNS = {};
+  logRows.forEach(r => {
+    const name = r.person && r.person.trim();
+    const day  = getSeptDay(r.date);
+    if (!name || !day) return;
+    const sec  = toSeconds(r.minutes || 0, r.seconds || 0);
+    const ts   = r.Timestamp || '';
+    if (!RUNS[name]) RUNS[name] = {};
+    if (!RUNS[name][day] || ts > RUNS[name][day].ts) {
+      RUNS[name][day] = { sec, ts };
+    }
+  });
+}
+
+// ── Form population ───────────────────────────────────────────
+function populateLogForm() {
+  // Date: today
+  const t = today();
+  const mm = String(t.getMonth() + 1).padStart(2, '0');
+  const dd = String(t.getDate()).padStart(2, '0');
+  document.getElementById('logDate').value = `${t.getFullYear()}-${mm}-${dd}`;
+
+  // Name dropdown
+  const sel = document.getElementById('logName');
+  sel.innerHTML = PEOPLE.length
+    ? '<option value="">Select runner…</option>' + PEOPLE.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('')
+    : '<option value="">No runners yet — sign up first</option>';
+
+  // Minutes 5–20
+  const minSel = document.getElementById('logMin');
+  minSel.innerHTML = '';
+  for (let m = 5; m <= 20; m++) {
+    minSel.innerHTML += `<option value="${m}"${m === 10 ? ' selected' : ''}>${m}</option>`;
+  }
+
+  // Seconds 0–59
+  const secSel = document.getElementById('logSec');
+  secSel.innerHTML = '';
+  for (let s = 0; s <= 59; s++) {
+    secSel.innerHTML += `<option value="${s}"${s === 30 ? ' selected' : ''}>${String(s).padStart(2, '0')}</option>`;
+  }
+}
+
+function esc(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── Tracker renderer ──────────────────────────────────────────
+function buildTracker() {
+  const todayDay = today().getMonth() === SEPT_MONTH && today().getFullYear() === SEPT_YEAR
+    ? today().getDate() : null;
+
+  // Sort: most days run (desc), then alpha
+  const sorted = [...PEOPLE].sort((a, b) => {
+    const da = Object.keys(RUNS[a] || {}).length;
+    const db = Object.keys(RUNS[b] || {}).length;
+    return db - da || a.localeCompare(b);
+  });
+
+  if (!sorted.length) {
+    document.getElementById('tracker').innerHTML =
+      '<div class="loading" style="animation:none">No runners yet. Be the first to sign up!</div>';
+    return;
+  }
+
+  document.getElementById('tracker').innerHTML = sorted.map(name => {
+    const runs = RUNS[name] || {};
+    const days = Object.keys(runs).map(Number);
+    const doneDays = days.length;
+
+    // Dots
+    const dots = Array.from({length: 30}, (_, i) => {
+      const d = i + 1;
+      let cls = 'day-dot ';
+      if (d > (todayDay || 30)) cls += 'future';
+      else if (runs[d]) cls += 'done';
+      else cls += 'miss';
+      if (d === todayDay) cls += ' today';
+      return `<div class="${cls}" title="Sept ${d}"><span class="day-num">${d}</span></div>`;
+    }).join('');
+
+    // Fastest time
+    let fastSec = null, fastDay = null;
+    days.forEach(d => {
+      if (fastSec === null || runs[d].sec < fastSec) { fastSec = runs[d].sec; fastDay = d; }
+    });
+
+    // Sparkline
+    const spark = buildSparkline(runs);
+
+    const fastStr = fastSec !== null ? fmtTime(fastSec) : '—';
+    const fastDateStr = fastDay ? `Sept ${fastDay}` : '';
+
+    return `<div class="runner-row" id="row-${esc(name.replace(/\s+/g,'_'))}">
+      <div class="runner-head" onclick="toggleRow(this)">
+        <div class="runner-name">${esc(name)}</div>
+        <div class="cal-scroll"><div class="cal-track">${dots}</div></div>
+        <div class="runner-stats">
+          <div class="done-count">${doneDays}</div>
+          <div>${doneDays === 1 ? 'day' : 'days'}</div>
+        </div>
+      </div>
+      <div class="runner-expand">
+        <div class="expand-grid">
+          <div class="expand-stat">
+            <div class="expand-stat-label">Fastest Mile</div>
+            <div class="expand-stat-val">${fastStr}</div>
+            <div class="expand-stat-sub">${fastDateStr}</div>
+          </div>
+          <div class="spark-wrap">
+            <div class="expand-stat-label">Time Progress <span style="color:var(--ink-soft);font-size:9px">(lower = faster)</span></div>
+            ${spark}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildSparkline(runs) {
+  const pts = Object.keys(runs).map(Number).sort((a,b)=>a-b)
+    .map(d => ({ d, sec: runs[d].sec }));
+
+  if (!pts.length) return '<div class="spark-empty">No runs yet</div>';
+  if (pts.length === 1) return `<div class="spark-empty" style="padding-top:8px;font-size:14px;color:var(--green)">${fmtTime(pts[0].sec)}</div>`;
+
+  const W = 240, H = 56, P = 6;
+  const secs = pts.map(p => p.sec);
+  const minS = Math.min(...secs), maxS = Math.max(...secs);
+  const range = maxS - minS || 1;
+
+  const coords = pts.map((p, i) => {
+    const x = P + (i / (pts.length - 1)) * (W - P * 2);
+    // Invert Y so faster = higher visually
+    const y = P + ((p.sec - minS) / range) * (H - P * 2);
+    return { x, y, p };
+  });
+
+  const polyline = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(' ');
+  const circles = coords.map(c =>
+    `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="3" fill="var(--green)">
+       <title>Sept ${c.p.d}: ${fmtTime(c.p.sec)}</title>
+     </circle>`
+  ).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <polyline points="${polyline}" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linejoin="round" opacity=".7"/>
+    ${circles}
+  </svg>`;
+}
+
+function toggleRow(head) {
+  head.closest('.runner-row').classList.toggle('expanded');
+}
+
+// ── Form submissions ───────────────────────────────────────────
+async function submitSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  if (!name) { toast('Enter your full name', true); return; }
+
+  const body = new URLSearchParams();
+  body.set(PEOPLE_NAME_FIELD, name);
+
+  try {
+    await fetch(PEOPLE_FORM_URL, { method: 'POST', mode: 'no-cors', body });
+    toast('Signed up! Reload in a moment to see your name.');
+    closeSignup();
+    document.getElementById('signupName').value = '';
+    setTimeout(refresh, 3000);
+  } catch(e) {
+    toast('Submission failed — try again', true);
+  }
+}
+
+async function submitLog() {
+  const name = document.getElementById('logName').value;
+  const date = document.getElementById('logDate').value;
+  const min  = document.getElementById('logMin').value;
+  const sec  = document.getElementById('logSec').value;
+
+  if (!name) { toast('Select a runner', true); return; }
+  if (!date) { toast('Pick a date', true); return; }
+
+  const body = new URLSearchParams();
+  body.set(LOG_PERSON_FIELD, name);
+  body.set(LOG_DATE_FIELD,   dateInputToForm(date));
+  body.set(LOG_MIN_FIELD,    min);
+  body.set(LOG_SEC_FIELD,    sec);
+
+  try {
+    await fetch(LOG_FORM_URL, { method: 'POST', mode: 'no-cors', body });
+    toast(`Run logged: ${name} · ${min}:${String(sec).padStart(2,'0')}`);
+    setTimeout(refresh, 3000);
+  } catch(e) {
+    toast('Submission failed — try again', true);
+  }
+}
+
+// ── Modal ─────────────────────────────────────────────────────
+function openSignup()  { document.getElementById('signupModal').classList.add('open'); }
+function closeSignup() { document.getElementById('signupModal').classList.remove('open'); }
+document.getElementById('signupModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSignup();
+});
+
+// ── Toast ─────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, err = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────
+async function refresh() {
+  try {
+    await loadData();
+    populateLogForm();
+    buildTracker();
+  } catch(e) {
+    document.getElementById('tracker').innerHTML =
+      `<div class="loading" style="animation:none;color:#FF3B30">Could not load data — check connection</div>`;
+  }
+}
+
+refresh();
+</script>
+</body>
+</html>
