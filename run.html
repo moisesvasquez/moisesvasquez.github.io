@@ -168,6 +168,30 @@ select option { background: #0a0a10; }
 }
 .today-pill.miss::before { content: '○'; font-size: 8px; }
 
+/* Date pager */
+.date-pager {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  margin: 0 0 16px;
+}
+.pager-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--ink-mid); border-radius: 8px; width: 32px; height: 32px;
+  font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .12s;
+}
+.pager-btn:hover:not(:disabled) { background: var(--border); color: var(--ink); }
+.pager-btn:disabled { opacity: .3; cursor: default; }
+.pager-label {
+  font-size: 13px; font-weight: 600; color: var(--ink); min-width: 80px; text-align: center;
+}
+
+/* Streak badge */
+.streak-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600; color: var(--ink-mid);
+  flex-shrink: 0; white-space: nowrap;
+}
+
 .runner-expand {
   max-height: 0; overflow: hidden;
   transition: max-height .35s ease, padding .35s ease;
@@ -307,7 +331,13 @@ select option { background: #0a0a10; }
 
   <!-- Tracker -->
   <div class="tracker-title">Team Progress</div>
-  <p style="text-align:center;font-style:italic;color:var(--ink-soft);font-size:13px;margin:-8px 0 16px"><em>Run submissions can take some time to reflect. Wait a minute and then refresh the page.</em></p>
+  <p style="text-align:center;font-style:italic;color:var(--ink-soft);font-size:13px;margin:-8px 0 10px"><em>Run submissions can take some time to reflect.<br>Wait a minute and then refresh the page.</em></p>
+
+  <div class="date-pager">
+    <button class="pager-btn" id="pagerPrev" onclick="shiftView(-1)">&#9664;</button>
+    <div class="pager-label" id="pagerLabel">Today</div>
+    <button class="pager-btn" id="pagerNext" onclick="shiftView(1)">&#9654;</button>
+  </div>
 
   <div id="tracker">
     <div class="loading">Loading team data</div>
@@ -513,15 +543,52 @@ function esc(s) {
   return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// ── Date pager state ──────────────────────────────────────────
+let viewDay = null;
+
+function getTodayDay() {
+  return today().getMonth() === SEPT_MONTH && today().getFullYear() === SEPT_YEAR
+    ? today().getDate() : null;
+}
+
+function shiftView(delta) {
+  const td = getTodayDay();
+  viewDay = Math.max(1, Math.min(td || 30, (viewDay || td || 1) + delta));
+  buildTracker();
+}
+
+function updatePager(todayDay) {
+  const label = document.getElementById('pagerLabel');
+  const prev  = document.getElementById('pagerPrev');
+  const next  = document.getElementById('pagerNext');
+  if (!label) return;
+  label.textContent = viewDay === todayDay ? 'Today' : `Sep ${viewDay}`;
+  prev.disabled = viewDay <= 1;
+  next.disabled = !todayDay || viewDay >= todayDay;
+}
+
+function calcStreak(runs, todayDay) {
+  if (!todayDay) return 0;
+  // If ran today, count back from today; otherwise count back from yesterday
+  const start = runs[todayDay] ? todayDay : todayDay - 1;
+  let streak = 0;
+  for (let d = start; d >= 1; d--) {
+    if (runs[d]) streak++;
+    else break;
+  }
+  return streak;
+}
+
 // ── Tracker renderer ──────────────────────────────────────────
 function buildTracker() {
-  const todayDay = today().getMonth() === SEPT_MONTH && today().getFullYear() === SEPT_YEAR
-    ? today().getDate() : null;
+  const todayDay = getTodayDay();
+  if (viewDay === null) viewDay = todayDay || 1;
+  updatePager(todayDay);
 
-  // Sort: not completed today first (accountability), then alpha within each group
+  // Sort: not completed on viewDay first, then alpha
   const sorted = [...PEOPLE].sort((a, b) => {
-    const aDone = todayDay && !!(RUNS[a] || {})[todayDay] ? 1 : 0;
-    const bDone = todayDay && !!(RUNS[b] || {})[todayDay] ? 1 : 0;
+    const aDone = !!(RUNS[a] || {})[viewDay] ? 1 : 0;
+    const bDone = !!(RUNS[b] || {})[viewDay] ? 1 : 0;
     return aDone - bDone || a.localeCompare(b);
   });
 
@@ -535,10 +602,16 @@ function buildTracker() {
     const runs = RUNS[name] || {};
     const days = Object.keys(runs).map(Number);
 
-    // Today pill
-    const ranToday = todayDay && !!runs[todayDay];
-    const pillCls  = ranToday ? 'today-pill done' : 'today-pill miss';
-    const pillText = ranToday ? 'Today Completed' : 'Today Not Completed Yet';
+    // Status pill for viewDay
+    const ranViewDay = !!runs[viewDay];
+    const pillCls  = ranViewDay ? 'today-pill done' : 'today-pill miss';
+    const pillText = ranViewDay ? 'Completed' : 'Not Completed';
+
+    // Streak (always based on real today)
+    const streak = calcStreak(runs, todayDay);
+    const streakHtml = streak > 0
+      ? `<div class="streak-badge">🔥 ${streak}</div>`
+      : '';
 
     // Fastest time
     let fastSec = null, fastDay = null;
@@ -551,6 +624,7 @@ function buildTracker() {
     return `<div class="runner-row" id="row-${esc(name.replace(/\s+/g,'_'))}">
       <div class="runner-head" onclick="toggleRow(this)">
         <div class="runner-name">${esc(name)}</div>
+        ${streakHtml}
         <div class="${pillCls}">${pillText}</div>
       </div>
       <div class="runner-expand">
