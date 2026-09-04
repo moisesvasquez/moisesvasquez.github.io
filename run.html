@@ -10,7 +10,7 @@ permalink: /run/
 <title>September Run Challenge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root {
   --green:      #00E676;
@@ -216,7 +216,8 @@ select option { background: #0a0a10; }
 .cal-cell.empty { background: none; }
 .cal-cell.done {
   background: var(--green); display: flex; align-items: center;
-  justify-content: center; font-size: 11px; font-weight: 700; color: #000;
+  justify-content: center; font-size: 9px; font-weight: 400; color: #000;
+  font-family: 'Share Tech Mono', monospace;
   box-shadow: 0 0 8px var(--green-glow);
 }
 .cal-cell.miss {
@@ -663,7 +664,9 @@ function buildCalGrid(runs, todayDay) {
     else if (past || isToday) cls += ' miss';
     else                cls += ' future';
     if (isToday)        cls += ' today-ring';
-    cells.push(`<div class="${cls}">${d}</div>`);
+    const label = runs[d] ? fmtTime(runs[d].sec) : d;
+    const title = runs[d] ? `Sept ${d} · ${fmtTime(runs[d].sec)}` : `Sept ${d}`;
+    cells.push(`<div class="${cls}" title="${title}">${label}</div>`);
   }
   return `<div class="cal-grid">${headers}${cells.join('')}</div>`;
 }
