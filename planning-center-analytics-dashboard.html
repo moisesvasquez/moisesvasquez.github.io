@@ -1,0 +1,701 @@
+---
+layout: null
+permalink: /planning-center-analytics-dashboard/
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plumbline — Custom Planning Center Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0F3D2E; --green-800:#14532D; --green-700:#1B7A4B;
+  --green-600:#22A05B; --green-400:#5FCB8C; --green-200:#BFEBD2; --green-50:#EEF9F2;
+  --ink:#14181F; --ink-2:#5A6472; --ink-3:#98A2B0;
+  --line:#E9ECEF; --card:#FFFFFF; --shell:#F5F6F7;
+  --amber-bg:#FEF6E7; --amber-fg:#B27400;
+  --rose-bg:#FDEDEE;  --rose-fg:#C0333C;
+  --blue-bg:#EDF3FE;  --blue-fg:#2B62C4;
+  --r-lg:26px; --r-md:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  background:linear-gradient(160deg,#E7E9EA,#F2F3F4 40%,#E9EBEC);
+  color:var(--ink);padding:26px;min-height:100vh;-webkit-font-smoothing:antialiased}
+.shell{max-width:1560px;margin:0 auto;background:var(--shell);border-radius:var(--r-lg);
+  padding:16px;display:grid;grid-template-columns:250px 1fr;gap:16px;
+  box-shadow:0 30px 70px -20px rgba(15,61,46,.22)}
+
+.side{background:var(--card);border-radius:22px;padding:24px 16px;display:flex;flex-direction:column;min-height:calc(100vh - 84px)}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 26px}
+.brand b{font-size:19px;font-weight:800;letter-spacing:-.4px}
+.navlabel{font-size:10.5px;font-weight:700;letter-spacing:1.3px;color:var(--ink-3);padding:0 10px;margin:14px 0 8px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;border:0;background:none;font:inherit;
+  font-size:14.5px;font-weight:600;color:var(--ink-2);padding:11px 10px;border-radius:11px;
+  cursor:pointer;position:relative;text-align:left;transition:background .16s,color .16s}
+.nav button:hover{background:var(--green-50);color:var(--green-800)}
+.nav button.on{color:var(--ink);background:var(--green-50)}
+.nav button.on::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--green-700)}
+.nav .pill{margin-left:auto;background:var(--ink);color:#fff;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px}
+.nav .pill.alert{background:var(--rose-fg)}
+.nav svg{flex:none;opacity:.85}
+.side-foot{margin-top:auto;background:linear-gradient(150deg,#0B2C21,#14532D 55%,#0B2C21);border-radius:18px;padding:20px 18px;color:#fff;position:relative;overflow:hidden}
+.side-foot::after{content:"";position:absolute;inset:-40% -60% auto auto;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(95,203,140,.35),transparent 65%)}
+.side-foot h4{font-size:15.5px;font-weight:800;line-height:1.3;position:relative}
+.side-foot p{font-size:11.5px;color:#B7D8C5;margin:6px 0 14px;position:relative}
+.side-foot a{display:block;text-align:center;background:var(--green-600);color:#fff;text-decoration:none;font-size:13px;font-weight:700;padding:10px;border-radius:999px;position:relative}
+
+.main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.topbar{background:var(--card);border-radius:22px;padding:14px 18px;display:flex;align-items:center;gap:16px}
+.search{flex:1;display:flex;align-items:center;gap:10px;background:var(--shell);border-radius:12px;padding:11px 14px;max-width:480px}
+.search input{border:0;background:none;font:inherit;font-size:14px;flex:1;outline:none;color:var(--ink)}
+.search input::placeholder{color:var(--ink-3)}
+.kbd{font-size:11px;font-weight:700;color:var(--ink-2);background:#fff;border-radius:6px;padding:3px 7px}
+.icobtn{width:42px;height:42px;border-radius:50%;background:var(--shell);border:0;display:grid;place-items:center;cursor:pointer}
+.icobtn:hover{background:var(--green-50)}
+.me{display:flex;align-items:center;gap:11px;margin-left:4px}
+.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(140deg,var(--green-400),var(--green-800));color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.me small{display:block;font-size:11.5px;color:var(--ink-3);font-weight:500}
+.me b{font-size:14px;font-weight:700}
+
+.page{background:var(--card);border-radius:22px;padding:26px;flex:1}
+.phead{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.phead h1{font-size:34px;font-weight:800;letter-spacing:-1px}
+.phead p{color:var(--ink-2);font-size:14px;margin-top:5px}
+.phead .acts{margin-left:auto;display:flex;gap:10px}
+.btn{border:0;font:inherit;font-size:13.5px;font-weight:700;padding:13px 22px;border-radius:999px;cursor:pointer}
+.btn.solid{background:var(--green-800);color:#fff}
+.btn.solid:hover{background:var(--green-900)}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--green-600);color:var(--green-800)}
+
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);padding:20px}
+
+.stat{position:relative}
+.stat h3{font-size:14.5px;font-weight:700;padding-right:34px}
+.stat .arrow{position:absolute;top:18px;right:18px;width:30px;height:30px;border-radius:50%;border:1.4px solid var(--line);display:grid;place-items:center;color:var(--ink-2)}
+.stat .val{font-size:40px;font-weight:800;letter-spacing:-1.6px;margin:14px 0 10px;line-height:1}
+.stat .val span{font-size:20px;font-weight:700;letter-spacing:-.5px;color:var(--ink-2)}
+.stat .foot{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);font-weight:500}
+.chip{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:6px;background:var(--green-50);color:var(--green-700)}
+.chip.dn{background:var(--rose-bg);color:var(--rose-fg)}
+.chip.flat{background:var(--shell);color:var(--ink-2)}
+.stat.hero{background:linear-gradient(150deg,#12503A,#1B7A4B 60%,#12503A);border-color:transparent;color:#fff;overflow:hidden}
+.stat.hero::after{content:"";position:absolute;right:-70px;bottom:-90px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.13),transparent 62%)}
+.stat.hero .arrow{border-color:rgba(255,255,255,.4);color:#fff;background:rgba(255,255,255,.12)}
+.stat.hero .foot{color:#BEE5CE}
+.stat.hero .chip{background:rgba(255,255,255,.18);color:#DFF5E8}
+.stat.hero .val span{color:#BEE5CE}
+
+.chead{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.chead h3{font-size:16.5px;font-weight:800;letter-spacing:-.3px}
+.chead .r{margin-left:auto;display:flex;gap:8px;align-items:center}
+.sub{font-size:12px;color:var(--ink-3);font-weight:500;margin-bottom:16px;line-height:1.5}
+.tag{font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--shell);color:var(--ink-2);border:0;font-family:inherit;cursor:pointer}
+.tag.on{background:var(--green-800);color:#fff}
+.tag.warn{background:var(--amber-bg);color:var(--amber-fg)}
+.tag.ok{background:var(--green-50);color:var(--green-700)}
+.tag.bad{background:var(--rose-bg);color:var(--rose-fg)}
+.tag.info{background:var(--blue-bg);color:var(--blue-fg)}
+
+.bars{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;height:180px;padding-top:24px}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;height:100%;justify-content:flex-end}
+.btrack{width:100%;max-width:56px;flex:1;display:flex;align-items:flex-end}
+.bfill{width:100%;border-radius:999px;background:var(--green-600);position:relative}
+.bfill.mute{background:repeating-linear-gradient(-45deg,#E7EAEC 0 5px,#F4F6F7 5px 10px)}
+.bfill.dark{background:var(--green-900)}
+.bfill.lite{background:var(--green-400)}
+.bfill .bub{position:absolute;top:-27px;left:50%;transform:translateX(-50%);background:#fff;border:1.4px solid var(--line);font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:7px;white-space:nowrap}
+.blab{font-size:11.5px;font-weight:700;color:var(--ink-2)}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.legend div{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:var(--ink-2)}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--green-600)}
+.dot.d2{background:var(--green-900)}.dot.d3{background:var(--green-400)}
+.dot.d4{background:repeating-linear-gradient(-45deg,#E1E5E7 0 3px,#F2F4F5 3px 6px)}
+
+.rows{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0;padding-bottom:0}
+.row:first-child{padding-top:4px}
+.ava{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:800;color:#fff;flex:none}
+.row .who{min-width:0;flex:1}
+.row .who b{font-size:14px;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .who small{font-size:12px;color:var(--ink-2);font-weight:500}
+.row .who small em{font-style:normal;font-weight:700;color:var(--ink)}
+
+.pline{height:9px;border-radius:999px;background:var(--shell);overflow:hidden}
+.pline i{display:block;height:100%;border-radius:999px;background:var(--green-600)}
+.pline i.dark{background:var(--green-900)}
+.pline i.warn{background:#E8A33D}
+.pline i.bad{background:#D9534F}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:10.5px;letter-spacing:.9px;font-weight:700;color:var(--ink-3);padding:0 12px 11px 0;border-bottom:1.5px solid var(--line);white-space:nowrap}
+td{padding:13px 12px 13px 0;border-bottom:1px solid var(--line);font-size:13.5px;font-weight:600;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.mut{color:var(--ink-2);font-weight:500}
+.nm{display:flex;align-items:center;gap:10px}
+
+.gwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0}
+.gauge{position:relative;width:250px}
+.gtext{position:absolute;left:0;right:0;bottom:14px;text-align:center}
+.gtext b{font-size:44px;font-weight:800;letter-spacing:-1.8px;display:block;line-height:1}
+.gtext small{font-size:12px;color:var(--ink-2);font-weight:600}
+
+.cov{display:flex;align-items:center;gap:10px;background:var(--amber-bg);color:var(--amber-fg);border-radius:11px;padding:10px 13px;font-size:12px;font-weight:600;margin-bottom:16px;line-height:1.4}
+.cov svg{flex:none}
+.cov.info{background:var(--blue-bg);color:var(--blue-fg)}
+
+/* streak dots */
+.streak{display:flex;gap:3px}
+.streak i{width:9px;height:16px;border-radius:3px;background:var(--green-600);display:block}
+.streak i.off{background:var(--line)}
+.streak i.hot{background:var(--rose-fg)}
+
+/* conflict rail */
+.conf{display:flex;flex-direction:column;gap:10px}
+.confrow{display:grid;grid-template-columns:132px 1fr;gap:12px;align-items:center}
+.confrow .lbl{font-size:12.5px;font-weight:700}
+.confrow .lbl small{display:block;font-size:11px;color:var(--ink-2);font-weight:500}
+.slots{position:relative;height:34px;background:var(--shell);border-radius:9px;overflow:hidden}
+.slot{position:absolute;top:5px;height:24px;border-radius:6px;font-size:10.5px;font-weight:700;color:#fff;display:grid;place-items:center;padding:0 6px;white-space:nowrap;overflow:hidden}
+.slot.a{background:var(--green-700)}
+.slot.b{background:var(--blue-fg)}
+.slot.clash{background:var(--rose-fg);box-shadow:0 0 0 2px #fff}
+.timeline{display:grid;grid-template-columns:132px 1fr;gap:12px;margin-bottom:6px}
+.ticks{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--ink-3)}
+
+.hide{display:none}
+.mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.mini span{font-size:11px;font-weight:700;padding:5px 10px;border-radius:8px;background:var(--shell);color:var(--ink-2)}
+.mini span b{color:var(--ink)}
+
+@media(max-width:1200px){.shell{grid-template-columns:1fr}.side{min-height:0}.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
+@media(max-width:640px){body{padding:10px}.g4{grid-template-columns:1fr}.phead h1{font-size:26px}.page{padding:18px}.confrow,.timeline{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+:focus-visible{outline:2.5px solid var(--green-600);outline-offset:2px;border-radius:6px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="side">
+  <div class="brand">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" stroke="#1B7A4B" stroke-width="2.4"/><circle cx="16" cy="16" r="8.5" stroke="#1B7A4B" stroke-width="2.4"/><circle cx="16" cy="16" r="3" fill="#1B7A4B"/></svg>
+    <b>Plumbline</b>
+  </div>
+
+  <div class="navlabel">MEASURE</div>
+  <nav class="nav">
+    <button class="on" data-p="overview"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Overview</button>
+    <button data-p="attendance"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M6 20V10M11 20V5M16 20v-8M21 20v-4"/></svg>Attendance</button>
+    <button data-p="discipleship"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M12 7.5v4m0 0L7.5 15.5M12 11.5l4.5 4"/></svg>Discipleship</button>
+    <button data-p="groups"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 5.5a3.2 3.2 0 010 5.6M18 19c0-2.4-.9-4-2.4-4.6"/></svg>Groups</button>
+    <button data-p="workflows"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="6" rx="1.8"/><rect x="14" y="15" width="7" height="6" rx="1.8"/><path d="M6.5 9v6.5a2.5 2.5 0 002.5 2.5H14"/></svg>Workflows<span class="pill">18</span></button>
+    <button data-p="serving"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.7-7.5-9.7A4.3 4.3 0 0112 8.6a4.3 4.3 0 017.5 2.7c0 5-7.5 9.7-7.5 9.7z"/><path d="M9 3.5h6"/></svg>Serving<span class="pill alert">9</span></button>
+    <button data-p="care"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5"/></svg>Care List<span class="pill">34</span></button>
+  </nav>
+
+  <div class="navlabel">GENERAL</div>
+  <nav class="nav">
+    <button data-p="settings"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1v.2a2 2 0 11-4 0v-.1a1.6 1.6 0 00-2.7-1.2l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003.7 15a2 2 0 110-4h.2a1.6 1.6 0 001.1-2.7l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 009 4.6a2 2 0 114 0v.2a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 001.1 2.7 2 2 0 110 4z"/></svg>Definitions</button>
+    <button data-p="sync"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11A8 8 0 006.3 5.7L3 9M4 13a8 8 0 0013.7 5.3L21 15"/><path d="M21 4v5h-5M3 20v-5h5"/></svg>Sync status</button>
+  </nav>
+
+  <div class="side-foot">
+    <h4>Snapshots are running</h4>
+    <p>Weekly history captured since week one. Trend metrics unlock as it accumulates.</p>
+    <a href="#" onclick="return false">View snapshot log</a>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="search">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#98A2B0" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input placeholder="Search people, groups, metrics" aria-label="Search">
+      <span class="kbd">⌘ K</span>
+    </div>
+    <button class="icobtn" aria-label="Messages"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#14181F" stroke-width="1.9"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg></button>
+    <button class="icobtn" aria-label="Notifications"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#14181F" stroke-width="1.9"><path d="M18 9a6 6 0 10-12 0c0 6-2 7-2 7h16s-2-1-2-7z"/><path d="M13.7 20a2 2 0 01-3.4 0"/></svg></button>
+    <div class="me"><div class="av">MV</div><div><b>Moises Vasquez</b><small>Demo data · not a live church</small></div></div>
+  </div>
+
+  <div class="page">
+
+  <!-- OVERVIEW -->
+  <section data-page="overview">
+    <div class="phead">
+      <div><h1>Overview</h1><p>Rolling 90 days ending Sun, Aug 2 · synced from Planning Center 4:02 AM</p></div>
+      <div class="acts"><button class="btn ghost">Export</button><button class="btn solid">+ Add metric</button></div>
+    </div>
+
+    <div class="grid g4">
+      <div class="card stat hero">
+        <div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div>
+        <h3>Active people</h3><div class="val">1,284</div>
+        <div class="foot"><span class="chip">▲ 46</span> Attended, gave or grouped in 90d</div>
+      </div>
+      <div class="card stat"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>Avg weekly attendance</h3><div class="val">742</div><div class="foot"><span class="chip">▲ 3.1%</span> 13-week rolling</div></div>
+      <div class="card stat"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>Group connection rate</h3><div class="val">38.4<span>%</span></div><div class="foot"><span class="chip dn">▼ 1.8%</span> 84% of groups reporting</div></div>
+      <div class="card stat"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>% congregation discipled</h3><div class="val">17.0<span>%</span></div><div class="foot"><span class="chip">▲ 0.9%</span> 218 of 1,284 active</div></div>
+    </div>
+
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card" style="grid-column:span 2">
+        <div class="chead"><h3>Attendance frequency mix</h3><div class="r"><button class="tag on">8 weeks</button><button class="tag">26 weeks</button></div></div>
+        <p class="sub">How often active attenders showed up. Headcount can hold flat while this shifts left.</p>
+        <div class="bars">
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:34%"></div></div><div class="blab">1x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill" style="height:58%"></div></div><div class="blab">2x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill lite" style="height:71%"><div class="bub">24%</div></div></div><div class="blab">3x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill dark" style="height:88%"></div></div><div class="blab">4x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:62%"></div></div><div class="blab">5x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:41%"></div></div><div class="blab">6–7x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:29%"></div></div><div class="blab">8x</div></div>
+        </div>
+        <div class="mini"><span>Median <b>3.2 services / 8 wks</b></span><span>Prior period <b>3.6</b></span><span>Shift <b>−11%</b></span></div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>This week</h3></div>
+        <p class="sub">Items waiting on a person, not a report.</p>
+        <div class="rows">
+          <div class="row"><div class="ava" style="background:#C0333C">34</div><div class="who"><b>Care follow-ups</b><small>12 unassigned</small></div></div>
+          <div class="row"><div class="ava" style="background:#B27400">18</div><div class="who"><b>Stalled workflow cards</b><small>&gt;14 days in stage</small></div></div>
+          <div class="row"><div class="ava" style="background:#2B62C4">9</div><div class="who"><b>Serving conflicts</b><small>4 double-booked Sunday</small></div></div>
+          <div class="row"><div class="ava" style="background:#1B7A4B">27</div><div class="who"><b>New people last 7d</b><small>9 not yet contacted</small></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card">
+        <div class="chead"><h3>Ministry overlap</h3></div>
+        <p class="sub">Share of active attenders in each track.</p>
+        <div class="rows">
+          <div class="row" style="display:block;padding-top:6px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:7px"><span>In a group</span><span>38%</span></div><div class="pline"><i style="width:38%"></i></div></div>
+          <div class="row" style="display:block"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:7px"><span>Serving</span><span>19%</span></div><div class="pline"><i class="dark" style="width:19%"></i></div></div>
+          <div class="row" style="display:block"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:7px"><span>In a 1:1</span><span>17%</span></div><div class="pline"><i style="width:17%"></i></div></div>
+          <div class="row" style="display:block"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:7px"><span>None of the three</span><span>44%</span></div><div class="pline"><i class="warn" style="width:44%"></i></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>Discipleship snapshot</h3><div class="r"><button class="tag" data-jump="discipleship">Open →</button></div></div>
+        <p class="sub">Live from the Discipleship Hub.</p>
+        <div class="rows">
+          <div class="row"><div class="who"><b>Multiplier rate</b><small><em>0.42</em> disciples who now disciple</small></div><span class="tag ok">▲ .06</span></div>
+          <div class="row"><div class="who"><b>People in 1:1 relationships</b><small><em>218</em> across 109 pairs</small></div><span class="tag ok">▲ 14</span></div>
+          <div class="row"><div class="who"><b>Relationship health</b><small><em>68%</em> met in last 30 days</small></div><span class="tag warn">▼ 3</span></div>
+          <div class="row"><div class="who"><b>Deepest generation</b><small><em>Gen 4</em> — Marcos → Luis → Andre → Kyle</small></div><span class="tag info">new</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>Serving load</h3><div class="r"><button class="tag" data-jump="serving">Open →</button></div></div>
+        <p class="sub">Concentration and conflict flags.</p>
+        <div class="rows">
+          <div class="row"><div class="who"><b>Long streaks</b><small><em>14</em> serving 6+ weeks straight</small></div><span class="tag bad">burnout</span></div>
+          <div class="row"><div class="who"><b>Multi-ministry</b><small><em>23</em> on 3+ teams at once</small></div><span class="tag warn">watch</span></div>
+          <div class="row"><div class="who"><b>Double-booked</b><small><em>4</em> conflicts this Sunday</small></div><span class="tag bad">fix now</span></div>
+          <div class="row"><div class="who"><b>Slot concentration</b><small><em>34%</em> of slots by 3+/mo servers</small></div><span class="tag warn">▲ 4</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATTENDANCE -->
+  <section data-page="attendance" class="hide">
+    <div class="phead">
+      <div><h1>Attendance</h1><p>Canonical definition: distinct Check-Ins records per service date, adults + kids.</p></div>
+      <div class="acts"><button class="btn ghost">Change definition</button><button class="btn solid">Export</button></div>
+    </div>
+
+    <div class="grid g4">
+      <div class="card stat hero"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>Avg weekly</h3><div class="val">742</div><div class="foot"><span class="chip">▲ 3.1%</span> 13-week rolling</div></div>
+      <div class="card stat"><h3>Distinct attenders (90d)</h3><div class="val">1,106</div><div class="foot"><span class="chip">▲ 52</span> unique people</div></div>
+      <div class="card stat"><h3>Median frequency</h3><div class="val">3.2<span>/8wk</span></div><div class="foot"><span class="chip dn">▼ 0.4</span> engagement softening</div></div>
+      <div class="card stat"><h3>Kids share</h3><div class="val">22.6<span>%</span></div><div class="foot"><span class="chip">▲ 1.2%</span> 168 avg per week</div></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card">
+        <div class="chead"><h3>Weekly attendance</h3><div class="r"><button class="tag on">13 wk</button><button class="tag">52 wk</button></div></div>
+        <p class="sub">Adults and kids, by service date.</p>
+        <div class="bars">
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:62%"></div></div><div class="blab">May</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill" style="height:70%"></div></div><div class="blab">Jun 1</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:58%"></div></div><div class="blab">Jun 15</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill dark" style="height:92%"><div class="bub">861</div></div></div><div class="blab">Jun 29</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:54%"></div></div><div class="blab">Jul 13</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill lite" style="height:74%"></div></div><div class="blab">Jul 27</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill" style="height:79%"></div></div><div class="blab">Aug 3</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>Frequency shift</h3><div class="r"><span class="tag info">8wk vs prior 8wk</span></div></div>
+        <p class="sub">Same people, compared window over window. This is where a soft decline shows up first.</p>
+        <div class="bars" style="height:150px">
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:34%"></div></div><div class="blab">1x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill" style="height:58%"></div></div><div class="blab">2x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill lite" style="height:71%"></div></div><div class="blab">3x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill dark" style="height:88%"><div class="bub">198</div></div></div><div class="blab">4x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:62%"></div></div><div class="blab">5x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:41%"></div></div><div class="blab">6–7x</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:29%"></div></div><div class="blab">8x</div></div>
+        </div>
+        <div class="mini"><span>Median now <b>3.2</b></span><span>Prior <b>3.6</b></span><span>Distinct attenders <b>1,106</b></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCIPLESHIP -->
+  <section data-page="discipleship" class="hide">
+    <div class="phead">
+      <div><h1>Discipleship</h1><p>Sourced from the Discipleship Hub, joined to PCO active-person status.</p></div>
+      <div class="acts"><button class="btn ghost">Generation tree</button><button class="btn solid">Open Hub →</button></div>
+    </div>
+
+    <div class="cov info"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>Pairing and meeting data comes from the Discipleship Hub. Only the congregation percentage is computed here, because its denominator lives in Planning Center.</div>
+
+    <div class="grid g4">
+      <div class="card stat hero">
+        <div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div>
+        <h3>Multiplier rate</h3><div class="val">0.42</div>
+        <div class="foot"><span class="chip">▲ .06</span> 46 of 109 now disciple</div>
+      </div>
+      <div class="card stat"><h3>People in 1:1 relationships</h3><div class="val">218</div><div class="foot"><span class="chip">▲ 14</span> 109 active pairs</div></div>
+      <div class="card stat"><h3>% of congregation discipled</h3><div class="val">17.0<span>%</span></div><div class="foot"><span class="chip">▲ 0.9%</span> 218 of 1,284 active</div></div>
+      <div class="card stat"><h3>Relationship health</h3><div class="val">68<span>%</span></div><div class="foot"><span class="chip dn">▼ 3%</span> met in last 30 days</div></div>
+    </div>
+
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card" style="grid-column:span 2">
+        <div class="chead"><h3>Multiplication by generation</h3><div class="r"><button class="tag on">All time</button><button class="tag">Last 12 mo</button></div></div>
+        <p class="sub">People per depth level. Gen 1 was discipled by a leader; Gen 4 means the chain survived three handoffs.</p>
+        <div class="bars">
+          <div class="bcol"><div class="btrack"><div class="bfill dark" style="height:94%"><div class="bub">98</div></div></div><div class="blab">Gen 1</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill" style="height:66%"></div></div><div class="blab">Gen 2</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill lite" style="height:34%"></div></div><div class="blab">Gen 3</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:12%"></div></div><div class="blab">Gen 4</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:3%"></div></div><div class="blab">Gen 5</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:0%"></div></div><div class="blab">Gen 6</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:0%"></div></div><div class="blab">Gen 7</div></div>
+        </div>
+        <div class="mini"><span>Deepest chain <b>Gen 4</b></span><span>Gen 2+ share <b>55%</b></span><span>Total ever discipled <b>109</b></span></div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>Relationship health</h3></div>
+        <p class="sub">Auto-status from meeting log recency.</p>
+        <div class="gwrap">
+          <div class="gauge">
+            <svg viewBox="0 0 250 140" width="250" height="140">
+              <path d="M25 130 A100 100 0 0 1 225 130" fill="none" stroke="#EFF1F2" stroke-width="26" stroke-linecap="round"/>
+              <path d="M25 130 A100 100 0 0 1 225 130" fill="none" stroke="#0F3D2E" stroke-width="26" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="132"/>
+              <path d="M25 130 A100 100 0 0 1 225 130" fill="none" stroke="#22A05B" stroke-width="26" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="196"/>
+            </svg>
+            <div class="gtext"><b>68%</b><small>met in the last 30 days</small></div>
+          </div>
+        </div>
+        <div class="legend"><div><span class="dot"></span>Active 74</div><div><span class="dot d2"></span>Slowing 21</div><div><span class="dot d4"></span>Stalled 14</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GROUPS -->
+  <section data-page="groups" class="hide">
+    <div class="phead">
+      <div><h1>Groups</h1><p>Group attendance from Planning Center Groups, joined to service attendance.</p></div>
+      <div class="acts"><button class="btn ghost">By campus</button><button class="btn solid">Export</button></div>
+    </div>
+
+    <div class="cov"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>84% of active groups logged attendance this period. A drop here looks identical to an engagement drop — check it first.</div>
+
+    <div class="grid g4">
+      <div class="card stat hero"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>Connection rate</h3><div class="val">38.4<span>%</span></div><div class="foot"><span class="chip dn">▼ 1.8%</span> 425 of 1,106 attenders</div></div>
+      <div class="card stat"><h3>Group health</h3><div class="val">63<span>%</span></div><div class="foot"><span class="chip">▲ 2%</span> present ÷ roster</div></div>
+      <div class="card stat"><h3>Active groups</h3><div class="val">48</div><div class="foot"><span class="chip">▲ 3</span> avg roster 11.4</div></div>
+      <div class="card stat"><h3>Reporting compliance</h3><div class="val">84<span>%</span></div><div class="foot"><span class="chip dn">▼ 6%</span> 6 groups silent 3+ wks</div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="chead"><h3>Group roster</h3><div class="r"><button class="tag on">All</button><button class="tag">Needs attention</button></div></div>
+      <table>
+        <thead><tr><th>GROUP</th><th>LEADER</th><th>ROSTER</th><th>AVG PRESENT</th><th>HEALTH</th><th>LAST LOGGED</th><th>STATUS</th></tr></thead>
+        <tbody>
+          <tr><td>Miramar Men's Tuesday</td><td class="mut">Marcos Peña</td><td class="mut">14</td><td class="mut">11.2</td><td><div class="pline" style="width:90px"><i style="width:80%"></i></div></td><td class="mut">Aug 4</td><td><span class="tag ok">Healthy</span></td></tr>
+          <tr><td>Young Marrieds</td><td class="mut">Andre &amp; Nia Lewis</td><td class="mut">18</td><td class="mut">12.6</td><td><div class="pline" style="width:90px"><i style="width:70%"></i></div></td><td class="mut">Aug 3</td><td><span class="tag ok">Healthy</span></td></tr>
+          <tr><td>Pembroke Pines Women</td><td class="mut">Tiffany Vasquez</td><td class="mut">16</td><td class="mut">10.1</td><td><div class="pline" style="width:90px"><i style="width:63%"></i></div></td><td class="mut">Aug 4</td><td><span class="tag ok">Healthy</span></td></tr>
+          <tr><td>Español — Familias</td><td class="mut">Luis Ortega</td><td class="mut">12</td><td class="mut">6.4</td><td><div class="pline" style="width:90px"><i class="warn" style="width:53%"></i></div></td><td class="mut">Jul 28</td><td><span class="tag warn">Slipping</span></td></tr>
+          <tr><td>Weston Young Adults</td><td class="mut">Kyle Osborne</td><td class="mut">21</td><td class="mut">9.8</td><td><div class="pline" style="width:90px"><i class="warn" style="width:47%"></i></div></td><td class="mut">Jul 30</td><td><span class="tag warn">Slipping</span></td></tr>
+          <tr><td>Recovery Thursday</td><td class="mut">Samuel Mbeki</td><td class="mut">9</td><td class="mut">—</td><td><div class="pline" style="width:90px"><i class="bad" style="width:8%"></i></div></td><td class="mut">Jul 9</td><td><span class="tag bad">Not reporting</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- WORKFLOWS -->
+  <section data-page="workflows" class="hide">
+    <div class="phead">
+      <div><h1>Workflows</h1><p>Card state, stage timing and assignee load across 7 active workflows.</p></div>
+      <div class="acts"><button class="btn ghost">By assignee</button><button class="btn solid">Export</button></div>
+    </div>
+
+    <div class="grid g4">
+      <div class="card stat hero"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>New people (7d)</h3><div class="val">27</div><div class="foot"><span class="chip">▲ 6</span> cards created</div></div>
+      <div class="card stat"><h3>Cards in flight</h3><div class="val">143</div><div class="foot"><span class="chip flat">— 2</span> open across 7 workflows</div></div>
+      <div class="card stat"><h3>Stalled &gt; 14 days</h3><div class="val">18</div><div class="foot"><span class="chip dn">▲ 5</span> 12.6% of open cards</div></div>
+      <div class="card stat"><h3>90-day conversion</h3><div class="val">58<span>%</span></div><div class="foot"><span class="chip">▲ 4%</span> still active after entry</div></div>
+    </div>
+
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card" style="grid-column:span 2">
+        <div class="chead"><h3>Median days in stage — First Time Guest</h3><div class="r"><button class="tag on">First Time Guest</button><button class="tag">Baptism</button><button class="tag">Serve Team</button></div></div>
+        <p class="sub">Every workflow has one step where cards go to die. This is yours.</p>
+        <div class="bars">
+          <div class="bcol"><div class="btrack"><div class="bfill" style="height:16%"></div></div><div class="blab">Contact</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill lite" style="height:28%"></div></div><div class="blab">Text</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:34%"></div></div><div class="blab">Coffee</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill dark" style="height:96%"><div class="bub">19 days</div></div></div><div class="blab">Group invite</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:24%"></div></div><div class="blab">Serve invite</div></div>
+          <div class="bcol"><div class="btrack"><div class="bfill mute" style="height:12%"></div></div><div class="blab">Close</div></div>
+        </div>
+        <div class="mini"><span>End-to-end median <b>31 days</b></span><span>Bottleneck <b>Group invite</b></span><span>Cards stuck there <b>11</b></span></div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>Load per assignee</h3><div class="r"><span class="tag warn">imbalanced</span></div></div>
+        <p class="sub">Open cards. Two names carry 58% of the queue.</p>
+        <div class="rows">
+          <div class="row"><div class="ava" style="background:#0F3D2E">VC</div><div class="who"><b>Vivy Cassis</b><small><em>44</em> open · 7 stalled</small></div><span class="tag bad">31%</span></div>
+          <div class="row"><div class="ava" style="background:#1B7A4B">MP</div><div class="who"><b>Marcos Peña</b><small><em>39</em> open · 5 stalled</small></div><span class="tag bad">27%</span></div>
+          <div class="row"><div class="ava" style="background:#2B62C4">TV</div><div class="who"><b>Tiffany Vasquez</b><small><em>24</em> open · 2 stalled</small></div><span class="tag warn">17%</span></div>
+          <div class="row"><div class="ava" style="background:#B27400">AL</div><div class="who"><b>Andre Lewis</b><small><em>21</em> open · 3 stalled</small></div><span class="tag">15%</span></div>
+          <div class="row"><div class="ava" style="background:#C0333C">LO</div><div class="who"><b>Luis Ortega</b><small><em>15</em> open · 1 stalled</small></div><span class="tag">10%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="chead"><h3>Workflow pipeline</h3></div>
+      <table>
+        <thead><tr><th>WORKFLOW</th><th>OPEN</th><th>NEW 30D</th><th>MEDIAN TIME</th><th>STALLED</th><th>90-DAY STILL ACTIVE</th></tr></thead>
+        <tbody>
+          <tr><td>First Time Guest</td><td class="mut">52</td><td class="mut">61</td><td class="mut">31 d</td><td><span class="tag bad">11</span></td><td>58%</td></tr>
+          <tr><td>Next Steps Class</td><td class="mut">28</td><td class="mut">24</td><td class="mut">18 d</td><td><span class="tag warn">3</span></td><td>74%</td></tr>
+          <tr><td>Baptism</td><td class="mut">17</td><td class="mut">9</td><td class="mut">26 d</td><td><span class="tag ok">1</span></td><td>81%</td></tr>
+          <tr><td>Serve Team Onboarding</td><td class="mut">21</td><td class="mut">18</td><td class="mut">42 d</td><td><span class="tag bad">2</span></td><td>66%</td></tr>
+          <tr><td>PowerGroup Placement</td><td class="mut">19</td><td class="mut">22</td><td class="mut">23 d</td><td><span class="tag ok">1</span></td><td>77%</td></tr>
+          <tr><td>Pastoral Care</td><td class="mut">6</td><td class="mut">7</td><td class="mut">12 d</td><td><span class="tag ok">0</span></td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SERVING -->
+  <section data-page="serving" class="hide">
+    <div class="phead">
+      <div><h1>Serving</h1><p>Volunteer load, streaks, multi-team spread and schedule conflicts from Services.</p></div>
+      <div class="acts"><button class="btn ghost">Thresholds</button><button class="btn solid">Export roster</button></div>
+    </div>
+
+    <div class="grid g4">
+      <div class="card stat hero"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>Slot concentration</h3><div class="val">34<span>%</span></div><div class="foot"><span class="chip dn">▲ 4%</span> of slots by 3+/mo servers</div></div>
+      <div class="card stat"><h3>Distinct volunteers</h3><div class="val">244</div><div class="foot"><span class="chip">▲ 11</span> filling 612 slots / mo</div></div>
+      <div class="card stat"><h3>Serving 6+ weeks straight</h3><div class="val">14</div><div class="foot"><span class="chip dn">▲ 3</span> longest streak 11 weeks</div></div>
+      <div class="card stat"><h3>On 3+ teams</h3><div class="val">23</div><div class="foot"><span class="chip dn">▲ 5</span> 4 people on 4+ teams</div></div>
+    </div>
+
+    <div class="cov"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>Burnout shows up in these three tables roughly six months before it shows up in resignations. Thresholds are configurable per ministry.</div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="chead"><h3>Serving too many weeks in a row</h3><div class="r"><button class="tag on">6+ wks</button><button class="tag">4+ wks</button></div></div>
+        <p class="sub">Consecutive weeks with at least one confirmed slot. No break taken.</p>
+        <table>
+          <thead><tr><th>PERSON</th><th>TEAM</th><th>STREAK</th><th>LAST 11 WEEKS</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><div class="nm"><div class="ava" style="background:#C0333C">DK</div>Derek Kim</div></td><td class="mut">Production</td><td>11 wks</td><td><div class="streak"><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i></div></td><td><span class="tag bad">Rest week</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#C0333C">MS</div>Maritza Solís</div></td><td class="mut">Kids · Café</td><td>9 wks</td><td><div class="streak"><i class="off"></i><i class="off"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i><i class="hot"></i></div></td><td><span class="tag bad">Rest week</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#B27400">TB</div>Trevor Blake</div></td><td class="mut">Worship</td><td>8 wks</td><td><div class="streak"><i class="off"></i><i class="off"></i><i class="off"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></td><td><span class="tag warn">Watch</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#B27400">GA</div>Grace Adeyemi</div></td><td class="mut">Guest Services</td><td>7 wks</td><td><div class="streak"><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></td><td><span class="tag warn">Watch</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#B27400">RM</div>Ray Molina</div></td><td class="mut">Parking · Setup</td><td>6 wks</td><td><div class="streak"><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i></i><i></i><i></i><i></i><i></i><i></i></div></td><td><span class="tag warn">Watch</span></td></tr>
+          </tbody>
+        </table>
+        <div class="mini"><span>Church median streak <b>2.1 wks</b></span><span>Flagged <b>14 people</b></span><span>Threshold <b>6 weeks</b></span></div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h3>Serving in too many ministries</h3><div class="r"><button class="tag on">3+ teams</button><button class="tag">4+ teams</button></div></div>
+        <p class="sub">Active on multiple teams in the same month. Spread thin, not necessarily overworked — check alongside streak.</p>
+        <table>
+          <thead><tr><th>PERSON</th><th>TEAMS</th><th>SLOTS / MO</th><th>SPREAD</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><div class="nm"><div class="ava" style="background:#C0333C">MS</div>Maritza Solís</div></td><td class="mut">Kids, Café, Guest Svc, Setup</td><td>7</td><td><div class="pline" style="width:80px"><i class="bad" style="width:100%"></i></div></td><td><span class="tag bad">4 teams</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#C0333C">JF</div>Jorge Fuentes</div></td><td class="mut">Production, Worship, Setup, Parking</td><td>6</td><td><div class="pline" style="width:80px"><i class="bad" style="width:100%"></i></div></td><td><span class="tag bad">4 teams</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#B27400">AN</div>Alina Novak</div></td><td class="mut">Kids, Students, Café</td><td>5</td><td><div class="pline" style="width:80px"><i class="warn" style="width:75%"></i></div></td><td><span class="tag warn">3 teams</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#B27400">DK</div>Derek Kim</div></td><td class="mut">Production, Worship, Setup</td><td>5</td><td><div class="pline" style="width:80px"><i class="warn" style="width:75%"></i></div></td><td><span class="tag warn">3 teams</span></td></tr>
+            <tr><td><div class="nm"><div class="ava" style="background:#B27400">PC</div>Priya Chandra</div></td><td class="mut">Guest Svc, Café, Prayer</td><td>4</td><td><div class="pline" style="width:80px"><i class="warn" style="width:75%"></i></div></td><td><span class="tag warn">3 teams</span></td></tr>
+          </tbody>
+        </table>
+        <div class="mini"><span>On 3+ teams <b>23 people</b></span><span>On 4+ <b>4 people</b></span><span>Appear in both tables <b>2</b></span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="chead"><h3>Overlapping schedule — Sunday, Aug 10</h3><div class="r"><button class="tag on">This Sunday</button><button class="tag">Next 4 wks</button><span class="tag bad">4 conflicts</span></div></div>
+      <p class="sub">People scheduled in two places at once. Red blocks are the overlap — both teams think they have this person.</p>
+      <div class="timeline"><div></div><div class="ticks"><span>8:00</span><span>9:00</span><span>10:00</span><span>11:00</span><span>12:00</span><span>1:00</span></div></div>
+      <div class="conf">
+        <div class="confrow">
+          <div class="lbl">Maritza Solís<small>Kids · Café</small></div>
+          <div class="slots">
+            <div class="slot a" style="left:2%;width:26%">Café setup 8:00–9:15</div>
+            <div class="slot clash" style="left:30%;width:30%">CONFLICT — Kids 9:15 &amp; Café 9:15</div>
+            <div class="slot b" style="left:62%;width:24%">Guest Svc 11:00</div>
+          </div>
+        </div>
+        <div class="confrow">
+          <div class="lbl">Jorge Fuentes<small>Production · Worship</small></div>
+          <div class="slots">
+            <div class="slot a" style="left:2%;width:22%">Sound check 8:00</div>
+            <div class="slot clash" style="left:26%;width:34%">CONFLICT — FOH &amp; Band both 9:30</div>
+            <div class="slot b" style="left:62%;width:20%">Teardown 12:00</div>
+          </div>
+        </div>
+        <div class="confrow">
+          <div class="lbl">Derek Kim<small>Production · Setup</small></div>
+          <div class="slots">
+            <div class="slot clash" style="left:2%;width:32%">CONFLICT — Setup 8:00 &amp; Cam 8:30</div>
+            <div class="slot a" style="left:36%;width:30%">Camera 2 — 9:30–11:00</div>
+          </div>
+        </div>
+        <div class="confrow">
+          <div class="lbl">Alina Novak<small>Kids · Students</small></div>
+          <div class="slots">
+            <div class="slot a" style="left:2%;width:28%">Kids check-in 8:15</div>
+            <div class="slot clash" style="left:32%;width:28%">CONFLICT — Kids &amp; Students 10:00</div>
+          </div>
+        </div>
+        <div class="confrow">
+          <div class="lbl">Grace Adeyemi<small>Guest Services</small></div>
+          <div class="slots">
+            <div class="slot a" style="left:2%;width:34%">Door team 8:00–10:00</div>
+            <div class="slot b" style="left:40%;width:26%">Info desk 10:30</div>
+          </div>
+        </div>
+      </div>
+      <div class="mini"><span>Conflicts <b>4 of 5 shown</b></span><span>Teams affected <b>Kids, Café, Production, Worship, Students</b></span><span>Detection <b>overlapping confirmed slots</b></span></div>
+    </div>
+  </section>
+
+  <!-- CARE -->
+  <section data-page="care" class="hide">
+    <div class="phead">
+      <div><h1>Care List</h1><p>34 people to reach out to this week. Built to be worked, not admired.</p></div>
+      <div class="acts"><button class="btn ghost">Suppression rules</button><button class="btn solid">Assign all</button></div>
+    </div>
+
+    <div class="grid g4">
+      <div class="card stat hero"><div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M9 7h8v8"/></svg></div><h3>On the list</h3><div class="val">34</div><div class="foot"><span class="chip">12 unassigned</span> 9 suppressed</div></div>
+      <div class="card stat"><h3>Tier 1 — Drifting</h3><div class="val">11</div><div class="foot"><span class="chip dn">▲ 3</span> 0 visits in 28 days</div></div>
+      <div class="card stat"><h3>Tier 2 — Slipping</h3><div class="val">15</div><div class="foot"><span class="chip dn">▲ 4</span> frequency down ≥50%</div></div>
+      <div class="card stat"><h3>Tier 3 — New</h3><div class="val">8</div><div class="foot"><span class="chip flat">— 1</span> arrived, unconnected</div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="chead"><h3>Who to reach out to</h3>
+        <div class="r"><button class="tag on">All 34</button><button class="tag">Drifting</button><button class="tag">Slipping</button><button class="tag">New</button></div>
+      </div>
+      <p class="sub">9 people suppressed by rule — open pastoral-care card, marked inactive, moved away, or seasonal resident.</p>
+      <table>
+        <thead><tr><th>PERSON</th><th>TIER</th><th>LAST ATTENDED</th><th>PRIOR RHYTHM</th><th>GROUP</th><th>SERVING</th><th>ASSIGNED</th></tr></thead>
+        <tbody>
+          <tr><td><div class="nm"><div class="ava" style="background:#C0333C">DR</div>Daniela Rivas</div></td><td><span class="tag bad">Drifting</span></td><td class="mut">May 31 · 68 d</td><td class="mut">4x / month</td><td class="mut">—</td><td class="mut">Kids</td><td class="mut">Vivy C.</td></tr>
+          <tr><td><div class="nm"><div class="ava" style="background:#C0333C">JT</div>Jared Thompson</div></td><td><span class="tag bad">Drifting</span></td><td class="mut">Jun 14 · 54 d</td><td class="mut">3x / month</td><td class="mut">Weston YA</td><td class="mut">—</td><td class="mut">Kyle O.</td></tr>
+          <tr><td><div class="nm"><div class="ava" style="background:#C0333C">MO</div>Marta Ochoa</div></td><td><span class="tag bad">Drifting</span></td><td class="mut">Jun 21 · 47 d</td><td class="mut">4x / month</td><td class="mut">Español</td><td class="mut">Café</td><td><span class="tag bad">Unassigned</span></td></tr>
+          <tr><td><div class="nm"><div class="ava" style="background:#B27400">BC</div>Brandon Cole</div></td><td><span class="tag warn">Slipping</span></td><td class="mut">Jul 27 · 11 d</td><td class="mut">4x → 1x</td><td class="mut">Men's Tue</td><td class="mut">Production</td><td class="mut">Marcos P.</td></tr>
+          <tr><td><div class="nm"><div class="ava" style="background:#B27400">SN</div>Simone Nadeau</div></td><td><span class="tag warn">Slipping</span></td><td class="mut">Aug 3 · 4 d</td><td class="mut">4x → 2x</td><td class="mut">PP Women</td><td class="mut">—</td><td class="mut">Tiffany V.</td></tr>
+          <tr><td><div class="nm"><div class="ava" style="background:#B27400">EG</div>Eli Guerrero</div></td><td><span class="tag warn">Slipping</span></td><td class="mut">Jul 20 · 18 d</td><td class="mut">3x → 1x</td><td class="mut">—</td><td class="mut">Parking</td><td><span class="tag bad">Unassigned</span></td></tr>
+          <tr><td><div class="nm"><div class="ava" style="background:#2B62C4">AK</div>Amara Kone</div></td><td><span class="tag info">New</span></td><td class="mut">Aug 3 · 4 d</td><td class="mut">arrived Jun 8</td><td class="mut">—</td><td class="mut">—</td><td class="mut">Andre L.</td></tr>
+          <tr><td><div class="nm"><div class="ava" style="background:#2B62C4">RP</div>Ryan Pierce</div></td><td><span class="tag info">New</span></td><td class="mut">Jul 27 · 11 d</td><td class="mut">arrived Jun 22</td><td class="mut">—</td><td class="mut">—</td><td><span class="tag bad">Unassigned</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DEFINITIONS -->
+  <section data-page="settings" class="hide">
+    <div class="phead"><div><h1>Definitions</h1><p>Every metric's denominator, window and source, in one editable place.</p></div></div>
+    <div class="card">
+      <table><thead><tr><th>TERM</th><th>DEFINITION</th><th>SOURCE</th><th>OWNER</th></tr></thead><tbody>
+        <tr><td>Active person</td><td class="mut">Attended, gave, or logged group attendance in trailing 90 days</td><td class="mut">Check-Ins + Groups</td><td class="mut">Analytics</td></tr>
+        <tr><td>Weekly attendance</td><td class="mut">Distinct Check-Ins per service date, adults + kids</td><td class="mut">Check-Ins</td><td class="mut">Analytics</td></tr>
+        <tr><td>Connection rate</td><td class="mut">Distinct group attenders ÷ distinct service attenders, 90d</td><td class="mut">Groups + Check-Ins</td><td class="mut">Groups Pastor</td></tr>
+        <tr><td>Multiplier rate</td><td class="mut">Disciples who now disciple ÷ all ever discipled</td><td class="mut">Discipleship Hub</td><td class="mut">Discipleship</td></tr>
+        <tr><td>Discipled</td><td class="mut">In an active 1:1 with ≥1 logged meeting in 60 days</td><td class="mut">Discipleship Hub</td><td class="mut">Discipleship</td></tr>
+        <tr><td>Serving streak</td><td class="mut">Consecutive weeks with ≥1 confirmed slot, no break</td><td class="mut">Services</td><td class="mut">Volunteer Ops</td></tr>
+        <tr><td>Schedule conflict</td><td class="mut">Two confirmed slots with overlapping time on one date</td><td class="mut">Services</td><td class="mut">Volunteer Ops</td></tr>
+      </tbody></table>
+    </div>
+  </section>
+
+  <!-- SYNC -->
+  <section data-page="sync" class="hide">
+    <div class="phead"><div><h1>Sync status</h1><p>Last incremental run 4:02 AM · 6,412 records touched · 0 errors.</p></div></div>
+    <div class="card">
+      <table><thead><tr><th>SOURCE</th><th>RECORDS</th><th>LAST RUN</th><th>MODE</th><th>STATUS</th></tr></thead><tbody>
+        <tr><td>PCO People</td><td class="mut">4,208</td><td class="mut">4:02 AM</td><td class="mut">Incremental</td><td><span class="tag ok">OK</span></td></tr>
+        <tr><td>PCO Check-Ins</td><td class="mut">18,940</td><td class="mut">4:04 AM</td><td class="mut">Incremental</td><td><span class="tag ok">OK</span></td></tr>
+        <tr><td>PCO Groups</td><td class="mut">2,116</td><td class="mut">4:06 AM</td><td class="mut">Incremental</td><td><span class="tag ok">OK</span></td></tr>
+        <tr><td>PCO Services</td><td class="mut">3,401</td><td class="mut">4:09 AM</td><td class="mut">Incremental</td><td><span class="tag warn">Rate limited 2x</span></td></tr>
+        <tr><td>Discipleship Hub</td><td class="mut">109 pairs</td><td class="mut">4:12 AM</td><td class="mut">Read replica</td><td><span class="tag ok">OK</span></td></tr>
+        <tr><td>Weekly snapshots</td><td class="mut">142 wks</td><td class="mut">Sun 3:00 AM</td><td class="mut">Weekly write</td><td><span class="tag ok">OK</span></td></tr>
+      </tbody></table>
+    </div>
+  </section>
+
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+  var btns = document.querySelectorAll('.nav button');
+  var pages = document.querySelectorAll('[data-page]');
+  function go(name){
+    pages.forEach(function(p){ p.classList.toggle('hide', p.dataset.page !== name); });
+    btns.forEach(function(b){ b.classList.toggle('on', b.dataset.p === name); });
+    document.querySelector('.page').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ go(b.dataset.p); }); });
+  document.querySelectorAll('[data-jump]').forEach(function(j){
+    j.addEventListener('click', function(){ go(j.dataset.jump); });
+  });
+  document.querySelectorAll('.chead .r').forEach(function(grp){
+    var tags = grp.querySelectorAll('.tag:not(.ok):not(.warn):not(.bad):not(.info)');
+    if(tags.length < 2) return;
+    tags.forEach(function(t){
+      t.addEventListener('click', function(){
+        tags.forEach(function(x){x.classList.remove('on');});
+        t.classList.add('on');
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
