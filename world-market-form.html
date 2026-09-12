@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>TSC World Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#02E3FB;
+    --brand-ink:#04343B;          /* dark text used on the bright brand button */
+    --brand-tint:#E6FCFF;
+    --brand-tint-2:#F0FDFF;
+    --bg:#ffffff;
+    --panel:#f7f8fa;
+    --ink:#101828;
+    --ink-soft:#667085;
+    --ink-faint:#98a2b3;
+    --line:#eaecf0;
+    --line-2:#e4e7ec;
+    --shadow:0 12px 34px rgba(16,24,40,.10);
+    --shadow-lg:0 24px 60px rgba(16,24,40,.18);
+    --r:14px;
+    --safe-b:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--ink);
+    -webkit-font-smoothing:antialiased;letter-spacing:-.1px;
+    min-height:100vh;min-height:100dvh;
+  }
+  img{max-width:100%}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ---------- App shell / directory ---------- */
+  .wrap{max-width:900px;margin:0 auto;padding:22px 18px calc(120px + var(--safe-b));}
+  .topbar{display:flex;align-items:center;gap:12px;margin:2px 0 20px}
+  .logo{
+    width:42px;height:42px;border-radius:12px;flex:none;background:var(--brand-tint);
+    display:grid;place-items:center;font-size:22px;
+  }
+  .topbar h1{font-size:20px;font-weight:800;margin:0;line-height:1.1}
+  .topbar p{margin:2px 0 0;font-size:13px;color:var(--ink-soft);font-weight:500}
+
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:20px}
+  .stat{padding:14px 10px;text-align:center;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:none}
+  .stat b{display:block;font-size:22px;font-weight:800;line-height:1}
+  .stat span{display:block;font-size:11px;color:var(--ink-soft);font-weight:600;margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+
+  .searchbar{position:relative;margin-bottom:24px}
+  .searchbar input{
+    width:100%;border:1px solid var(--line-2);background:var(--bg);border-radius:12px;
+    padding:13px 14px 13px 42px;font-size:15px;font-weight:500;color:var(--ink);outline:none;
+  }
+  .searchbar input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(2,227,251,.18)}
+  .searchbar input::placeholder{color:var(--ink-faint);font-weight:500}
+  .searchbar svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--ink-faint)}
+
+  .region{margin-bottom:26px}
+  .region-head{display:flex;align-items:center;gap:9px;margin:0 2px 12px}
+  .region-head .e{font-size:16px}
+  .region-head h2{font-size:14px;font-weight:700;margin:0;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.6px}
+  .region-head .rc{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink-faint)}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:560px){.grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:820px){.grid{grid-template-columns:1fr 1fr 1fr}}
+
+  .country{
+    background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:15px;
+    transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;
+  }
+  .country:hover{border-color:var(--line-2);box-shadow:var(--shadow);transform:translateY(-1px)}
+  .country.mine{border-color:var(--brand);background:var(--brand-tint-2);box-shadow:0 0 0 3px rgba(2,227,251,.14)}
+  .country .ch{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+  .flag{width:32px;height:24px;border-radius:5px;object-fit:cover;flex:none;box-shadow:0 0 0 1px rgba(16,24,40,.08);background:#f0f0f0}
+  .country .name{font-weight:700;font-size:15px;line-height:1.15}
+  .country .cnt{margin-left:auto;font-size:12px;font-weight:700;color:var(--brand-ink);background:var(--brand-tint);padding:3px 9px;border-radius:999px;flex:none}
+  .people{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12.5px;font-weight:600;color:#475467;background:var(--panel);padding:5px 10px;border-radius:999px;border:1px solid var(--line)}
+  .chip.you{background:var(--brand);color:var(--brand-ink);border-color:transparent;font-weight:700}
+
+  .empty{text-align:center;padding:64px 20px;color:var(--ink-soft)}
+  .empty .big{font-size:46px;margin-bottom:12px}
+  .empty h3{margin:0 0 6px;color:var(--ink);font-size:17px;font-weight:700}
+  .empty p{margin:0;font-size:14px;font-weight:500}
+
+  /* ---------- Floating action button ---------- */
+  .fab{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + var(--safe-b));z-index:40;
+    background:var(--brand);color:var(--brand-ink);border:none;border-radius:999px;
+    padding:15px 24px;font-size:15px;font-weight:700;
+    box-shadow:0 12px 28px rgba(2,227,251,.5);display:flex;align-items:center;gap:8px;
+  }
+  .fab svg{width:19px;height:19px;stroke:var(--brand-ink);stroke-width:2.6}
+
+  /* ---------- Modal / bottom sheet ---------- */
+  .scrim{
+    position:fixed;inset:0;z-index:50;background:rgba(16,24,40,.45);
+    opacity:0;pointer-events:none;transition:opacity .28s ease;
+    display:flex;align-items:flex-end;justify-content:center;
+  }
+  .scrim.open{opacity:1;pointer-events:auto}
+  @media(min-width:640px){.scrim{align-items:center}}
+
+  .sheet{
+    background:var(--bg);width:100%;max-width:480px;max-height:94dvh;overflow-y:auto;
+    border-radius:22px 22px 0 0;
+    box-shadow:var(--shadow-lg);
+    transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1);
+    -webkit-overflow-scrolling:touch;
+  }
+  .scrim.open .sheet{transform:translateY(0)}
+  @media(min-width:640px){
+    .sheet{border-radius:22px;transform:translateY(20px) scale(.97);opacity:0;transition:transform .3s ease,opacity .3s ease}
+    .scrim.open .sheet{transform:translateY(0) scale(1);opacity:1}
+  }
+
+  .sheet-top{
+    position:sticky;top:0;z-index:5;background:var(--bg);
+    display:flex;align-items:center;gap:8px;padding:16px 18px;border-bottom:1px solid var(--line);
+  }
+  .sheet-top .x{
+    width:32px;height:32px;border-radius:999px;border:none;background:transparent;color:var(--ink);
+    font-size:20px;line-height:1;display:grid;place-items:center;flex:none;
+  }
+  .sheet-top .x:hover{background:var(--panel)}
+  .sheet-top h2{flex:1;text-align:center;font-size:16px;font-weight:700;margin:0;padding-right:32px}
+
+  .sheet-body{padding:18px 18px calc(20px + var(--safe-b))}
+  .lede{font-size:13.5px;color:var(--ink-soft);font-weight:500;margin:0 0 20px;line-height:1.45}
+
+  .field{margin-bottom:15px}
+  .field > label{display:block;font-size:13px;font-weight:600;margin:0 0 7px;color:var(--ink)}
+  .field .req{color:var(--brand-ink)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  .inp{
+    width:100%;border:1px solid var(--line-2);background:var(--bg);border-radius:12px;
+    padding:13px 14px;font-size:15px;font-weight:500;color:var(--ink);outline:none;
+    transition:border-color .15s ease,box-shadow .15s ease;
+  }
+  .inp::placeholder{color:var(--ink-faint);font-weight:500}
+  .inp:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(2,227,251,.18)}
+  .inp.bad{border-color:#f04438;box-shadow:0 0 0 3px rgba(240,68,56,.14)}
+
+  /* country combobox */
+  .combo{position:relative}
+  .combo-btn{
+    width:100%;border:1px solid var(--line-2);background:var(--bg);border-radius:12px;
+    padding:12px 40px 12px 14px;font-size:15px;font-weight:600;color:var(--ink);
+    outline:none;text-align:left;display:flex;align-items:center;gap:10px;min-height:48px;
+    transition:border-color .15s ease,box-shadow .15s ease;
+  }
+  .combo-btn:focus,.combo-btn.active{border-color:var(--brand);box-shadow:0 0 0 3px rgba(2,227,251,.18)}
+  .combo-btn.bad{border-color:#f04438;box-shadow:0 0 0 3px rgba(240,68,56,.14)}
+  .combo-btn .ph{color:var(--ink-faint);font-weight:500}
+  .combo-btn .caret{position:absolute;right:13px;top:50%;transform:translateY(-50%);width:20px;height:20px;display:grid;place-items:center;pointer-events:none}
+  .combo-btn .caret svg{width:16px;height:16px;stroke:var(--ink-soft);stroke-width:2.4}
+  .combo-pop{
+    position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;
+    background:var(--bg);border:1px solid var(--line-2);border-radius:14px;box-shadow:var(--shadow-lg);
+    padding:8px;display:none;
+  }
+  .combo-pop.open{display:block}
+  .combo-search{width:100%;border:1px solid var(--line-2);background:var(--bg);border-radius:10px;padding:11px 12px;font-size:14px;font-weight:500;outline:none;margin-bottom:6px}
+  .combo-search:focus{border-color:var(--brand)}
+  .combo-list{max-height:min(44dvh,300px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .opt{display:flex;align-items:center;gap:11px;padding:10px 10px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14.5px}
+  .opt:hover,.opt.active{background:var(--brand-tint)}
+  .opt small{margin-left:auto;color:var(--ink-faint);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+  .opt-none{padding:16px;text-align:center;color:var(--ink-soft);font-weight:600;font-size:14px}
+
+  .submit{
+    width:100%;border:none;border-radius:12px;margin-top:8px;
+    background:var(--brand);color:var(--brand-ink);
+    padding:16px;font-size:16px;font-weight:700;
+    box-shadow:0 10px 24px rgba(2,227,251,.4);transition:transform .12s ease,opacity .2s ease,filter .15s ease;
+  }
+  .submit:hover{filter:brightness(.97)}
+  .submit:active{transform:scale(.99)}
+  .submit:disabled{opacity:.55;box-shadow:none}
+
+  .formnote{text-align:center;font-size:12px;color:var(--ink-soft);font-weight:500;margin:14px 4px 0;line-height:1.45}
+
+  /* success */
+  .success{text-align:center;padding:36px 20px calc(28px + var(--safe-b));display:none}
+  .success.show{display:block}
+  .success .badge{width:76px;height:76px;border-radius:999px;margin:0 auto 16px;background:var(--brand);display:grid;place-items:center;box-shadow:0 12px 28px rgba(2,227,251,.45);animation:pop .5s cubic-bezier(.22,1.4,.4,1)}
+  .success .badge svg{width:38px;height:38px;stroke:var(--brand-ink);stroke-width:3;fill:none}
+  @keyframes pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+  .success h2{margin:0 0 8px;font-size:21px;font-weight:800}
+  .success .who{display:inline-flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);padding:9px 15px;border-radius:999px;font-weight:700;font-size:14px;margin-bottom:16px}
+  .success p{margin:0 0 24px;font-size:14.5px;color:var(--ink-soft);font-weight:500;line-height:1.5}
+
+  .toast{
+    position:fixed;left:50%;bottom:calc(92px + var(--safe-b));transform:translateX(-50%) translateY(16px);
+    background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;
+    z-index:60;opacity:0;pointer-events:none;transition:all .26s ease;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{background:#d92d20}
+
+  .skeleton{height:96px;border-radius:16px;background:linear-gradient(90deg,#f2f4f7 25%,#f9fafb 37%,#f2f4f7 63%);background-size:400% 100%;animation:sh 1.3s ease infinite}
+  @keyframes sh{0%{background-position:100% 0}100%{background-position:-100% 0}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>TSC World Market</h1>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="stPeople">0</b><span>People</span></div>
+    <div class="stat"><b id="stCountries">0</b><span>Countries</span></div>
+  </div>
+
+  <div class="searchbar">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+    <input id="dirSearch" type="text" placeholder="Search a country or a name…" autocomplete="off" />
+  </div>
+
+  <div id="directory"></div>
+</div>
+
+<button class="fab" id="openBtn">
+  <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  Sign up
+</button>
+
+<!-- Sign-up sheet -->
+<div class="scrim" id="scrim">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="World Market sign up">
+    <div class="sheet-top">
+      <button class="x" id="closeBtn" aria-label="Close">✕</button>
+      <h2 id="sheetTitle">Sign Up</h2>
+    </div>
+
+    <div class="sheet-body" id="formView">
+      <p class="lede">Join your country's booth at the World Market. You'll appear in the directory so others from your country can find and connect with you.</p>
+
+      <form id="signupForm" novalidate>
+        <div class="row2">
+          <div class="field">
+            <label>First name <span class="req">*</span></label>
+            <input class="inp" id="firstName" type="text" placeholder="Peter" autocomplete="given-name" />
+          </div>
+          <div class="field">
+            <label>Last name <span class="req">*</span></label>
+            <input class="inp" id="lastName" type="text" placeholder="Bar-Jonah" autocomplete="family-name" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input class="inp" id="email" type="email" placeholder="peter@fishersofmen.org" autocomplete="email" inputmode="email" />
+        </div>
+
+        <div class="field">
+          <label>Phone <span class="req">*</span></label>
+          <input class="inp" id="phone" type="tel" placeholder="(555) 100-0012" autocomplete="tel" inputmode="tel" />
+        </div>
+
+        <div class="field">
+          <label>Country <span class="req">*</span></label>
+          <div class="combo">
+            <button type="button" class="combo-btn" id="comboBtn" aria-haspopup="listbox">
+              <span class="ph" id="comboLabel">Choose your country…</span>
+              <span class="caret"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            </button>
+            <div class="combo-pop" id="comboPop">
+              <input class="combo-search" id="comboSearch" type="text" placeholder="Type to search…" autocomplete="off" />
+              <div class="combo-list" id="comboList"></div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit" id="submitBtn">Sign up to represent my country</button>
+        <p class="formnote">Your <b>name</b> and country are shown publicly so people can connect with you. Your email and phone stay private.</p>
+      </form>
+    </div>
+
+    <div class="success" id="successView">
+      <div class="badge"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h2>You're in! 🎉</h2>
+      <div class="who" id="successWho"></div>
+      <p id="successMsg"></p>
+      <button class="submit" id="seeListBtn" style="max-width:300px;margin:0 auto">See who's joining →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== CONFIG ===================== */
+const API_URL = "https://script.google.com/macros/s/AKfycby8xErGG0cIeMQBQAFMV2vj-IWE144akHl8NepnDZ9SQVLk74FaSxrMgKA2WjrH2tA/exec";
+
+/* ===================== COUNTRY DATA =====================
+   [ Name, ISO2 (for flag), Region (kept for search/reference only) ] */
+const COUNTRIES = [
+  ["United States","us","North America"],["Canada","ca","North America"],
+
+  ["Mexico","mx","Latin America"],["Guatemala","gt","Latin America"],["Belize","bz","Latin America"],
+  ["Honduras","hn","Latin America"],["El Salvador","sv","Latin America"],["Nicaragua","ni","Latin America"],
+  ["Costa Rica","cr","Latin America"],["Panama","pa","Latin America"],["Colombia","co","Latin America"],
+  ["Venezuela","ve","Latin America"],["Ecuador","ec","Latin America"],["Peru","pe","Latin America"],
+  ["Bolivia","bo","Latin America"],["Brazil","br","Latin America"],["Paraguay","py","Latin America"],
+  ["Uruguay","uy","Latin America"],["Argentina","ar","Latin America"],["Chile","cl","Latin America"],
+  ["Guyana","gy","Latin America"],["Suriname","sr","Latin America"],
+
+  ["Cuba","cu","Caribbean"],["Dominican Republic","do","Caribbean"],["Haiti","ht","Caribbean"],
+  ["Jamaica","jm","Caribbean"],["Puerto Rico","pr","Caribbean"],["Trinidad and Tobago","tt","Caribbean"],
+  ["Bahamas","bs","Caribbean"],["Barbados","bb","Caribbean"],["Saint Lucia","lc","Caribbean"],
+  ["Grenada","gd","Caribbean"],["Saint Vincent and the Grenadines","vc","Caribbean"],
+  ["Antigua and Barbuda","ag","Caribbean"],["Dominica","dm","Caribbean"],["Saint Kitts and Nevis","kn","Caribbean"],
+
+  ["United Kingdom","gb","Europe"],["Ireland","ie","Europe"],["France","fr","Europe"],["Germany","de","Europe"],
+  ["Spain","es","Europe"],["Portugal","pt","Europe"],["Italy","it","Europe"],["Netherlands","nl","Europe"],
+  ["Belgium","be","Europe"],["Luxembourg","lu","Europe"],["Switzerland","ch","Europe"],["Austria","at","Europe"],
+  ["Denmark","dk","Europe"],["Norway","no","Europe"],["Sweden","se","Europe"],["Finland","fi","Europe"],
+  ["Iceland","is","Europe"],["Poland","pl","Europe"],["Czech Republic","cz","Europe"],["Slovakia","sk","Europe"],
+  ["Hungary","hu","Europe"],["Romania","ro","Europe"],["Bulgaria","bg","Europe"],["Greece","gr","Europe"],
+  ["Croatia","hr","Europe"],["Slovenia","si","Europe"],["Serbia","rs","Europe"],["Bosnia and Herzegovina","ba","Europe"],
+  ["Montenegro","me","Europe"],["North Macedonia","mk","Europe"],["Albania","al","Europe"],["Kosovo","xk","Europe"],
+  ["Ukraine","ua","Europe"],["Belarus","by","Europe"],["Lithuania","lt","Europe"],["Latvia","lv","Europe"],
+  ["Estonia","ee","Europe"],["Moldova","md","Europe"],["Russia","ru","Europe"],["Malta","mt","Europe"],
+  ["Cyprus","cy","Europe"],["Andorra","ad","Europe"],["Monaco","mc","Europe"],["Liechtenstein","li","Europe"],
+  ["San Marino","sm","Europe"],["Vatican City","va","Europe"],
+
+  ["Nigeria","ng","Africa"],["Ghana","gh","Africa"],["Kenya","ke","Africa"],["Ethiopia","et","Africa"],
+  ["South Africa","za","Africa"],["Egypt","eg","Africa"],["Morocco","ma","Africa"],["Algeria","dz","Africa"],
+  ["Tunisia","tn","Africa"],["Libya","ly","Africa"],["Sudan","sd","Africa"],["South Sudan","ss","Africa"],
+  ["DR Congo","cd","Africa"],["Congo","cg","Africa"],["Cameroon","cm","Africa"],["Ivory Coast","ci","Africa"],
+  ["Senegal","sn","Africa"],["Mali","ml","Africa"],["Uganda","ug","Africa"],["Tanzania","tz","Africa"],
+  ["Rwanda","rw","Africa"],["Burundi","bi","Africa"],["Zambia","zm","Africa"],["Zimbabwe","zw","Africa"],
+  ["Angola","ao","Africa"],["Mozambique","mz","Africa"],["Botswana","bw","Africa"],["Namibia","na","Africa"],
+  ["Malawi","mw","Africa"],["Madagascar","mg","Africa"],["Somalia","so","Africa"],["Eritrea","er","Africa"],
+  ["Djibouti","dj","Africa"],["Chad","td","Africa"],["Niger","ne","Africa"],["Burkina Faso","bf","Africa"],
+  ["Benin","bj","Africa"],["Togo","tg","Africa"],["Sierra Leone","sl","Africa"],["Liberia","lr","Africa"],
+  ["Guinea","gn","Africa"],["Guinea-Bissau","gw","Africa"],["Gambia","gm","Africa"],["Mauritania","mr","Africa"],
+  ["Gabon","ga","Africa"],["Equatorial Guinea","gq","Africa"],["Central African Republic","cf","Africa"],
+  ["Lesotho","ls","Africa"],["Eswatini","sz","Africa"],["Mauritius","mu","Africa"],["Seychelles","sc","Africa"],
+  ["Cabo Verde","cv","Africa"],["Comoros","km","Africa"],["Sao Tome and Principe","st","Africa"],
+
+  ["Israel","il","Middle East"],["Palestine","ps","Middle East"],["Lebanon","lb","Middle East"],
+  ["Jordan","jo","Middle East"],["Syria","sy","Middle East"],["Iraq","iq","Middle East"],["Iran","ir","Middle East"],
+  ["Saudi Arabia","sa","Middle East"],["Yemen","ye","Middle East"],["Oman","om","Middle East"],
+  ["United Arab Emirates","ae","Middle East"],["Qatar","qa","Middle East"],["Bahrain","bh","Middle East"],
+  ["Kuwait","kw","Middle East"],["Turkey","tr","Middle East"],
+
+  ["China","cn","Asia"],["Japan","jp","Asia"],["South Korea","kr","Asia"],["North Korea","kp","Asia"],
+  ["Mongolia","mn","Asia"],["Taiwan","tw","Asia"],["Hong Kong","hk","Asia"],["India","in","Asia"],
+  ["Pakistan","pk","Asia"],["Bangladesh","bd","Asia"],["Sri Lanka","lk","Asia"],["Nepal","np","Asia"],
+  ["Bhutan","bt","Asia"],["Maldives","mv","Asia"],["Afghanistan","af","Asia"],["Kazakhstan","kz","Asia"],
+  ["Uzbekistan","uz","Asia"],["Turkmenistan","tm","Asia"],["Kyrgyzstan","kg","Asia"],["Tajikistan","tj","Asia"],
+  ["Azerbaijan","az","Asia"],["Armenia","am","Asia"],["Georgia","ge","Asia"],["Thailand","th","Asia"],
+  ["Vietnam","vn","Asia"],["Cambodia","kh","Asia"],["Laos","la","Asia"],["Myanmar","mm","Asia"],
+  ["Malaysia","my","Asia"],["Singapore","sg","Asia"],["Indonesia","id","Asia"],["Philippines","ph","Asia"],
+  ["Brunei","bn","Asia"],["Timor-Leste","tl","Asia"],
+
+  ["Australia","au","Oceania"],["New Zealand","nz","Oceania"],["Papua New Guinea","pg","Oceania"],
+  ["Fiji","fj","Oceania"],["Solomon Islands","sb","Oceania"],["Vanuatu","vu","Oceania"],["Samoa","ws","Oceania"],
+  ["Tonga","to","Oceania"],["Kiribati","ki","Oceania"],["Micronesia","fm","Oceania"],
+  ["Marshall Islands","mh","Oceania"],["Palau","pw","Oceania"],["Nauru","nr","Oceania"],["Tuvalu","tv","Oceania"]
+];
+
+const ISO = {};   // name -> iso2
+COUNTRIES.forEach(([n,i])=>{ISO[n]=i;});
+function flagUrl(iso){return "https://flagcdn.com/"+iso+".svg";}
+
+/* ===================== STATE ===================== */
+let submissions = [];
+let myEntry = null;
+const $ = s=>document.querySelector(s);
+
+/* ===================== ELEMENTS ===================== */
+const scrim=$("#scrim"), sheet=$("#sheet");
+const dirEl=$("#directory"), dirSearch=$("#dirSearch");
+
+/* ===================== SHEET OPEN / CLOSE ===================== */
+function openSheet(){showFormView();scrim.classList.add("open");document.body.style.overflow="hidden";}
+function closeSheet(){scrim.classList.remove("open");document.body.style.overflow="";closeCombo();}
+$("#openBtn").addEventListener("click",openSheet);
+$("#closeBtn").addEventListener("click",closeSheet);
+scrim.addEventListener("click",e=>{if(e.target===scrim)closeSheet();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCombo();if(scrim.classList.contains("open"))closeSheet();}});
+
+function showFormView(){$("#formView").style.display="block";$("#successView").classList.remove("show");$("#sheetTitle").textContent="Sign Up";}
+function showSuccessView(){$("#formView").style.display="none";$("#successView").classList.add("show");$("#sheetTitle").textContent="Welcome!";sheet.scrollTop=0;}
+
+/* ===================== COUNTRY COMBOBOX ===================== */
+const comboBtn=$("#comboBtn"), comboPop=$("#comboPop"), comboList=$("#comboList"),
+      comboSearch=$("#comboSearch"), comboLabel=$("#comboLabel");
+let selectedCountry="";
+
+function renderComboOptions(filter=""){
+  const f=filter.trim().toLowerCase();
+  const list=COUNTRIES.filter(([n])=>!f||n.toLowerCase().includes(f)).sort((a,b)=>a[0].localeCompare(b[0]));
+  if(!list.length){comboList.innerHTML='<div class="opt-none">No country found</div>';return;}
+  comboList.innerHTML=list.map(([n,i])=>
+    `<div class="opt" data-name="${n}" role="option">
+       <img class="flag" loading="lazy" src="${flagUrl(i)}" alt="">
+       <span>${n}</span>
+     </div>`).join("");
+  comboList.querySelectorAll(".opt").forEach(o=>o.addEventListener("click",()=>chooseCountry(o.dataset.name)));
+}
+function chooseCountry(name){
+  selectedCountry=name;
+  comboLabel.classList.remove("ph");
+  comboLabel.innerHTML=`<img class="flag" style="width:24px;height:18px" src="${flagUrl(ISO[name])}" alt=""> ${escapeHtml(name)}`;
+  comboBtn.classList.remove("bad");
+  closeCombo();
+}
+function openCombo(){comboPop.classList.add("open");comboBtn.classList.add("active");renderComboOptions(comboSearch.value);setTimeout(()=>comboSearch.focus(),40);}
+function closeCombo(){comboPop.classList.remove("open");comboBtn.classList.remove("active");}
+comboBtn.addEventListener("click",()=>{comboPop.classList.contains("open")?closeCombo():openCombo();});
+comboSearch.addEventListener("input",()=>renderComboOptions(comboSearch.value));
+comboSearch.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const first=comboList.querySelector(".opt");if(first)chooseCountry(first.dataset.name);}});
+document.addEventListener("click",e=>{if(!e.target.closest(".combo"))closeCombo();});
+
+/* ===================== SUBMIT ===================== */
+const form=$("#signupForm"), submitBtn=$("#submitBtn");
+const SUBMIT_LABEL="Sign up to represent my country";
+function markBad(el,bad){el.classList.toggle("bad",bad);}
+function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+
+form.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const firstName=$("#firstName").value.trim();
+  const lastName=$("#lastName").value.trim();
+  const email=$("#email").value.trim();
+  const phone=$("#phone").value.trim();
+
+  let ok=true;
+  if(!firstName){markBad($("#firstName"),true);ok=false;}else markBad($("#firstName"),false);
+  if(!lastName){markBad($("#lastName"),true);ok=false;}else markBad($("#lastName"),false);
+  if(!validEmail(email)){markBad($("#email"),true);ok=false;}else markBad($("#email"),false);
+  if(!phone){markBad($("#phone"),true);ok=false;}else markBad($("#phone"),false);
+  if(!selectedCountry){comboBtn.classList.add("bad");ok=false;}
+  if(!ok){toast("Please fill in all fields correctly",true);return;}
+
+  const payload={firstName,lastName,email,phone,country:selectedCountry};
+  submitBtn.disabled=true; submitBtn.textContent="Signing you up…";
+  try{
+    // Cross-origin write to Apps Script: "no-cors" lets the request through and
+    // the row gets written. The response is opaque (unreadable), so we treat a
+    // completed request as success, then reconcile by reloading the directory.
+    await fetch(API_URL,{
+      method:"POST",
+      mode:"no-cors",
+      body:JSON.stringify(payload),
+      headers:{"Content-Type":"text/plain;charset=utf-8"}
+    });
+
+    myEntry={firstName,lastName,country:selectedCountry};
+    submissions.push(myEntry);
+    renderDirectory();
+
+    $("#successWho").innerHTML=`<img class="flag" style="width:22px;height:16px" src="${flagUrl(ISO[selectedCountry])}" alt=""> ${escapeHtml(firstName)} · ${escapeHtml(selectedCountry)}`;
+    const same=submissions.filter(s=>s.country===selectedCountry).length;
+    $("#successMsg").textContent = same>1
+      ? `You've joined ${same-1} other${same-1>1?"s":""} representing ${selectedCountry}. Find them in the directory and connect before the market!`
+      : `You're the first to represent ${selectedCountry}! Others who sign up will be able to find and join you.`;
+    showSuccessView();
+    resetForm();
+    setTimeout(loadSubmissions,1800); // give the sheet a moment, then reconcile
+  }catch(err){
+    toast("Couldn't reach the server — check your connection and try again",true);
+    console.error("Submit error:",err);
+  }finally{
+    submitBtn.disabled=false; submitBtn.textContent=SUBMIT_LABEL;
+  }
+});
+
+function resetForm(){
+  form.reset();
+  selectedCountry="";
+  comboLabel.classList.add("ph");
+  comboLabel.textContent="Choose your country…";
+  comboSearch.value="";
+  ["#firstName","#lastName","#email","#phone"].forEach(s=>markBad($(s),false));
+  comboBtn.classList.remove("bad");
+}
+
+$("#seeListBtn").addEventListener("click",()=>{
+  closeSheet();
+  const card=document.querySelector(".country.mine");
+  if(card) card.scrollIntoView({behavior:"smooth",block:"center"});
+});
+
+/* ===================== DIRECTORY ===================== */
+function applyData(data){
+  submissions=(data||[]).filter(r=>r&&r.country)
+    .map(r=>({firstName:(r.firstName||"").trim(),lastName:(r.lastName||"").trim(),country:(r.country||"").trim()}));
+  if(myEntry && !submissions.some(s=>s.firstName===myEntry.firstName && s.lastName===myEntry.lastName && s.country===myEntry.country)){
+    submissions.push(myEntry);
+  }
+  renderDirectory();
+}
+function directoryError(){
+  if(!submissions.length) dirEl.innerHTML=emptyState("Couldn't load the directory","Check your connection and try again in a moment.","😕");
+}
+
+// Cross-origin read from a static host: try a normal fetch first (works if the
+// Apps Script sends CORS headers), then fall back to JSONP (needs doGet to honor
+// a ?callback= param — see the Apps Script snippet).
+async function loadSubmissions(){
+  try{
+    const res=await fetch(API_URL,{method:"GET"});
+    const result=await res.json();
+    if(result && result.status==="success" && Array.isArray(result.data)){ applyData(result.data); return; }
+    throw new Error("unreadable");
+  }catch(e){ jsonpLoad(); }
+}
+
+function jsonpLoad(){
+  const cb="__wm_"+Math.random().toString(36).slice(2);
+  const s=document.createElement("script");
+  let done=false;
+  const cleanup=()=>{ try{delete window[cb];}catch(_){ } s.remove(); clearTimeout(t); };
+  const t=setTimeout(()=>{ if(!done){ done=true; cleanup(); directoryError(); } },12000);
+  window[cb]=(result)=>{
+    done=true; cleanup();
+    if(result && result.status==="success" && Array.isArray(result.data)) applyData(result.data);
+    else directoryError();
+  };
+  s.onerror=()=>{ if(!done){ done=true; cleanup(); directoryError(); } };
+  s.src=API_URL+(API_URL.indexOf("?")>-1?"&":"?")+"callback="+cb+"&_="+Date.now();
+  document.body.appendChild(s);
+}
+
+function isMine(s){return myEntry && s.firstName===myEntry.firstName && s.lastName===myEntry.lastName && s.country===myEntry.country;}
+function emptyState(h,p,ic){return `<div class="empty"><div class="big">${ic}</div><h3>${h}</h3><p>${p}</p></div>`;}
+
+function renderDirectory(){
+  const q=(dirSearch.value||"").trim().toLowerCase();
+  const byCountry={};
+  submissions.forEach(s=>{if(s.country)(byCountry[s.country]=byCountry[s.country]||[]).push(s);});
+
+  const countryNames=Object.keys(byCountry);
+  $("#stPeople").textContent=submissions.length;
+  $("#stCountries").textContent=countryNames.length;
+
+  if(!submissions.length){
+    dirEl.innerHTML=emptyState("No one has signed up yet","Be the first to represent your country — tap “Sign up” below.","🌱");
+    return;
+  }
+
+  // filter by search, then sort countries alphabetically
+  const shown=countryNames.filter(c=>{
+    const people=byCountry[c];
+    return !q||c.toLowerCase().includes(q)||people.some(p=>(`${p.firstName} ${p.lastName}`).toLowerCase().includes(q));
+  }).sort((a,b)=>a.localeCompare(b));
+
+  if(!shown.length){dirEl.innerHTML=emptyState("No matches","Try a different country or name.","🔎");return;}
+
+  const cards=shown.map(c=>{
+    const people=byCountry[c].slice().sort((a,b)=>(isMine(b)?1:0)-(isMine(a)?1:0));
+    const mine=people.some(isMine);
+    const chips=people.map(p=>
+      `<span class="chip${isMine(p)?' you':''}">${isMine(p)?'You · ':''}${escapeHtml(p.firstName)} ${escapeHtml(p.lastName)}</span>`
+    ).join("");
+    return `<div class="country${mine?' mine':''}">
+      <div class="ch">
+        <img class="flag" loading="lazy" src="${flagUrl(ISO[c]||'')}" alt="">
+        <span class="name">${escapeHtml(c)}</span>
+        <span class="cnt">${people.length}</span>
+      </div>
+      <div class="people">${chips}</div>
+    </div>`;
+  }).join("");
+
+  dirEl.innerHTML=`<div class="grid">${cards}</div>`;
+}
+
+function escapeHtml(s){return (s||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+dirSearch.addEventListener("input",renderDirectory);
+
+/* ===================== TOAST ===================== */
+let toastT;
+function toast(msg,isErr){
+  const t=$("#toast");
+  t.textContent=msg; t.className="toast show"+(isErr?" err":"");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.className="toast"+(isErr?" err":""),3200);
+}
+
+/* ===================== INIT ===================== */
+dirEl.innerHTML=`<div class="grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>`;
+loadSubmissions();
+window.addEventListener("load",()=>setTimeout(openSheet,350));
+</script>
+</body>
+</html>
