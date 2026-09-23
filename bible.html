@@ -13,22 +13,22 @@ permalink: /bible/
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent:      #2563EB;
-  --accent-dim:  rgba(37,99,235,0.10);
-  --accent-glow: rgba(37,99,235,0.20);
-  --bg:          #EFF6FF;
-  --surface:     #FFFFFF;
-  --surface2:    #F5F8FF;
-  --border:      #DBEAFE;
-  --border-hi:   #93C5FD;
-  --ink:         #1E3A5F;
-  --ink-mid:     #4A6B8A;
-  --ink-soft:    #94AABB;
-  --done:        #16A34A;
-  --done-bg:     rgba(22,163,74,0.12);
-  --miss-bg:     rgba(220,38,38,0.08);
-  --miss-ink:    #DC2626;
-  --future-bg:   rgba(37,99,235,0.05);
+  --accent:      #FE7F2D;
+  --accent-dim:  rgba(254,127,45,0.15);
+  --accent-glow: rgba(254,127,45,0.28);
+  --bg:          #233D4D;
+  --surface:     #1C3040;
+  --surface2:    #2A4A5C;
+  --border:      #2E5060;
+  --border-hi:   #3D6478;
+  --ink:         #F0F6FA;
+  --ink-mid:     #8AACBC;
+  --ink-soft:    #4A6878;
+  --done:        #4ADE80;
+  --done-bg:     rgba(74,222,128,0.15);
+  --miss-bg:     rgba(248,113,113,0.12);
+  --miss-ink:    #F87171;
+  --future-bg:   rgba(254,127,45,0.06);
   --radius:      10px;
   --font:        'Inter', system-ui, sans-serif;
 }
@@ -67,7 +67,11 @@ html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); fo
 }
 .btn:hover { background: var(--accent); color: #fff; }
 .btn-solid { background: var(--accent); color: #fff; }
-.btn-solid:hover { background: #1D4ED8; border-color: #1D4ED8; }
+.btn-solid:hover { background: #E56D1A; border-color: #E56D1A; }
+.btn-solid:disabled, .btn-solid[disabled] {
+  background: var(--border); border-color: var(--border);
+  color: var(--ink-soft); cursor: not-allowed; opacity: .7;
+}
 .btn-full { width: 100%; justify-content: center; margin-top: 14px; font-size: 14px; padding: 13px; }
 
 /* ── Card ───────────────────────────────────────────────────── */
@@ -77,7 +81,7 @@ html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); fo
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 28px;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.20);
 }
 .card-title {
   font-size: 11px; font-weight: 700; color: var(--ink-soft);
@@ -98,7 +102,7 @@ select, input[type="date"], input[type="text"] {
   cursor: pointer; transition: border-color .15s;
 }
 select:focus, input:focus { border-color: var(--accent); }
-select option { background: #fff; color: var(--ink); }
+select option { background: var(--surface); color: var(--ink); }
 
 .chapter-preview {
   font-size: 12px; font-weight: 600; color: var(--accent);
@@ -109,7 +113,7 @@ select option { background: #fff; color: var(--ink); }
 /* ── Modal ──────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 500;
-  background: rgba(30,58,95,0.45);
+  background: rgba(10,20,28,0.75);
   backdrop-filter: blur(4px);
   display: none; align-items: center; justify-content: center; padding: 20px;
 }
@@ -140,10 +144,10 @@ select option { background: #fff; color: var(--ink); }
 .runner-row {
   background: var(--surface); border: 1.5px solid var(--border);
   border-radius: var(--radius); margin-bottom: 8px;
-  overflow: hidden; box-shadow: 0 1px 4px rgba(37,99,235,0.05);
+  overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.20);
   transition: box-shadow .2s;
 }
-.runner-row.expanded { border-color: var(--border-hi); box-shadow: 0 4px 16px rgba(37,99,235,0.10); }
+.runner-row.expanded { border-color: var(--border-hi); box-shadow: 0 4px 16px rgba(0,0,0,0.30); }
 
 .runner-head {
   display: flex; align-items: center; gap: 10px;
@@ -165,7 +169,7 @@ select option { background: #fff; color: var(--ink); }
 }
 .today-pill.done::before { content: '✓'; font-size: 11px; }
 .today-pill.miss {
-  background: rgba(0,0,0,0.03); color: var(--ink-soft);
+  background: rgba(255,255,255,0.05); color: var(--ink-soft);
   border: 1px solid var(--border);
 }
 .today-pill.miss::before { content: '○'; font-size: 8px; }
@@ -221,13 +225,13 @@ select option { background: #fff; color: var(--ink); }
 }
 .cal-cell.empty { background: none; }
 .cal-cell.done {
-  background: var(--done); color: #fff; font-size: 15px; font-weight: 700;
-  box-shadow: 0 2px 8px rgba(22,163,74,0.30);
+  background: var(--done); color: #1A2A1A; font-size: 15px; font-weight: 700;
+  box-shadow: 0 2px 8px rgba(74,222,128,0.25);
 }
 .cal-cell.miss {
   background: var(--miss-bg); color: var(--miss-ink);
   font-size: 14px; font-weight: 700;
-  border: 1px solid rgba(220,38,38,0.15);
+  border: 1px solid rgba(248,113,113,0.20);
 }
 .cal-cell.future {
   background: var(--future-bg); color: var(--ink-soft);
@@ -243,7 +247,7 @@ select option { background: #fff; color: var(--ink); }
   display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700;
 }
 .leg-dot.done { background: var(--done); color: #fff; }
-.leg-dot.miss { background: var(--miss-bg); color: var(--miss-ink); border: 1px solid rgba(220,38,38,0.2); }
+.leg-dot.miss { background: var(--miss-bg); color: var(--miss-ink); border: 1px solid rgba(248,113,113,0.25); }
 .leg-dot.future { background: var(--future-bg); color: var(--ink-soft); border: 1px solid var(--border); font-size: 8px; }
 
 /* Expand stats */
@@ -279,15 +283,55 @@ select option { background: #fff; color: var(--ink); }
 }
 @keyframes blink { 50% { opacity: 0; } }
 
+/* ── Countdown ──────────────────────────────────────────────── */
+#countdown-bar {
+  background: var(--surface); border-bottom: 2px solid var(--accent);
+  text-align: center; padding: 14px 16px;
+  position: sticky; top: 0; z-index: 100;
+}
+.cd-label {
+  font-size: 11px; font-weight: 700; color: var(--ink-mid);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px;
+}
+.cd-units {
+  display: inline-flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; justify-content: center;
+}
+.cd-unit { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 48px; }
+.cd-num {
+  font-size: 36px; font-weight: 700; color: var(--accent);
+  line-height: 1; font-variant-numeric: tabular-nums;
+}
+.cd-sep {
+  font-size: 28px; font-weight: 700; color: var(--border-hi);
+  line-height: 1; padding-bottom: 8px;
+}
+.cd-txt { font-size: 10px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .07em; }
+
 @media (max-width: 560px) {
   .form-row { flex-direction: column; }
   .header-title { font-size: 15px; }
   .runner-name { font-size: 12px; }
   .progress-badge, .streak-badge { font-size: 11px; }
+  .cd-num { font-size: 28px; }
+  .cd-units { gap: 12px; }
 }
 </style>
 </head>
 <body>
+
+<!-- Countdown banner (hidden once Oct 1 arrives) -->
+<div id="countdown-bar">
+  <div class="cd-label">Challenge starts in</div>
+  <div class="cd-units">
+    <div class="cd-unit"><div class="cd-num" id="cd-days">--</div><div class="cd-txt">days</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit"><div class="cd-num" id="cd-hrs">--</div><div class="cd-txt">hrs</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit"><div class="cd-num" id="cd-min">--</div><div class="cd-txt">min</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit"><div class="cd-num" id="cd-sec">--</div><div class="cd-txt">sec</div></div>
+  </div>
+</div>
 
 <div class="page">
 
@@ -316,7 +360,7 @@ select option { background: #fff; color: var(--ink); }
       </div>
     </div>
     <p id="chapterPreview" class="chapter-preview" style="display:none"></p>
-    <button class="btn btn-solid btn-full" onclick="submitLog()">Log Reading ▶</button>
+    <button id="logBtn" class="btn btn-solid btn-full" onclick="submitLog()">Log Reading ▶</button>
   </div>
 
   <!-- Tracker -->
@@ -672,6 +716,8 @@ async function submitSignup() {
 }
 
 async function submitLog() {
+  if (!canLog()) { toast('Logging opens October 1', true); return; }
+
   const name = document.getElementById('logName').value;
   const date = document.getElementById('logDate').value;
 
@@ -710,6 +756,53 @@ function toast(msg, err = false) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
+
+// ── Countdown & log-gate ──────────────────────────────────────
+const OCT_START = new Date(2026, 9, 1); // Oct 1, 2026 00:00:00 local
+
+function canLog() { return new Date() >= OCT_START; }
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function tickCountdown() {
+  const bar = document.getElementById('countdown-bar');
+  if (!bar) return;
+  const diff = OCT_START - new Date();
+  if (diff <= 0) {
+    bar.style.display = 'none';
+    updateLogBtn();
+    return;
+  }
+  const days = Math.floor(diff / 86400000);
+  const hrs  = Math.floor((diff % 86400000) / 3600000);
+  const min  = Math.floor((diff % 3600000)  / 60000);
+  const sec  = Math.floor((diff % 60000)    / 1000);
+  document.getElementById('cd-days').textContent = days;
+  document.getElementById('cd-hrs').textContent  = pad2(hrs);
+  document.getElementById('cd-min').textContent  = pad2(min);
+  document.getElementById('cd-sec').textContent  = pad2(sec);
+}
+
+function updateLogBtn() {
+  const btn = document.getElementById('logBtn');
+  if (!btn) return;
+  if (canLog()) {
+    btn.disabled = false;
+    btn.textContent = 'Log Reading ▶';
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Logging Opens October 1';
+  }
+}
+
+// Hide countdown bar immediately if already past Oct 1
+if (canLog()) {
+  document.getElementById('countdown-bar').style.display = 'none';
+} else {
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+}
+updateLogBtn();
 
 // ── Bootstrap ─────────────────────────────────────────────────
 async function refresh() {
