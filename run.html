@@ -482,6 +482,8 @@ async function loadData() {
     const seen = new Set();
     PEOPLE = [];
     peopleRows.forEach(r => {
+      const challenge = (r.challenge || r.Challenge || '').toLowerCase().trim();
+      if (challenge && challenge !== 'run') return; // exclude bible-only sign-ups
       // Try several likely header names (Google Forms preserves question label verbatim)
       const name = (r.fullName || r['Full Name'] || r['full name'] || r.Name || r.name || '').trim();
       if (name && !seen.has(name)) { seen.add(name); PEOPLE.push(name); }
@@ -713,7 +715,8 @@ async function submitSignup() {
   if (!name) { toast('Enter your full name', true); return; }
 
   const body = new URLSearchParams();
-  body.set(PEOPLE_NAME_FIELD, name);
+  body.set(PEOPLE_NAME_FIELD,   name);
+  body.set('entry.1773901033',  'run');
 
   try {
     await fetch(PEOPLE_FORM_URL, { method: 'POST', mode: 'no-cors', body });
