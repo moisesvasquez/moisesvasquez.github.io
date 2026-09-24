@@ -45,13 +45,15 @@ html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); fo
 /* ── Header ─────────────────────────────────────────────────── */
 .header {
   display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
   padding: 22px 0 20px;
   border-bottom: 2px solid var(--border);
   margin-bottom: 28px;
 }
+.header-text { min-width: 0; }
 .header-title {
   font-size: 20px; font-weight: 700; color: var(--accent);
-  text-transform: uppercase; letter-spacing: .05em; line-height: 1;
+  text-transform: uppercase; letter-spacing: .05em; line-height: 1.15;
 }
 .header-sub { font-size: 11px; color: var(--ink-mid); margin-top: 4px; letter-spacing: .04em; }
 
@@ -309,7 +311,8 @@ select option { background: var(--surface); color: var(--ink); }
 
 @media (max-width: 560px) {
   .form-row { flex-direction: column; }
-  .header-title { font-size: 15px; }
+  .header-title { font-size: 16px; }
+  .header .btn { width: 100%; justify-content: center; }
   .runner-name { font-size: 12px; }
   .progress-badge, .streak-badge { font-size: 11px; }
   .cd-num { font-size: 28px; }
@@ -337,7 +340,7 @@ select option { background: var(--surface); color: var(--ink); }
 
   <!-- Header -->
   <div class="header">
-    <div>
+    <div class="header-text">
       <div class="header-title">October Daily Bible Reading Challenge</div>
       <div class="header-sub">1 Samuel · 31 chapters · one chapter a day</div>
     </div>
@@ -399,7 +402,7 @@ select option { background: var(--surface); color: var(--ink); }
 
 <script>
 // ── Config ────────────────────────────────────────────────────
-const PEOPLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8ETO2mIlwm18NvoGjDibsqEUBPCarmoZNGXLWRqfwrOXVn2mFc0iEOQAF5dPkJ_iDx8wlMQrSxB63/pub?output=csv';
+const PEOPLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8ETO2mIlwm18NvoGjDibsqEUBPCarmoZNGXLWRqfwrOXVn2mFc0iEOQAF5dPkJ_iDx8wlMQrSxB63/pub?gid=867620642&single=true&output=csv';
 const LOG_CSV    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRhbWLkGnhswO5ayao20silWChSAHxu4b9DESqkzXDlZf5dK7Le9NhSi2jFuuPvp9QyW-VGWFAp0vsS/pub?output=csv';
 
 const PEOPLE_FORM_URL        = 'https://docs.google.com/forms/d/e/1FAIpQLSdSCetILZUJni0bSB0qCNGJjVZB6IvgRpelAebiPm2sSVE85Q/formResponse';
@@ -506,12 +509,17 @@ async function loadData() {
 
   // People — only bible challenge sign-ups
   if (peopleRows) {
+    if (peopleRows.length) console.log('[bible] people CSV cols:', Object.keys(peopleRows[0]));
     const seen = new Set();
     PEOPLE = [];
     peopleRows.forEach(r => {
-      const challenge = (r.challenge || r.Challenge || '').toLowerCase().trim();
+      // Find the challenge column regardless of exact question wording
+      const challengeKey = Object.keys(r).find(k => k.toLowerCase().includes('challenge'));
+      const challenge = challengeKey ? (r[challengeKey] || '').toLowerCase().trim() : '';
       if (challenge !== 'bible') return;
-      const name = (r.fullName || r['Full Name'] || r['full name'] || r.Name || r.name || '').trim();
+      // Find the name column regardless of exact header
+      const nameKey = Object.keys(r).find(k => /name/i.test(k));
+      const name = (nameKey ? r[nameKey] : (r.fullName || r['Full Name'] || r.Name || '')).trim();
       if (name && !seen.has(name)) { seen.add(name); PEOPLE.push(name); }
     });
     setCachedPeople(PEOPLE);
