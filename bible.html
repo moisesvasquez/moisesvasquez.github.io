@@ -594,11 +594,11 @@ function updatePager(todayDay) {
   next.disabled = !todayDay || viewDay >= todayDay;
 }
 
-function calcStreak(reads, todayDay) {
-  if (!todayDay) return 0;
-  const start = reads[todayDay] ? todayDay : todayDay - 1;
+// Streak counted backwards from asOfDay (person must have completed that day)
+function calcStreakAsOf(reads, asOfDay) {
+  if (!asOfDay || !reads[asOfDay]) return 0;
   let streak = 0;
-  for (let d = start; d >= 1; d--) {
+  for (let d = asOfDay; d >= 1; d--) {
     if (reads[d]) streak++;
     else break;
   }
@@ -615,26 +615,26 @@ function buildTracker() {
   if (viewDay === null) viewDay = todayDay || 1;
   updatePager(todayDay);
 
-  const sorted = [...PEOPLE].sort((a, b) => {
-    const aDone = !!(READS[a] || {})[viewDay] ? 1 : 0;
-    const bDone = !!(READS[b] || {})[viewDay] ? 1 : 0;
-    return aDone - bDone || a.localeCompare(b);
-  });
-
-  if (!sorted.length) {
+  if (!PEOPLE.length) {
     document.getElementById('tracker').innerHTML =
       '<div class="loading" style="animation:none">No readers yet. Be the first to sign up!</div>';
     return;
   }
 
-  document.getElementById('tracker').innerHTML = sorted.map(name => {
-    const reads    = READS[name] || {};
-    const didRead  = !!reads[viewDay];
-    const streak   = calcStreak(reads, todayDay);
-    const progress = calcProgress(reads);
+  // Only show people who completed on viewDay
+  const completers = PEOPLE.filter(name => !!(READS[name] || {})[viewDay])
+    .sort((a, b) => a.localeCompare(b));
 
-    const pillCls  = didRead ? 'today-pill done' : 'today-pill miss';
-    const pillText = didRead ? 'Read' : 'Not Read';
+  if (!completers.length) {
+    document.getElementById('tracker').innerHTML =
+      `<div class="loading" style="animation:none">No readings logged for Oct ${viewDay} yet</div>`;
+    return;
+  }
+
+  document.getElementById('tracker').innerHTML = completers.map(name => {
+    const reads    = READS[name] || {};
+    const streak   = calcStreakAsOf(reads, viewDay);
+    const progress = calcProgress(reads);
     const streakHtml = streak > 0 ? `<div class="streak-badge">🔥 ${streak}</div>` : '';
 
     return `<div class="runner-row">
@@ -642,7 +642,7 @@ function buildTracker() {
         <div class="runner-name">${esc(name)}</div>
         ${streakHtml}
         <div class="progress-badge">${progress}/${OCT_DAYS}</div>
-        <div class="${pillCls}">${pillText}</div>
+        <div class="today-pill done">Read</div>
       </div>
       <div class="runner-expand">
         ${buildCalGrid(reads, todayDay)}
@@ -658,7 +658,7 @@ function buildTracker() {
             <div class="expand-stat-sub">${OCT_DAYS - progress} remaining</div>
           </div>
           <div class="expand-stat">
-            <div class="expand-stat-label">Current Streak</div>
+            <div class="expand-stat-label">Streak on Oct ${viewDay}</div>
             <div class="expand-stat-val">${streak}</div>
             <div class="expand-stat-sub">${streak === 1 ? 'day' : 'days'} in a row</div>
           </div>

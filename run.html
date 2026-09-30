@@ -198,9 +198,15 @@ select option { background: #0a0a10; }
   border-top: 0px solid var(--border);
 }
 .runner-row.expanded .runner-expand {
-  max-height: 520px;
+  max-height: 900px;
   border-top: 2px solid var(--border);
   padding: 18px 16px;
+}
+
+.cal-month-label {
+  font-size: 10px; font-weight: 700; color: var(--ink-soft);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 6px; margin-top: 4px;
 }
 
 /* 7-col calendar grid */
@@ -310,7 +316,7 @@ select option { background: #0a0a10; }
       </div>
       <div class="form-group" style="flex:1">
         <label class="form-label">Date</label>
-        <input type="date" id="logDate">
+        <input type="date" id="logDate" min="2026-09-01" max="2026-10-31">
       </div>
     </div>
     <div class="form-group" style="margin-top:12px">
@@ -397,24 +403,25 @@ function bustPeopleCache() {
   try { localStorage.removeItem(CACHE_KEY); } catch {}
 }
 
-const SEPT_YEAR  = 2026;
-const SEPT_MONTH = 8; // 0-indexed
-
 // ── Utilities ─────────────────────────────────────────────────
-function today() {
-  return new Date();
-}
+function today() { return new Date(); }
 
-function getSeptDay(dateStr) {
+// Returns absolute challenge day: Sept 1=1 … Sept 30=30, Oct 1=31 … Oct 31=61
+function getChallengeDay(dateStr) {
   if (!dateStr) return null;
   let d;
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-    d = new Date(dateStr + 'T12:00:00');
-  } else {
-    d = new Date(dateStr);
-  }
-  if (d.getMonth() === SEPT_MONTH && d.getFullYear() === SEPT_YEAR) return d.getDate();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) d = new Date(dateStr + 'T12:00:00');
+  else d = new Date(dateStr);
+  if (isNaN(d)) return null;
+  const y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
+  if (y === 2026 && m === 8) return day;           // September: 1–30
+  if (y === 2026 && m === 9) return 30 + day;      // October:  31–61
   return null;
+}
+
+function dayToLabel(day) {
+  if (!day) return '—';
+  return day <= 30 ? `Sep ${day}` : `Oct ${day - 30}`;
 }
 
 function toSeconds(min, sec) {
@@ -500,7 +507,7 @@ async function loadData() {
     // Try several likely header names
     const name = (r.person || r.Person || r.Name || r.name || r['Your Name'] || '').trim();
     const rawDate = r.date || r.Date || r['Date of Run'] || r['Run Date'] || '';
-    const day  = getSeptDay(rawDate);
+    const day  = getChallengeDay(rawDate);
     if (!name || !day) return;
     const mins = r.minutes || r.Minutes || r.min || r.Min || 0;
     const secs = r.seconds || r.Seconds || r.sec || r.Sec || 0;
@@ -515,11 +522,15 @@ async function loadData() {
 
 // ── Form population ───────────────────────────────────────────
 function populateLogForm() {
-  // Date: today
-  const t = today();
-  const mm = String(t.getMonth() + 1).padStart(2, '0');
-  const dd = String(t.getDate()).padStart(2, '0');
-  document.getElementById('logDate').value = `${t.getFullYear()}-${mm}-${dd}`;
+  // Date: today if within challenge window, else last day
+  const t  = today();
+  const inWindow = getChallengeDay(
+    `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`
+  );
+  const ref = inWindow ? t : new Date(2026, 9, 31); // fallback to Oct 31
+  const mm = String(ref.getMonth() + 1).padStart(2, '0');
+  const dd = String(ref.getDate()).padStart(2, '0');
+  document.getElementById('logDate').value = `${ref.getFullYear()}-${mm}-${dd}`;
 
   // Name dropdown
   const sel = document.getElementById('logName');
@@ -527,10 +538,10 @@ function populateLogForm() {
     ? '<option value="">Select runner…</option>' + PEOPLE.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('')
     : '<option value="">No runners yet — sign up first</option>';
 
-  // Minutes 5–20
+  // Minutes 5–40
   const minSel = document.getElementById('logMin');
   minSel.innerHTML = '';
-  for (let m = 5; m <= 20; m++) {
+  for (let m = 5; m <= 40; m++) {
     minSel.innerHTML += `<option value="${m}"${m === 10 ? ' selected' : ''}>${m}</option>`;
   }
 
@@ -550,13 +561,15 @@ function esc(s) {
 let viewDay = null;
 
 function getTodayDay() {
-  return today().getMonth() === SEPT_MONTH && today().getFullYear() === SEPT_YEAR
-    ? today().getDate() : null;
+  const t = today(), y = t.getFullYear(), m = t.getMonth(), d = t.getDate();
+  if (y === 2026 && m === 8) return d;
+  if (y === 2026 && m === 9) return 30 + d;
+  return null;
 }
 
 function shiftView(delta) {
   const td = getTodayDay();
-  viewDay = Math.max(1, Math.min(td || 30, (viewDay || td || 1) + delta));
+  viewDay = Math.max(1, Math.min(td || 61, (viewDay || td || 1) + delta));
   buildTracker();
 }
 
@@ -565,17 +578,16 @@ function updatePager(todayDay) {
   const prev  = document.getElementById('pagerPrev');
   const next  = document.getElementById('pagerNext');
   if (!label) return;
-  label.textContent = viewDay === todayDay ? 'Today' : `Sep ${viewDay}`;
+  label.textContent = viewDay === todayDay ? 'Today' : dayToLabel(viewDay);
   prev.disabled = viewDay <= 1;
   next.disabled = !todayDay || viewDay >= todayDay;
 }
 
-function calcStreak(runs, todayDay) {
-  if (!todayDay) return 0;
-  // If ran today, count back from today; otherwise count back from yesterday
-  const start = runs[todayDay] ? todayDay : todayDay - 1;
+// Streak counted backwards from asOfDay (must have completed that day to count)
+function calcStreakAsOf(runs, asOfDay) {
+  if (!asOfDay || !runs[asOfDay]) return 0;
   let streak = 0;
-  for (let d = start; d >= 1; d--) {
+  for (let d = asOfDay; d >= 1; d--) {
     if (runs[d]) streak++;
     else break;
   }
@@ -588,47 +600,42 @@ function buildTracker() {
   if (viewDay === null) viewDay = todayDay || 1;
   updatePager(todayDay);
 
-  // Sort: not completed on viewDay first, then alpha
-  const sorted = [...PEOPLE].sort((a, b) => {
-    const aDone = !!(RUNS[a] || {})[viewDay] ? 1 : 0;
-    const bDone = !!(RUNS[b] || {})[viewDay] ? 1 : 0;
-    return aDone - bDone || a.localeCompare(b);
-  });
-
-  if (!sorted.length) {
+  if (!PEOPLE.length) {
     document.getElementById('tracker').innerHTML =
       '<div class="loading" style="animation:none">No runners yet. Be the first to sign up!</div>';
     return;
   }
 
-  document.getElementById('tracker').innerHTML = sorted.map(name => {
+  // Only show people who completed on viewDay
+  const completers = PEOPLE.filter(name => !!(RUNS[name] || {})[viewDay])
+    .sort((a, b) => a.localeCompare(b));
+
+  if (!completers.length) {
+    document.getElementById('tracker').innerHTML =
+      `<div class="loading" style="animation:none">No runs logged for ${dayToLabel(viewDay)} yet</div>`;
+    return;
+  }
+
+  document.getElementById('tracker').innerHTML = completers.map(name => {
     const runs = RUNS[name] || {};
     const days = Object.keys(runs).map(Number);
 
-    // Status pill for viewDay
-    const ranViewDay = !!runs[viewDay];
-    const pillCls  = ranViewDay ? 'today-pill done' : 'today-pill miss';
-    const pillText = ranViewDay ? 'Completed' : 'Not Completed';
+    const streak     = calcStreakAsOf(runs, viewDay);
+    const streakHtml = streak > 0 ? `<div class="streak-badge">🔥 ${streak}</div>` : '';
 
-    // Streak (always based on real today)
-    const streak = calcStreak(runs, todayDay);
-    const streakHtml = streak > 0
-      ? `<div class="streak-badge">🔥 ${streak}</div>`
-      : '';
-
-    // Fastest time
+    // Fastest time across all logged runs
     let fastSec = null, fastDay = null;
     days.forEach(d => {
       if (fastSec === null || runs[d].sec < fastSec) { fastSec = runs[d].sec; fastDay = d; }
     });
     const fastStr     = fastSec !== null ? fmtTime(fastSec) : '—';
-    const fastDateStr = fastDay ? `Sept ${fastDay}` : '';
+    const fastDateStr = fastDay ? dayToLabel(fastDay) : '';
 
     return `<div class="runner-row" id="row-${esc(name.replace(/\s+/g,'_'))}">
       <div class="runner-head" onclick="toggleRow(this)">
         <div class="runner-name">${esc(name)}</div>
         ${streakHtml}
-        <div class="${pillCls}">${pillText}</div>
+        <div class="today-pill done">Completed</div>
       </div>
       <div class="runner-expand">
         ${buildCalGrid(runs, todayDay)}
@@ -649,28 +656,34 @@ function buildTracker() {
 }
 
 function buildCalGrid(runs, todayDay) {
-  const DOWS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const DOWS    = ['Su','Mo','Tu','We','Th','Fr','Sa'];
   const headers = DOWS.map(d => `<div class="cal-dow">${d}</div>`).join('');
-  // Sept 1, 2026 = Tuesday (index 2)
-  const startOffset = 2;
-  const totalDays = 30;
-  const cells = [];
-  // empty cells before day 1
-  for (let i = 0; i < startOffset; i++) cells.push('<div class="cal-cell empty"></div>');
-  for (let d = 1; d <= totalDays; d++) {
-    const past = todayDay ? d < todayDay : false;
-    const isToday = d === todayDay;
-    const future = todayDay ? d > todayDay : true;
-    let cls = 'cal-cell';
-    if (runs[d])        cls += ' done';
-    else if (past || isToday) cls += ' miss';
-    else                cls += ' future';
-    if (isToday)        cls += ' today-ring';
-    const label = runs[d] ? fmtTime(runs[d].sec) : d;
-    const title = runs[d] ? `Sept ${d} · ${fmtTime(runs[d].sec)}` : `Sept ${d}`;
-    cells.push(`<div class="${cls}" title="${title}">${label}</div>`);
+
+  function monthCells(absStart, totalDays, startDOW, monthName) {
+    const cells = [];
+    for (let i = 0; i < startDOW; i++) cells.push('<div class="cal-cell empty"></div>');
+    for (let offset = 0; offset < totalDays; offset++) {
+      const abs     = absStart + offset;
+      const dispDay = offset + 1;
+      const past    = todayDay ? abs < todayDay : false;
+      const isToday = abs === todayDay;
+      let cls = 'cal-cell';
+      if (runs[abs])             cls += ' done';
+      else if (past || isToday)  cls += ' miss';
+      else                       cls += ' future';
+      if (isToday)               cls += ' today-ring';
+      const label = runs[abs] ? fmtTime(runs[abs].sec) : dispDay;
+      const title = `${monthName} ${dispDay}${runs[abs] ? ' · ' + fmtTime(runs[abs].sec) : ''}`;
+      cells.push(`<div class="${cls}" title="${title}">${label}</div>`);
+    }
+    return cells.join('');
   }
-  return `<div class="cal-grid">${headers}${cells.join('')}</div>`;
+
+  return `
+    <div class="cal-month-label">September</div>
+    <div class="cal-grid">${headers}${monthCells(1,  30, 2, 'Sept')}</div>
+    <div class="cal-month-label">October</div>
+    <div class="cal-grid">${headers}${monthCells(31, 31, 4, 'Oct')}</div>`;
 }
 
 function buildSparkline(runs) {
@@ -695,7 +708,7 @@ function buildSparkline(runs) {
   const polyline = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(' ');
   const circles = coords.map(c =>
     `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="3" fill="var(--green)">
-       <title>Sept ${c.p.d}: ${fmtTime(c.p.sec)}</title>
+       <title>${dayToLabel(c.p.d)}: ${fmtTime(c.p.sec)}</title>
      </circle>`
   ).join('');
 
@@ -738,6 +751,7 @@ async function submitLog() {
 
   if (!name) { toast('Select a runner', true); return; }
   if (!date) { toast('Pick a date', true); return; }
+  if (!getChallengeDay(date)) { toast('Date must be in Sept or Oct 2026', true); return; }
 
   const body = new URLSearchParams();
   body.set(LOG_PERSON_FIELD, name);
