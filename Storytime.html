@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:dark}body{margin:0}</style></head><body>
+<title>Storytime Soundboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700&display=swap">
+<style>
+/* Layout: one narrow reading column. Book switcher, a large Listen control with live transcript,
+   then a grid of tap pads (each shows the story words that trigger it), then an add-a-word form.
+   Committed to a dim night look on purpose: it is used at bedtime. Each book re-tints the accent set. */
+:root {
+  color-scheme: dark;
+  --bg: #0d1626;
+  --surface: #15233a;
+  --line: #2b3d58;
+  --ink: #f4efe3;
+  --muted: #a8b7cc;
+  --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.45;
+}
+.app {
+  --accent: #ffd84a;
+  --hot: #ff7a2f;
+  --tile: #173f2c;
+  --tile-edge: #2f8f4e;
+  --tint: #14344f;
+  --on-accent: #1c1600;
+  min-height: 100vh;
+  padding-inline: 16px;
+  padding-block: 20px 40px;
+  background: linear-gradient(180deg, var(--tint), transparent 360px);
+}
+.app[data-book="coral"] {
+  --accent: #ff9a85;
+  --hot: #4fd1c5;
+  --tile: #3b2231;
+  --tile-edge: #e8776a;
+  --tint: #3a2236;
+  --on-accent: #2a0e0a;
+}
+.wrap { max-width: 720px; margin-inline: auto; display: flex; flex-direction: column; gap: 22px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: 1.9rem; line-height: 1.1; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 800; font-size: 1.25rem; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.books { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.book-btn {
+  font: 700 0.98rem/1.2 var(--body);
+  color: var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 10px;
+  min-width: 0;
+  cursor: pointer;
+}
+.book-btn[aria-selected="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.listen { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
+.listen-btn {
+  font: 800 1.45rem/1 var(--display);
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 0;
+  border-radius: 999px;
+  padding: 18px 24px;
+  cursor: pointer;
+}
+.listen-btn.on { background: var(--hot); color: #101010; animation: pulse 1.8s ease-out infinite; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--hot) 55%, transparent); }
+  100% { box-shadow: 0 0 0 18px transparent; }
+}
+.status { display: flex; gap: 8px; align-items: center; color: var(--muted); font-weight: 700; min-height: 1.5em; }
+.status::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+.status[data-state="on"]::before { background: var(--hot); }
+.status[data-state="play"] { color: var(--ink); }
+.status[data-state="play"]::before { background: var(--accent); }
+.status[data-state="warn"] { color: var(--ink); }
+.status[data-state="warn"]::before { background: #ffb020; }
+.heard {
+  min-height: 3em;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+.notice { background: #3a2c10; border: 1px solid #8a6a1f; color: #ffe9b8; padding: 10px 12px; border-radius: 10px; }
+.vol { display: flex; gap: 12px; align-items: center; color: var(--muted); font-weight: 700; }
+.vol input { flex: 1; min-width: 0; accent-color: var(--accent); }
+
+.pads-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.pads-head p { color: var(--muted); }
+.pads { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.pad {
+  display: grid; gap: 4px; align-content: start; text-align: left;
+  min-width: 0; min-height: 84px; padding: 12px;
+  background: var(--tile); color: var(--ink);
+  border: 2px solid var(--tile-edge); border-radius: 14px;
+  cursor: pointer; font-family: var(--body);
+}
+.pad:active { transform: scale(0.97); }
+.pad-name { font: 800 1.1rem/1.15 var(--display); }
+.pad-words { font-size: 0.82rem; color: var(--muted); overflow-wrap: anywhere; }
+.pad.hit { animation: hit 0.6s ease-out; }
+@keyframes hit {
+  0% { background: var(--hot); transform: scale(1.05); }
+  100% { background: var(--tile); transform: scale(1); }
+}
+
+.add { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.add form { display: flex; flex-wrap: wrap; gap: 8px; }
+.add select, .add input[type="text"] {
+  flex: 1 1 140px; min-width: 0;
+  font: 600 1rem var(--body); color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+}
+.btn { font: 700 1rem var(--body); color: var(--on-accent); background: var(--accent); border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer; }
+.btn.quiet { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+.add-msg { color: var(--muted); min-height: 1.4em; }
+@media (prefers-reduced-motion: reduce) {
+  .listen-btn.on, .pad.hit { animation: none; }
+}
+</style>
+
+<main class="app" id="app" data-book="gm">
+  <div class="wrap">
+    <header>
+      <h1>Storytime Soundboard</h1>
+      <div class="books" role="tablist" aria-label="Choose a book">
+        <button class="book-btn" role="tab" id="tab-gm" data-book="gm" aria-selected="true" type="button">Goodnight Moon</button>
+        <button class="book-btn" role="tab" id="tab-coral" data-book="coral" aria-selected="false" type="button">Coral Cutie's Ice Cream Scoops</button>
+      </div>
+    </header>
+
+    <section class="listen" aria-label="Listening">
+      <button class="listen-btn" id="listenBtn" type="button">Start listening</button>
+      <div class="status" id="status" role="status" aria-live="polite" data-state="idle">Ready. Press Start, then read out loud.</div>
+      <p class="heard" id="heard" aria-label="What the microphone heard"></p>
+      <div class="notice" id="notice" hidden>The microphone isn't available in this view, so the page can't hear you read. The pads below still work by tap. For live voice triggering, open the standalone copy in Chrome or Safari and allow the microphone.</div>
+      <label class="vol" for="vol">Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.7"></label>
+    </section>
+
+    <section aria-labelledby="padsTitle">
+      <div class="pads-head">
+        <h2 id="padsTitle">Sounds</h2>
+        <p>Tap a pad to preview it. The words under each name trigger it when you say them.</p>
+      </div>
+      <div class="pads" id="pads"></div>
+    </section>
+
+    <section class="add" aria-labelledby="addTitle">
+      <h2 id="addTitle">Add a trigger word</h2>
+      <form id="addForm">
+        <select id="addSound" aria-label="Sound"></select>
+        <input type="text" id="addWord" placeholder="One word, like sprinkles" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Trigger word">
+        <button class="btn" type="submit">Add</button>
+      </form>
+      <p class="add-msg" id="addMsg" role="status" aria-live="polite"></p>
+      <div><button class="btn quiet" id="resetWords" type="button">Reset words I added for this book</button></div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Sound engine (Web Audio, synthesized) ---------- */
+  var A = null, master = null, nbuf = null, vol = 0.7;
+  function audio() {
+    if (!A) {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      A = new Ctx();
+      master = A.createGain();
+      master.gain.value = vol;
+      var comp = A.createDynamicsCompressor();
+      master.connect(comp);
+      comp.connect(A.destination);
+    }
+    if (A.state === "suspended") A.resume();
+    return A;
+  }
+  function env(g, t, a, peak, d) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
+  }
+  function tone(o) {
+    var t0 = A.currentTime + (o.t || 0), a = o.a == null ? 0.01 : o.a, d = o.d == null ? 0.3 : o.d;
+    var osc = A.createOscillator();
+    osc.type = o.type || "sine";
+    osc.frequency.setValueAtTime(o.f, t0);
+    if (o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2, t0 + a + d);
+    var gn = A.createGain();
+    env(gn, t0, a, o.g == null ? 0.25 : o.g, d);
+    if (o.filter) {
+      var bf = A.createBiquadFilter();
+      bf.type = o.filter.type;
+      bf.frequency.setValueAtTime(o.filter.f, t0);
+      if (o.filter.f2) bf.frequency.exponentialRampToValueAtTime(o.filter.f2, t0 + a + d);
+      bf.Q.value = o.filter.q || 1;
+      osc.connect(bf);
+      bf.connect(gn);
+    } else {
+      osc.connect(gn);
+    }
+    if (o.vib) {
+      var l = A.createOscillator(), lg = A.createGain();
+      l.frequency.value = o.vib.rate;
+      lg.gain.value = o.vib.depth;
+      l.connect(lg);
+      lg.connect(osc.frequency);
+      l.start(t0);
+      l.stop(t0 + a + d + 0.1);
+    }
+    gn.connect(master);
+    osc.start(t0);
+    osc.stop(t0 + a + d + 0.1);
+  }
+  function noise(o) {
+    if (!nbuf) {
+      nbuf = A.createBuffer(1, A.sampleRate * 2, A.sampleRate);
+      var data = nbuf.getChannelData(0);
+      for (var i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    }
+    var t0 = A.currentTime + (o.t || 0), a = o.a == null ? 0.01 : o.a, d = o.d == null ? 0.3 : o.d;
+    var s = A.createBufferSource();
+    s.buffer = nbuf;
+    s.loop = true;
+    var bf = A.createBiquadFilter();
+    bf.type = o.type || "bandpass";
+    bf.frequency.setValueAtTime(o.f || 2000, t0);
+    if (o.f2) bf.frequency.exponentialRampToValueAtTime(o.f2, t0 + a + d);
+    bf.Q.value = o.q || 1;
+    var gn = A.createGain();
+    env(gn, t0, a, o.g == null ? 0.25 : o.g, d);
+    s.connect(bf);
+    bf.connect(gn);
+    gn.connect(master);
+    s.start(t0, Math.random());
+    s.stop(t0 + a + d + 0.1);
+  }
+  function m(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function bell(f, t, d, g) {
+    tone({ f: f, t: t, a: 0.005, d: d, g: g });
+    tone({ f: f * 2.01, t: t, a: 0.005, d: d * 0.5, g: g * 0.3 });
+    tone({ f: f * 3.98, t: t, a: 0.003, d: d * 0.25, g: g * 0.12 });
+  }
+
+  var SFX = {
+    /* Goodnight Moon */
+    moon: function () {
+      tone({ f: m(76), a: 0.05, d: 2.2, g: 0.2 });
+      tone({ f: m(83), t: 0.12, a: 0.06, d: 2.2, g: 0.12 });
+      tone({ f: m(88), t: 0.25, a: 0.08, d: 2.4, g: 0.06 });
+      tone({ f: m(64), a: 0.2, d: 2.4, g: 0.09 });
+    },
+    stars: function () {
+      var notes = [84, 86, 88, 91, 93, 96];
+      for (var i = 0; i < 8; i++) tone({ f: m(notes[Math.floor(Math.random() * notes.length)]), t: i * 0.11 + rnd(0, 0.04), a: 0.004, d: 0.5, g: 0.1 });
+    },
+    cow: function () {
+      tone({ type: "sawtooth", f: 135, f2: 100, a: 0.15, d: 1.15, g: 0.22, filter: { type: "bandpass", f: 520, f2: 360, q: 2.5 }, vib: { rate: 5, depth: 5 } });
+      tone({ type: "triangle", f: 67, f2: 50, a: 0.15, d: 1.15, g: 0.18 });
+    },
+    kittens: function () {
+      tone({ type: "sawtooth", f: 480, f2: 820, a: 0.03, d: 0.17, g: 0.16, filter: { type: "bandpass", f: 1100, f2: 2200, q: 3 } });
+      tone({ type: "sawtooth", f: 820, f2: 430, t: 0.2, a: 0.01, d: 0.32, g: 0.16, filter: { type: "bandpass", f: 2200, f2: 900, q: 3 } });
+    },
+    mittens: function () {
+      noise({ type: "bandpass", f: 3000, q: 0.7, a: 0.05, d: 0.25, g: 0.12 });
+      noise({ type: "bandpass", f: 2400, q: 0.7, t: 0.2, a: 0.05, d: 0.25, g: 0.1 });
+    },
+    mouse: function () {
+      tone({ f: 2000, f2: 3200, a: 0.01, d: 0.08, g: 0.1 });
+      tone({ f: 2400, f2: 3600, t: 0.14, a: 0.01, d: 0.08, g: 0.1 });
+    },
+    fire: function () {
+      noise({ type: "lowpass", f: 300, a: 0.3, d: 1.8, g: 0.1 });
+      for (var i = 0; i < 16; i++) noise({ t: rnd(0, 1.8), a: 0.002, d: rnd(0.02, 0.07), g: rnd(0.15, 0.4), type: "highpass", f: rnd(1500, 4500), q: 0.7 });
+    },
+    clock: function () {
+      for (var i = 0; i < 4; i++) {
+        noise({ t: i * 0.5, a: 0.001, d: 0.04, g: 0.4, type: "bandpass", f: i % 2 ? 1500 : 2200, q: 2 });
+        tone({ t: i * 0.5, f: i % 2 ? 900 : 1200, a: 0.002, d: 0.05, g: 0.18 });
+      }
+    },
+    phone: function () {
+      [0, 0.9].forEach(function (r) {
+        for (var k = 0; k < 12; k++) tone({ type: "triangle", f: k % 2 ? 1050 : 1250, t: r + k * 0.04, a: 0.004, d: 0.035, g: 0.14 });
+      });
+    },
+    balloon: function () {
+      tone({ f: 300, f2: 900, a: 0.02, d: 0.35, g: 0.18, vib: { rate: 25, depth: 40 } });
+      noise({ t: 0.45, a: 0.001, d: 0.05, g: 0.3, type: "highpass", f: 1500 });
+      tone({ t: 0.45, f: 200, f2: 60, a: 0.002, d: 0.08, g: 0.25 });
+    },
+    hush: function () {
+      noise({ type: "bandpass", f: 5000, f2: 3500, q: 0.8, a: 0.4, d: 1.1, g: 0.18 });
+    },
+    lullaby: function () {
+      var mel = [79, 76, 72, 76, 79, 83, 84, 79];
+      mel.forEach(function (n, i) { bell(m(n), i * 0.34, i === mel.length - 1 ? 1.6 : 0.9, 0.16); });
+    },
+    bears: function () {
+      tone({ type: "sawtooth", f: 95, f2: 70, a: 0.1, d: 0.7, g: 0.2, filter: { type: "lowpass", f: 300, q: 1 }, vib: { rate: 18, depth: 8 } });
+    },
+    chairs: function () {
+      tone({ type: "sawtooth", f: 180, f2: 260, a: 0.05, d: 0.25, g: 0.1, filter: { type: "bandpass", f: 800, f2: 1400, q: 6 }, vib: { rate: 40, depth: 30 } });
+      tone({ type: "sawtooth", f: 260, f2: 170, t: 0.3, a: 0.03, d: 0.25, g: 0.09, filter: { type: "bandpass", f: 1400, f2: 800, q: 6 } });
+    },
+    bunny: function () {
+      tone({ f: 140, f2: 45, a: 0.005, d: 0.12, g: 0.45 });
+      tone({ f: 140, f2: 45, t: 0.2, a: 0.005, d: 0.12, g: 0.4 });
+    },
+    brush: function () {
+      noise({ type: "bandpass", f: 2500, f2: 6000, q: 0.6, a: 0.12, d: 0.2, g: 0.14 });
+      noise({ type: "bandpass", f: 6000, f2: 2500, q: 0.6, t: 0.45, a: 0.12, d: 0.2, g: 0.14 });
+    },
+    bowl: function () {
+      tone({ f: 2093, a: 0.002, d: 0.5, g: 0.16 });
+      tone({ f: 2093 * 2.76, a: 0.002, d: 0.25, g: 0.06 });
+      tone({ f: 2349, t: 0.2, a: 0.002, d: 0.5, g: 0.14 });
+    },
+    air: function () {
+      noise({ type: "lowpass", f: 400, f2: 1200, a: 0.8, d: 1.2, g: 0.14 });
+    },
+
+    /* Coral Cutie's Ice Cream Scoops */
+    scoop: function () {
+      noise({ type: "bandpass", f: 600, f2: 1800, q: 2, a: 0.05, d: 0.18, g: 0.2 });
+      tone({ t: 0.2, f: 500, f2: 150, a: 0.005, d: 0.12, g: 0.28 });
+    },
+    jingle: function () {
+      var mel = [84, 88, 91, 88, 86, 83, 86, 84];
+      mel.forEach(function (n, i) { bell(m(n), i * 0.17, i === mel.length - 1 ? 0.9 : 0.35, 0.14); });
+    },
+    vroom: function () {
+      tone({ type: "sawtooth", f: 70, f2: 190, a: 0.1, d: 0.9, g: 0.16, filter: { type: "lowpass", f: 400, f2: 1200, q: 2 }, vib: { rate: 22, depth: 20 } });
+    },
+    beep: function () {
+      tone({ type: "square", f: 520, a: 0.005, d: 0.12, g: 0.1, filter: { type: "lowpass", f: 1800 } });
+      tone({ type: "square", f: 520, t: 0.22, a: 0.005, d: 0.12, g: 0.1, filter: { type: "lowpass", f: 1800 } });
+    },
+    ding: function () {
+      bell(1320, 0, 1.2, 0.2);
+      bell(1320, 0.4, 1.0, 0.16);
+    },
+    crunch: function () {
+      [0, 0.09, 0.2].forEach(function (t) { noise({ t: t, a: 0.002, d: 0.06, g: 0.35, type: "highpass", f: 1500 }); });
+    },
+    sprinkles: function () {
+      for (var i = 0; i < 30; i++) tone({ f: rnd(2500, 6500), t: rnd(0, 1), a: 0.002, d: 0.05, g: 0.07 });
+    },
+    cherry: function () {
+      noise({ a: 0.001, d: 0.04, g: 0.3, type: "highpass", f: 1200 });
+      tone({ f: 700, f2: 200, a: 0.003, d: 0.08, g: 0.28 });
+      tone({ f: m(95), t: 0.1, a: 0.004, d: 0.4, g: 0.09 });
+    },
+    yum: function () {
+      tone({ f: m(72), f2: m(84), a: 0.05, d: 0.35, g: 0.18, vib: { rate: 7, depth: 8 } });
+      tone({ type: "triangle", f: m(84), t: 0.35, a: 0.01, d: 0.5, g: 0.14 });
+      tone({ type: "triangle", f: m(88), t: 0.42, a: 0.01, d: 0.5, g: 0.12 });
+    },
+    slurp: function () {
+      noise({ type: "bandpass", f: 800, f2: 2500, q: 3, a: 0.03, d: 0.25, g: 0.14 });
+      tone({ f: 900, f2: 1800, a: 0.02, d: 0.2, g: 0.05 });
+    },
+    buzz: function () {
+      tone({ type: "sawtooth", f: 210, f2: 240, a: 0.05, d: 1, g: 0.11, filter: { type: "bandpass", f: 900, q: 4 }, vib: { rate: 40, depth: 20 } });
+    },
+    chirp: function () {
+      for (var i = 0; i < 3; i++) tone({ f: 3000, f2: 4300, t: i * 0.14, a: 0.005, d: 0.08, g: 0.11, vib: { rate: 40, depth: 120 } });
+    },
+    waves: function () {
+      noise({ type: "lowpass", f: 300, f2: 1500, a: 1, d: 1, g: 0.22 });
+      noise({ type: "highpass", f: 3000, a: 1, d: 1, g: 0.035 });
+      noise({ type: "lowpass", f: 1500, f2: 250, t: 1.9, a: 0.05, d: 1.1, g: 0.18 });
+    },
+    bloom: function () {
+      [72, 76, 79, 84, 88, 91].forEach(function (n, i) { tone({ f: m(n), t: i * 0.12, a: 0.02, d: 0.9, g: 0.12 }); });
+    },
+    drip: function () {
+      [[0, 1400], [0.5, 1100], [0.85, 1600]].forEach(function (p) { tone({ f: p[1], f2: p[1] * 0.35, t: p[0], a: 0.003, d: 0.12, g: 0.22 }); });
+    },
+    hop: function () {
+      tone({ f: 200, f2: 700, a: 0.01, d: 0.25, g: 0.22, vib: { rate: 30, depth: 40 } });
+      tone({ f: 600, f2: 250, t: 0.3, a: 0.01, d: 0.2, g: 0.14 });
+    },
+    sun: function () {
+      [72, 76, 79, 83, 86].forEach(function (n, i) { tone({ f: m(n), t: i * 0.08, a: 0.4, d: 1.6, g: 0.09 }); });
+    },
+    bloop: function () {
+      tone({ f: 250, f2: 600, a: 0.01, d: 0.1, g: 0.24 });
+      tone({ f: 600, f2: 300, t: 0.12, a: 0.01, d: 0.12, g: 0.18 });
+    },
+    chill: function () {
+      for (var i = 0; i < 10; i++) tone({ f: rnd(3500, 6500), t: i * 0.06, a: 0.003, d: 0.25, g: 0.06 });
+      noise({ type: "highpass", f: 7000, a: 0.1, d: 0.5, g: 0.035 });
+    }
+  };
+
+  /* ---------- Books: sounds and the story words that trigger them ---------- */
+  var BOOKS = {
+    gm: {
+      title: "Goodnight Moon",
+      sounds: [
+        { id: "moon", name: "Moon glow", words: ["moon"], cool: 2500 },
+        { id: "stars", name: "Twinkle", words: ["star", "twinkle"], cool: 1500 },
+        { id: "cow", name: "Moo", words: ["cow", "moo"], cool: 2000 },
+        { id: "kittens", name: "Meow", words: ["kitten", "kitty", "cat", "meow"], cool: 1500 },
+        { id: "mittens", name: "Soft mittens", words: ["mitten", "sock"], cool: 1200 },
+        { id: "mouse", name: "Squeak", words: ["mouse", "mice"], cool: 1200 },
+        { id: "fire", name: "Fire crackle", words: ["fire", "fireplace"], cool: 2500 },
+        { id: "clock", name: "Tick tock", words: ["clock", "tick", "tock"], cool: 2500 },
+        { id: "phone", name: "Phone ring", words: ["telephone", "phone"], cool: 2500 },
+        { id: "balloon", name: "Balloon", words: ["balloon"], cool: 1500 },
+        { id: "hush", name: "Shhh", words: ["hush", "whisper", "whispering", "quiet", "lady"], cool: 2000 },
+        { id: "lullaby", name: "Lullaby", words: ["goodnight", "night", "sleep"], cool: 4000 },
+        { id: "bears", name: "Bear growl", words: ["bear"], cool: 1500 },
+        { id: "chairs", name: "Creaky chair", words: ["chair", "house", "door"], cool: 1500 },
+        { id: "bunny", name: "Bunny hop", words: ["bunny", "bunnies", "rabbit"], cool: 1200 },
+        { id: "brush", name: "Brushing", words: ["comb", "brush"], cool: 1500 },
+        { id: "bowl", name: "Bowl clink", words: ["mush", "bowl", "spoon"], cool: 1500 },
+        { id: "air", name: "Soft breeze", words: ["air", "breeze"], cool: 2500 }
+      ]
+    },
+    coral: {
+      title: "Coral Cutie's Ice Cream Scoops",
+      sounds: [
+        { id: "scoop", name: "Scoop", words: ["scoop", "scooping", "cream"], cool: 1500 },
+        { id: "jingle", name: "Truck jingle", words: ["truck", "van", "jingle", "music"], cool: 3500 },
+        { id: "vroom", name: "Vroom", words: ["vroom", "drive", "driving", "wheel", "road"], cool: 2000 },
+        { id: "beep", name: "Beep beep", words: ["beep", "honk", "toot"], cool: 1200 },
+        { id: "ding", name: "Bell", words: ["bell", "ding"], cool: 2000 },
+        { id: "crunch", name: "Crunch", words: ["cone", "crunch", "waffle"], cool: 1200 },
+        { id: "sprinkles", name: "Sprinkles", words: ["sprinkle", "sprinkles"], cool: 1800 },
+        { id: "cherry", name: "Cherry pop", words: ["cherry", "pop"], cool: 1200 },
+        { id: "yum", name: "Yum!", words: ["yum", "yummy", "delicious", "strawberry", "chocolate", "vanilla", "mint", "flavor", "taste"], cool: 1500 },
+        { id: "slurp", name: "Slurp", words: ["lick", "licking", "slurp"], cool: 1500 },
+        { id: "buzz", name: "Buzz", words: ["bee", "bumblebee", "buzz"], cool: 2000 },
+        { id: "chirp", name: "Chirp", words: ["bird", "duck", "duckling", "chick", "tweet"], cool: 1500 },
+        { id: "waves", name: "Waves", words: ["ocean", "sea", "wave", "water", "beach"], cool: 3500 },
+        { id: "bloom", name: "Flowers bloom", words: ["flower", "tulip", "petal"], cool: 2200 },
+        { id: "drip", name: "Drip", words: ["melt", "melting", "drip", "dripping"], cool: 1800 },
+        { id: "hop", name: "Boing hop", words: ["bunny", "bunnies", "rabbit", "hop", "jump", "coral", "cutie"], cool: 1500 },
+        { id: "sun", name: "Sunshine", words: ["sun", "sunny", "sunshine", "rainbow"], cool: 2500 },
+        { id: "bloop", name: "Bloop", words: ["mushroom", "bubble", "bloop"], cool: 1200 },
+        { id: "chill", name: "Icy chill", words: ["cold", "freezing", "frozen", "popsicle", "chilly"], cool: 1500 }
+      ]
+    }
+  };
+
+  /* ---------- State ---------- */
+  var cur = "gm";
+  var custom = { gm: {}, coral: {} };
+  var last = {};
+  var map = {};
+  var rec = null, wantListen = false, seen = {}, wake = null;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $("app"), padsEl = $("pads"), statusEl = $("status"), heardEl = $("heard"),
+      listenBtn = $("listenBtn"), noticeEl = $("notice"), addSound = $("addSound"),
+      addWord = $("addWord"), addMsg = $("addMsg");
+
+  function store(get, key, val) {
+    try {
+      if (get) return window.localStorage.getItem(key);
+      window.localStorage.setItem(key, val);
+    } catch (e) { /* storage may be unavailable */ }
+    return null;
+  }
+  try {
+    var saved = JSON.parse(store(true, "storytime-custom") || "null");
+    if (saved && saved.gm && saved.coral) custom = saved;
+  } catch (e) { /* ignore */ }
+
+  function normalize(w) { return String(w || "").toLowerCase().replace(/[^a-z]/g, ""); }
+  function tokenize(t) {
+    return String(t).toLowerCase().replace(/[’']/g, "").split(/[^a-z]+/).filter(Boolean);
+  }
+  function wordsFor(s) { return s.words.concat(custom[cur][s.id] || []); }
+
+  function buildMap() {
+    map = {};
+    BOOKS[cur].sounds.forEach(function (s) {
+      wordsFor(s).forEach(function (w) { if (!map[w]) map[w] = s.id; });
+    });
+  }
+  function lookup(w) {
+    if (map[w]) return map[w];
+    if (w.length > 3 && /ies$/.test(w) && map[w.slice(0, -3) + "y"]) return map[w.slice(0, -3) + "y"];
+    if (/es$/.test(w) && map[w.slice(0, -2)]) return map[w.slice(0, -2)];
+    if (/s$/.test(w) && map[w.slice(0, -1)]) return map[w.slice(0, -1)];
+    return null;
+  }
+  function soundById(id) {
+    var list = BOOKS[cur].sounds;
+    for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+    return null;
+  }
+
+  /* ---------- UI ---------- */
+  function setStatus(text, state) {
+    statusEl.textContent = text;
+    statusEl.dataset.state = state || "idle";
+  }
+  function setListening(on) {
+    listenBtn.textContent = on ? "Stop listening" : "Start listening";
+    listenBtn.classList.toggle("on", on);
+    if (on) setStatus("Listening. Start reading.", "on");
+    else if (statusEl.dataset.state === "on") setStatus("Stopped. Press Start when you're ready.", "idle");
+  }
+  function flash(id) {
+    var el = padsEl.querySelector('[data-id="' + id + '"]');
+    if (!el) return;
+    el.classList.remove("hit");
+    void el.offsetWidth;
+    el.classList.add("hit");
+  }
+  function play(id, byVoice) {
+    var fn = SFX[id];
+    if (!fn) return;
+    try { audio(); fn(); } catch (e) { setStatus("Sound couldn't play on this device.", "warn"); return; }
+    last[id] = Date.now();
+    flash(id);
+    var s = soundById(id);
+    if (s) setStatus((byVoice ? "Heard a story word: " : "Played: ") + s.name, "play");
+  }
+
+  function renderPads() {
+    var b = BOOKS[cur];
+    $("padsTitle").textContent = "Sounds for " + b.title;
+    padsEl.textContent = "";
+    addSound.textContent = "";
+    b.sounds.forEach(function (s) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pad";
+      btn.dataset.id = s.id;
+      var n = document.createElement("span");
+      n.className = "pad-name";
+      n.textContent = s.name;
+      var w = document.createElement("span");
+      w.className = "pad-words";
+      w.textContent = wordsFor(s).join(", ");
+      btn.appendChild(n);
+      btn.appendChild(w);
+      btn.addEventListener("click", function () { play(s.id, false); });
+      padsEl.appendChild(btn);
+      var opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.name;
+      addSound.appendChild(opt);
+    });
+    buildMap();
+  }
+
+  function switchBook(key) {
+    cur = key;
+    app.dataset.book = key;
+    ["gm", "coral"].forEach(function (k) { $("tab-" + k).setAttribute("aria-selected", String(k === key)); });
+    addMsg.textContent = "";
+    renderPads();
+    store(false, "storytime-book", key);
+  }
+  document.querySelectorAll(".book-btn").forEach(function (b) {
+    b.addEventListener("click", function () { switchBook(b.dataset.book); });
+  });
+
+  $("vol").addEventListener("input", function (e) {
+    vol = parseFloat(e.target.value);
+    if (master) master.gain.value = vol;
+  });
+
+  $("addForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var w = normalize(addWord.value);
+    if (!w) { addMsg.textContent = "Type one word, letters only."; return; }
+    var existing = lookup(w);
+    if (existing) { addMsg.textContent = "\"" + w + "\" already plays " + soundById(existing).name + "."; return; }
+    var id = addSound.value;
+    (custom[cur][id] = custom[cur][id] || []).push(w);
+    store(false, "storytime-custom", JSON.stringify(custom));
+    addWord.value = "";
+    addMsg.textContent = "Added \"" + w + "\" to " + soundById(id).name + ".";
+    renderPads();
+  });
+  $("resetWords").addEventListener("click", function () {
+    custom[cur] = {};
+    store(false, "storytime-custom", JSON.stringify(custom));
+    addMsg.textContent = "Back to the original words for " + BOOKS[cur].title + ".";
+    renderPads();
+  });
+
+  /* ---------- Listening ---------- */
+  function heardWord(w) {
+    var id = lookup(w);
+    if (!id) return;
+    var s = soundById(id);
+    if (Date.now() - (last[id] || 0) < (s ? s.cool : 1500)) return;
+    play(id, true);
+  }
+  function onResult(e) {
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      var words = tokenize(e.results[i][0].transcript);
+      for (var k = seen[i] || 0; k < words.length; k++) heardWord(words[k]);
+      seen[i] = words.length;
+    }
+    var all = "";
+    for (var j = 0; j < e.results.length; j++) all += " " + e.results[j][0].transcript;
+    heardEl.textContent = all.trim().split(/\s+/).slice(-14).join(" ");
+  }
+  function showBlocked() {
+    wantListen = false;
+    setListening(false);
+    noticeEl.hidden = false;
+    setStatus("Can't listen here. Tap the pads instead.", "warn");
+  }
+  async function requestWake() {
+    try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (e) { /* optional */ }
+  }
+  function releaseWake() {
+    try { if (wake) wake.release(); } catch (e) { /* ignore */ }
+    wake = null;
+  }
+  function startListening() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    try { audio(); } catch (e) { /* audio may fail; pads will report */ }
+    if (!SR) { noticeEl.hidden = false; setStatus("This browser can't listen. Tap the pads instead.", "warn"); return; }
+    noticeEl.hidden = true;
+    rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = "en-US";
+    rec.onstart = function () { seen = {}; setListening(true); };
+    rec.onresult = onResult;
+    rec.onerror = function (e) {
+      if (e.error === "no-speech" || e.error === "aborted") return;
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") { showBlocked(); return; }
+      setStatus("Listening problem: " + e.error, "warn");
+    };
+    rec.onend = function () {
+      if (wantListen) {
+        setTimeout(function () { if (wantListen) { try { rec.start(); } catch (err) { /* already started */ } } }, 250);
+      } else {
+        setListening(false);
+      }
+    };
+    wantListen = true;
+    try { rec.start(); } catch (err) { showBlocked(); return; }
+    requestWake();
+  }
+  function stopListening() {
+    wantListen = false;
+    try { if (rec) rec.stop(); } catch (e) { /* ignore */ }
+    setListening(false);
+    releaseWake();
+  }
+  listenBtn.addEventListener("click", function () { if (wantListen) stopListening(); else startListening(); });
+  document.addEventListener("visibilitychange", function () { if (wantListen && document.visibilityState === "visible") requestWake(); });
+
+  /* ---------- Boot ---------- */
+  var startBook = store(true, "storytime-book");
+  switchBook(startBook === "coral" ? "coral" : "gm");
+})();
+</script>
+
+</body></html>
