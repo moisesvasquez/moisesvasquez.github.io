@@ -5,8 +5,12 @@ date: 2026-10-17 09:00:00 -0400
 image: /assets/images/projects/us-baby-names.jpg
 permalink: /blog/us-baby-names
 description: "A name lookup tool built on 146 years of Social Security data. Search any name, compare trends, and see how naming in America has changed."
+brief: "Search 146 years of US baby name data from the SSA. Look up any name, compare trends, and explore what parents have been picking lately."
 category: Data
-tags: blog-post data javascript
+type: Web App
+link: https://names.moisesvasquez.io
+github: https://github.com/moisesvasquez/us-baby-names
+tags: blog-post data javascript project
 ---
 
 I built [names.moisesvasquez.io](https://names.moisesvasquez.io) because I kept getting annoyed at existing baby name sites. They all buried the actual data behind clutter, ads, and "popularity scores" with no source attached. I wanted something that just showed you the numbers.
@@ -29,7 +33,7 @@ Alexa has been falling hard since Amazon's assistant showed up everywhere. Down 
 
 The whole dataset is also available as a free API. If you want to pull name data into your own project, you can query by name, by year range, or by rank. No key required.
 
-The source code is on GitHub.
+The source code is [on GitHub](https://github.com/moisesvasquez/us-baby-names).
 
 ---
 
