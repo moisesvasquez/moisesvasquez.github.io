@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scribble Font — turn handwriting into a font</title>
+<meta name="description" content="Print a sheet, let your kid fill it in, snap a photo, and get a real font of their handwriting. Then record their voice and make caption videos in that font.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">Aa</span> Scribble Font</a>
+    <p class="tagline">Turn your kid's handwriting into a real font — then into videos.</p>
+  </div>
+  <nav class="wrap steps" aria-label="Steps">
+    <button data-step="print" class="active"><b>1</b> Print</button>
+    <button data-step="scan"><b>2</b> Scan</button>
+    <button data-step="font"><b>3</b> Font</button>
+    <button data-step="record"><b>4</b> Record</button>
+    <button data-step="captions"><b>5</b> Captions</button>
+    <button data-step="video"><b>6</b> Video</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <!-- 1. PRINT -->
+  <section id="step-print" class="step active">
+    <h1>Print the handwriting sheet</h1>
+    <p class="lead">Capitals &amp; numbers, lowercase &amp; symbols, and an optional page of accented letters. Kids write one character in each box — that's it.</p>
+    <div class="print-opts">
+      <div class="seg-inline" role="radiogroup" aria-label="Paper size">
+        <label><input type="radio" name="paper" value="a4" checked> A4</label>
+        <label><input type="radio" name="paper" value="letter"> US Letter</label>
+      </div>
+      <label class="check"><input type="checkbox" id="includeAccents" checked> Include the accents page (á é ñ ü ¿ ¡ ç)</label>
+    </div>
+    <div class="sheet-previews" id="sheetPreviews"></div>
+    <div class="actions">
+      <button class="btn primary" id="printBtn">Print the sheets</button>
+      <button class="btn" data-goto="scan">I've filled them in →</button>
+    </div>
+    <ul class="tips">
+      <li><b>Use a dark marker or felt-tip pen.</b> Pencil works but comes out thin and faint. Any colour is fine.</li>
+      <li><b>Letters sit on the solid line.</b> Tails on g, j, p, q, y hang below it. Keep each letter inside its box.</li>
+      <li><b>Print at 100% (or "fit to page").</b> The sheets fit on A4 or US Letter — pick your paper above.</li>
+      <li>Already made a font here before? <a href="#" data-goto="font">Load your font file</a> and skip ahead.</li>
+    </ul>
+  </section>
+
+  <!-- 2. SCAN -->
+  <section id="step-scan" class="step">
+    <h1>Scan the filled-in sheets</h1>
+    <p class="lead">Take a photo of each page from straight above, in good light, with all four black corner squares in the shot.</p>
+    <label class="drop" id="drop">
+      <input type="file" id="photoInput" accept="image/*" multiple hidden>
+      <span class="drop-icon" aria-hidden="true">📷</span>
+      <span><b>Add photos</b> — tap to take or choose pictures, or drop them here</span>
+    </label>
+    <div class="photos" id="photos"></div>
+
+    <div class="panel" id="readPanel" hidden>
+      <div class="sliders">
+        <label>Ink sensitivity
+          <input type="range" id="sensitivity" min="0.45" max="0.9" step="0.01" value="0.68">
+          <small>Raise it if strokes look broken; lower it if smudges show up.</small>
+        </label>
+        <label>Stroke thickness
+          <input type="range" id="weight" min="-2" max="3" step="1" value="0">
+          <small>Thicken thin pencil lines, or slim down heavy marker.</small>
+        </label>
+      </div>
+      <div class="glyph-grid" id="glyphGrid"></div>
+      <p class="hint">Tap a letter to leave it out of the font (for example, a messy one you'd rather redo).</p>
+      <div class="actions">
+        <button class="btn primary" id="buildBtn" disabled>Build my font →</button>
+        <span class="status" id="readStatus"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. FONT -->
+  <section id="step-font" class="step">
+    <h1>Your handwriting font</h1>
+    <div class="font-empty" id="fontEmpty">
+      <p>No font yet. <a href="#" data-goto="scan">Scan your sheets</a>, or load a font file you made earlier:</p>
+      <label class="btn"><input type="file" id="fontInput" accept=".otf,.ttf,.woff,font/otf,font/ttf" hidden>Load a font file</label>
+    </div>
+    <div id="fontReady" hidden>
+      <div class="font-row">
+        <label class="field">Font name
+          <input type="text" id="fontName" maxlength="40" placeholder="Emma's Handwriting">
+        </label>
+        <button class="btn primary" id="downloadFont">Download font (.otf)</button>
+        <label class="btn subtle"><input type="file" id="fontInput2" accept=".otf,.ttf,.woff,font/otf,font/ttf" hidden>Load a different font</label>
+      </div>
+      <label class="spacing" id="spacingRow">Letter spacing
+        <input type="range" id="spacing" min="-30" max="90" step="5" value="0">
+      </label>
+      <div class="specimen" id="specimen" contenteditable="true" spellcheck="false">The quick brown fox jumps over the lazy dog!<br>I love you to the moon ♥ 123</div>
+      <p class="hint">Click the text above and type to try your font. The .otf file installs on Mac, Windows, iPhone/iPad (via a font app) and works in Word, Pages, Canva, Cricut Design Space and more.</p>
+      <div class="actions">
+        <button class="btn" data-goto="record">Next: record a voice →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. RECORD -->
+  <section id="step-record" class="step">
+    <h1>Record a voice</h1>
+    <p class="lead">Read a story, sing a song, say a message to grandma. The words become captions in your handwriting.</p>
+    <div class="recorder">
+      <button class="rec-btn" id="recBtn" aria-label="Start recording"><span></span></button>
+      <div class="rec-info">
+        <div class="rec-time" id="recTime">0:00</div>
+        <div class="meter"><div id="meterFill"></div></div>
+        <div class="status" id="recStatus">Tap the red button to start.</div>
+      </div>
+    </div>
+    <div class="or">or <label class="link"><input type="file" id="audioInput" accept="audio/*,.m4a,.mp3,.wav" hidden>upload an audio file</label></div>
+    <div class="panel" id="audioPanel" hidden>
+      <audio id="audioEl" controls></audio>
+      <div class="actions">
+        <a class="btn subtle" id="audioDownload" download>Save recording</a>
+        <button class="btn primary" data-goto="captions">Next: captions →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CAPTIONS -->
+  <section id="step-captions" class="step">
+    <h1>Captions</h1>
+    <p class="lead">Let the app listen and write the words, or type them yourself and we'll match them to the recording.</p>
+    <p class="warn" id="capNeedsAudio">Record or upload some audio first (step 4).</p>
+    <div class="choices">
+      <div class="choice">
+        <h3>✨ Write them for me</h3>
+        <p>Speech recognition runs on this device. The first time, it downloads a ~80&nbsp;MB model.</p>
+        <label class="field">Language
+          <select id="lang"></select>
+        </label>
+        <button class="btn primary" id="autoBtn">Transcribe</button>
+      </div>
+      <div class="choice">
+        <h3>✍️ I'll type them</h3>
+        <textarea id="script" rows="4" placeholder="Once upon a time there was a little dragon…"></textarea>
+        <button class="btn" id="syncBtn">Match to recording</button>
+      </div>
+    </div>
+    <div class="status" id="capStatus"></div>
+
+    <div class="panel" id="capPanel" hidden>
+      <div class="cap-tools">
+        <label>Words per caption
+          <input type="range" id="capLen" min="8" max="48" step="2" value="24">
+        </label>
+        <button class="btn subtle" id="addCap">+ Add caption</button>
+      </div>
+      <div class="cap-list" id="capList"></div>
+      <p class="hint">Fix any words the app misheard. Times are in seconds — ▶ plays just that caption.</p>
+      <div class="actions">
+        <button class="btn primary" data-goto="video">Next: make the video →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. VIDEO -->
+  <section id="step-video" class="step">
+    <h1>Make the video</h1>
+    <p class="warn" id="vidNeeds" hidden></p>
+    <div class="studio">
+      <div class="stage-col">
+        <div class="stage" id="stage"><canvas id="preview"></canvas></div>
+        <div class="transport">
+          <button class="btn round" id="playBtn" aria-label="Play">▶</button>
+          <input type="range" id="scrub" min="0" max="1" step="0.01" value="0" aria-label="Position">
+          <span class="time" id="timeLabel">0:00</span>
+        </div>
+      </div>
+      <div class="controls">
+        <fieldset>
+          <legend>Shape</legend>
+          <div class="seg" id="aspects"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Background</legend>
+          <div class="swatches" id="bgSwatches"></div>
+          <div class="bg-image">
+            <label class="btn subtle small"><input type="file" id="bgInput" accept="image/*" hidden>Add a picture</label>
+            <span id="bgImageInfo" hidden>
+              <img id="bgThumb" alt="">
+              <label class="check"><input type="checkbox" id="bgFade" checked> Soften so words stand out</label>
+              <button class="x" id="bgRemove" title="Remove picture" aria-label="Remove picture">×</button>
+            </span>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Title card</legend>
+          <label class="check"><input type="checkbox" id="titleOn"> Start with a title card</label>
+          <div class="stack" id="titleFields">
+            <input type="text" id="titleText" maxlength="80" placeholder="The Little Dragon" aria-label="Title">
+            <input type="text" id="subtitleText" maxlength="80" placeholder="by Emma, age 6" aria-label="Subtitle">
+            <label class="inline">Show it for
+              <select id="introLen"><option value="2">2 seconds</option><option value="3">3 seconds</option><option value="4">4 seconds</option><option value="5">5 seconds</option></select>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Name on screen</legend>
+          <label class="check"><input type="checkbox" id="nameOn"> Show a name in the corner</label>
+          <input type="text" id="nameText" maxlength="40" placeholder="Emma, age 6" aria-label="Name">
+        </fieldset>
+        <fieldset>
+          <legend>Text colour</legend>
+          <div class="swatches" id="fgSwatches"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Highlight the word being said</legend>
+          <label class="check"><input type="checkbox" id="hlOn" checked> On</label>
+          <div class="swatches" id="hlSwatches"></div>
+        </fieldset>
+        <fieldset class="row2">
+          <label>Text size
+            <input type="range" id="textSize" min="0.5" max="1.6" step="0.05" value="1">
+          </label>
+          <label>Position
+            <select id="textPos"><option value="middle">Middle</option><option value="lower">Lower third</option></select>
+          </label>
+        </fieldset>
+        <div class="export">
+          <button class="btn primary big" id="exportBtn">Create video</button>
+          <div class="progress" id="exportProgress" hidden><div></div></div>
+          <div class="status" id="exportStatus"></div>
+          <div id="exportResult" hidden>
+            <video id="resultVideo" controls playsinline></video>
+            <a class="btn primary" id="videoDownload" download>Download video</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Printed instead of the app -->
+  <div class="print-sheets" id="printSheets" aria-hidden="true"></div>
+</main>
+
+<footer class="wrap foot">
+  Everything happens in your browser — photos and recordings never leave your device.
+</footer>
+
+<script src="vendor/opentype.min.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
