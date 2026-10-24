@@ -31,7 +31,14 @@
   <!-- 1. PRINT -->
   <section id="step-print" class="step active">
     <h1>Print the handwriting sheet</h1>
-    <p class="lead">Two pages: capitals &amp; numbers, then lowercase &amp; symbols. Kids write one character in each box — that's it.</p>
+    <p class="lead">Capitals &amp; numbers, lowercase &amp; symbols, and an optional page of accented letters. Kids write one character in each box — that's it.</p>
+    <div class="print-opts">
+      <div class="seg-inline" role="radiogroup" aria-label="Paper size">
+        <label><input type="radio" name="paper" value="a4" checked> A4</label>
+        <label><input type="radio" name="paper" value="letter"> US Letter</label>
+      </div>
+      <label class="check"><input type="checkbox" id="includeAccents" checked> Include the accents page (á é ñ ü ¿ ¡ ç)</label>
+    </div>
     <div class="sheet-previews" id="sheetPreviews"></div>
     <div class="actions">
       <button class="btn primary" id="printBtn">Print the sheets</button>
@@ -40,7 +47,7 @@
     <ul class="tips">
       <li><b>Use a dark marker or felt-tip pen.</b> Pencil works but comes out thin and faint. Any colour is fine.</li>
       <li><b>Letters sit on the solid line.</b> Tails on g, j, p, q, y hang below it. Keep each letter inside its box.</li>
-      <li><b>Print at 100% (or "fit to page").</b> Letter or A4 paper both work.</li>
+      <li><b>Print at 100% (or "fit to page").</b> The sheets fit on A4 or US Letter — pick your paper above.</li>
       <li>Already made a font here before? <a href="#" data-goto="font">Load your font file</a> and skip ahead.</li>
     </ul>
   </section>
@@ -182,6 +189,30 @@
         <fieldset>
           <legend>Background</legend>
           <div class="swatches" id="bgSwatches"></div>
+          <div class="bg-image">
+            <label class="btn subtle small"><input type="file" id="bgInput" accept="image/*" hidden>Add a picture</label>
+            <span id="bgImageInfo" hidden>
+              <img id="bgThumb" alt="">
+              <label class="check"><input type="checkbox" id="bgFade" checked> Soften so words stand out</label>
+              <button class="x" id="bgRemove" title="Remove picture" aria-label="Remove picture">×</button>
+            </span>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Title card</legend>
+          <label class="check"><input type="checkbox" id="titleOn"> Start with a title card</label>
+          <div class="stack" id="titleFields">
+            <input type="text" id="titleText" maxlength="80" placeholder="The Little Dragon" aria-label="Title">
+            <input type="text" id="subtitleText" maxlength="80" placeholder="by Emma, age 6" aria-label="Subtitle">
+            <label class="inline">Show it for
+              <select id="introLen"><option value="2">2 seconds</option><option value="3">3 seconds</option><option value="4">4 seconds</option><option value="5">5 seconds</option></select>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Name on screen</legend>
+          <label class="check"><input type="checkbox" id="nameOn"> Show a name in the corner</label>
+          <input type="text" id="nameText" maxlength="40" placeholder="Emma, age 6" aria-label="Name">
         </fieldset>
         <fieldset>
           <legend>Text colour</legend>

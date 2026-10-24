@@ -81,6 +81,13 @@ main { padding-top: 28px; padding-bottom: 40px; }
 .tips { margin: 26px 0 0; padding-left: 20px; max-width: 720px; }
 .tips li { margin-bottom: 6px; }
 .print-sheets { display: none; }
+.print-opts { display: flex; gap: 12px 24px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+.print-opts .check { margin: 0; }
+.seg-inline { display: inline-flex; background: var(--card); border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; }
+.seg-inline label { padding: 6px 14px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 14px; }
+.seg-inline input { position: absolute; opacity: 0; pointer-events: none; }
+.seg-inline label:has(input:checked) { background: var(--ink); color: #fff; }
+.seg-inline label:has(input:focus-visible) { outline: 2px solid var(--coral); }
 
 /* 2. scan */
 .drop {
@@ -188,6 +195,15 @@ fieldset.row2 label { font-weight: 800; font-size: 14px; display: grid; gap: 4px
 .swatch { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(0, 0, 0, .12); cursor: pointer; padding: 0; }
 .swatch.on { outline: 3px solid var(--ink); outline-offset: 2px; }
 .swatches input[type=color] { width: 38px; height: 38px; border: 0; padding: 0; background: none; cursor: pointer; }
+.bg-image { clear: both; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+.bg-image > span { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.bg-image .check { margin: 0; font-weight: 600; font-size: 14px; }
+#bgThumb { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
+.btn.small { padding: 6px 14px; font-size: 14px; }
+.stack { display: grid; gap: 8px; clear: both; }
+.stack.off { opacity: .45; }
+label.inline { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+label.inline select { width: auto; }
 .check { display: inline-flex; gap: 6px; align-items: center; font-weight: 700; margin-bottom: 8px; clear: both; }
 .export { display: grid; gap: 10px; }
 .progress { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
@@ -198,12 +214,11 @@ fieldset.row2 label { font-weight: 800; font-size: 14px; display: grid; gap: 4px
 .foot { color: var(--ink-soft); font-size: 13px; padding-bottom: 30px; text-align: center; }
 
 /* printing: only the worksheets */
-@page { size: letter; margin: 0; }
 @media print {
   body { background: #fff; }
   .top, .foot, .step { display: none !important; }
   main { padding: 0; max-width: none; }
   .print-sheets { display: block !important; }
-  .print-sheets svg { display: block; width: 8.5in; height: 11in; page-break-after: always; break-after: page; }
+  .print-sheets svg { display: block; page-break-after: always; break-after: page; }
   .print-sheets svg:last-child { page-break-after: auto; break-after: auto; }
 }

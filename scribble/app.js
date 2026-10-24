@@ -1,4 +1,4 @@
-import { PAGES, pageSVG } from './lib/template.js';
+import { PAGES, PAPERS, pageSVG } from './lib/template.js';
 import { loadPhoto, detectPage, readPageCode, readSheet, cellPreview } from './lib/scan.js';
 import { buildFont, registerFont, fontNameFromBuffer } from './lib/font.js';
 import { LANGUAGES, decodeAudio, syncScript, transcribe, groupWords } from './lib/captions.js';
@@ -31,7 +31,9 @@ const state = {
   captions: [],
   style: {
     aspect: '9:16', bg: '#fff4d6', color: '#2b2a33', highlight: '#ff6b4a', highlightOn: true, size: 1, position: 'middle',
+    bgFade: true, titleOn: false, title: '', subtitle: '', introLen: 3, nameOn: false, name: '',
   },
+  bgImage: null, // HTMLImageElement; not saved between visits
 };
 try { Object.assign(state.style, JSON.parse(store.get('scribble.style') || '{}')); } catch {}
 const saveStyle = () => store.set('scribble.style', JSON.stringify(state.style));
@@ -65,13 +67,32 @@ function markDone() {
 
 const previews = $('#sheetPreviews');
 const printSheets = $('#printSheets');
-PAGES.forEach((p, i) => {
-  const fig = el('figure');
-  fig.innerHTML = pageSVG(i);
-  fig.append(el('figcaption', {}, `Page ${i + 1}: ${p.title}`));
-  previews.append(fig);
-  printSheets.insertAdjacentHTML('beforeend', pageSVG(i));
-});
+const pageStyle = el('style');
+document.head.append(pageStyle);
+const paperInputs = [...document.querySelectorAll('input[name=paper]')];
+const includeAccents = $('#includeAccents');
+const savedPaper = store.get('scribble.paper');
+if (PAPERS[savedPaper]) paperInputs.forEach((r) => { r.checked = r.value === savedPaper; });
+includeAccents.checked = store.get('scribble.accents') !== '0';
+
+function renderSheets() {
+  const paper = paperInputs.find((r) => r.checked)?.value || 'a4';
+  const pages = PAGES.map((_, i) => i).filter((i) => !PAGES[i].optional || includeAccents.checked);
+  previews.replaceChildren();
+  printSheets.replaceChildren();
+  for (const i of pages) {
+    const fig = el('figure');
+    fig.innerHTML = pageSVG(i, paper, pages.length);
+    fig.append(el('figcaption', {}, `Page ${i + 1}: ${PAGES[i].title}`));
+    previews.append(fig);
+    printSheets.insertAdjacentHTML('beforeend', pageSVG(i, paper, pages.length));
+  }
+  pageStyle.textContent = `@page { size: ${PAPERS[paper].css}; margin: 0; }`;
+  store.set('scribble.paper', paper);
+  store.set('scribble.accents', includeAccents.checked ? '1' : '0');
+}
+[...paperInputs, includeAccents].forEach((i) => i.addEventListener('change', renderSheets));
+renderSheets();
 $('#printBtn').addEventListener('click', () => window.print());
 
 // ---------- 2. scan ----------
@@ -261,7 +282,7 @@ function renderGlyphs() {
   });
   $('#buildBtn').disabled = count === 0;
   const total = PAGES.reduce((a, p) => a + p.chars.length, 0);
-  const missingPages = PAGES.map((_, i) => i).filter((i) => !state.results.has(i)).map((i) => i + 1);
+  const missingPages = PAGES.map((_, i) => i).filter((i) => !state.results.has(i) && !PAGES[i].optional).map((i) => i + 1);
   $('#readStatus').textContent = `${count} of ${total} characters ready.` +
     (missingPages.length && count ? ` Page ${missingPages.join(' & ')} not scanned yet — you can still build the font.` : '');
 }
@@ -605,6 +626,69 @@ hlOn.checked = state.style.highlightOn;
 textSize.value = state.style.size;
 textPos.value = state.style.position;
 hlOn.addEventListener('change', () => { state.style.highlightOn = hlOn.checked; styleChanged(); });
+
+// Background picture
+const bgInput = $('#bgInput');
+bgInput.addEventListener('change', async () => {
+  const file = bgInput.files[0];
+  bgInput.value = '';
+  if (!file) return;
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  try {
+    await img.decode();
+  } catch {
+    $('#exportStatus').textContent = "Couldn't open that picture. Try a JPEG or PNG.";
+    return;
+  }
+  if (state.bgImage) URL.revokeObjectURL(state.bgImage.src);
+  state.bgImage = img;
+  $('#bgThumb').src = img.src;
+  $('#bgImageInfo').hidden = false;
+  styleChanged();
+});
+$('#bgRemove').addEventListener('click', () => {
+  if (state.bgImage) URL.revokeObjectURL(state.bgImage.src);
+  state.bgImage = null;
+  $('#bgImageInfo').hidden = true;
+  styleChanged();
+});
+const bgFade = $('#bgFade');
+bgFade.checked = state.style.bgFade;
+bgFade.addEventListener('change', () => { state.style.bgFade = bgFade.checked; styleChanged(); });
+
+// Title card and name. Typing into a field switches its option on.
+const bindText = (input, key, toggle, toggleKey) => {
+  input.value = state.style[key];
+  input.addEventListener('input', () => {
+    state.style[key] = input.value;
+    if (input.value.trim() && !toggle.checked) { toggle.checked = true; state.style[toggleKey] = true; syncToggles(); }
+    styleChanged();
+  });
+};
+const titleOn = $('#titleOn');
+const nameOn = $('#nameOn');
+const introLen = $('#introLen');
+titleOn.checked = state.style.titleOn;
+nameOn.checked = state.style.nameOn;
+introLen.value = String(state.style.introLen);
+function syncToggles() {
+  $('#titleFields').classList.toggle('off', !titleOn.checked);
+  $('#nameText').classList.toggle('off', !nameOn.checked);
+}
+syncToggles();
+bindText($('#titleText'), 'title', titleOn, 'titleOn');
+bindText($('#subtitleText'), 'subtitle', titleOn, 'titleOn');
+bindText($('#nameText'), 'name', nameOn, 'nameOn');
+titleOn.addEventListener('change', () => {
+  state.style.titleOn = titleOn.checked;
+  syncToggles();
+  // Show the card right away so people can see what they turned on.
+  if (titleOn.checked && !player.playing) previewT = 0;
+  styleChanged();
+});
+nameOn.addEventListener('change', () => { state.style.nameOn = nameOn.checked; syncToggles(); styleChanged(); });
+introLen.addEventListener('change', () => { state.style.introLen = Number(introLen.value); styleChanged(); });
 textSize.addEventListener('input', () => { state.style.size = Number(textSize.value); styleChanged(); });
 textPos.addEventListener('change', () => { state.style.position = textPos.value; styleChanged(); });
 
@@ -615,8 +699,31 @@ const scrub = $('#scrub');
 let previewT = 0;
 let loop = 0;
 
+function introLength() {
+  const s = state.style;
+  return s.titleOn && (s.title.trim() || s.subtitle.trim()) ? s.introLen : 0;
+}
+
 function frameStyle() {
-  return { ...state.style, family: state.font?.family || 'Fredoka' };
+  const s = state.style;
+  return {
+    ...s,
+    family: state.font?.family || 'Fredoka',
+    bgImage: state.bgImage,
+    intro: introLength(),
+    name: s.nameOn ? s.name.trim() : '',
+  };
+}
+
+function totalLength() {
+  return introLength() + (state.audio?.buffer.duration || 0);
+}
+
+function updateScrub() {
+  const total = totalLength();
+  scrub.max = String(Math.max(0.01, total));
+  if (previewT > total) previewT = 0;
+  scrub.value = String(previewT);
 }
 
 function sizeCanvas() {
@@ -642,6 +749,7 @@ function draw() {
 function styleChanged() {
   saveStyle();
   sizeCanvas();
+  updateScrub();
   draw();
 }
 
@@ -653,10 +761,7 @@ function enterVideo() {
   $('#vidNeeds').hidden = needs.length === 0;
   $('#vidNeeds').textContent = needs.length ? `To make a video you still need ${needs.join(' and ')}. You can play with the look in the meantime.` : '';
   $('#exportBtn').disabled = !state.audio || !state.captions.length;
-  const dur = state.audio?.buffer.duration || 0;
-  scrub.max = String(Math.max(0.01, dur));
-  if (previewT > dur) previewT = 0;
-  scrub.value = String(previewT);
+  updateScrub();
   sizeCanvas();
   document.fonts.ready.then(draw);
   draw();
@@ -672,8 +777,8 @@ function stopPreview() {
 $('#playBtn').addEventListener('click', async () => {
   if (!state.audio) return;
   if (player.playing) return stopPreview();
-  const from = previewT >= state.audio.buffer.duration - 0.05 ? 0 : previewT;
-  await player.play(state.audio.buffer, from);
+  const from = previewT >= totalLength() - 0.05 ? 0 : previewT;
+  await player.play(state.audio.buffer, from, { intro: introLength() });
   $('#playBtn').textContent = '❚❚';
   $('#playBtn').setAttribute('aria-label', 'Pause');
   const tick = () => {
@@ -710,7 +815,7 @@ $('#exportBtn').addEventListener('click', async () => {
   bar.hidden = false;
   $('#exportResult').hidden = true;
   status.classList.remove('error');
-  status.textContent = `Recording your video in real time (${fmt(state.audio.buffer.duration)}). Keep this tab open and in front.`;
+  status.textContent = `Recording your video in real time (${fmt(totalLength())}). Keep this tab open and in front.`;
   try {
     await document.fonts.ready;
     const blob = await exportVideo({

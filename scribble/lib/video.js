@@ -34,32 +34,117 @@ function layout(ctx, words, maxWidth) {
   return { lines, space };
 }
 
-// style: { bg, color, highlight, highlightOn, family, size (0.5–1.6), position: 'middle' | 'lower', still }
-// `still` skips the pop-in animation (for a paused preview).
-export function drawFrame(ctx, W, H, t, captions, style) {
-  ctx.fillStyle = style.bg;
-  ctx.fillRect(0, 0, W, H);
-  const cap = activeCaption(captions, t);
-  if (!cap) return;
+const fontFor = (style, s) => `${s}px "${style.family}", "Fredoka", "Comic Sans MS", sans-serif`;
 
-  const words = captionWords(cap);
-  const maxWidth = W * 0.86;
-  let size = Math.min(W, H) * 0.12 * style.size;
-  const fontFor = (s) => `${s}px "${style.family}", "Fredoka", "Comic Sans MS", sans-serif`;
-  ctx.font = fontFor(size);
+// Lays out words at the largest size (up to `size`) that fits in maxLines.
+function fit(ctx, words, style, size, maxWidth, maxLines) {
+  ctx.font = fontFor(style, size);
   let lay = layout(ctx, words, maxWidth);
-  // Shrink rather than run off the screen.
-  while ((lay.lines.length > 3 || lay.lines.some((l) => l.width > maxWidth)) && size > 20) {
+  while ((lay.lines.length > maxLines || lay.lines.some((l) => l.width > maxWidth)) && size > 16) {
     size *= 0.92;
-    ctx.font = fontFor(size);
+    ctx.font = fontFor(style, size);
     lay = layout(ctx, words, maxWidth);
   }
+  return { ...lay, size };
+}
 
-  const lineH = size * 1.25;
+function drawLines(ctx, lay, cx, cy, colorFor) {
+  const lineH = lay.size * 1.25;
   const blockH = lay.lines.length * lineH;
+  lay.lines.forEach((line, li) => {
+    let x = cx - line.width / 2;
+    const y = cy - blockH / 2 + li * lineH + lay.size * 0.92;
+    for (const w of line.words) {
+      ctx.fillStyle = colorFor(w);
+      ctx.fillText(w.text, x, y);
+      x += w.width + lay.space;
+    }
+  });
+}
+
+function drawBackground(ctx, W, H, style) {
+  ctx.fillStyle = style.bg;
+  ctx.fillRect(0, 0, W, H);
+  const img = style.bgImage;
+  if (!img) return;
+  const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+  const s = Math.max(W / iw, H / ih);
+  ctx.drawImage(img, (W - iw * s) / 2, (H - ih * s) / 2, iw * s, ih * s);
+  if (style.bgFade) {
+    // Wash the picture with the background colour so the words stand out.
+    ctx.globalAlpha = 0.5;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+}
+
+const toWords = (text) => text.split(/\s+/).filter(Boolean).map((t) => ({ text: t }));
+
+function drawTitleCard(ctx, W, H, t, style) {
+  const fadeIn = style.still ? 1 : Math.min(1, t / 0.4);
+  const fadeOut = style.still ? 1 : Math.min(1, (style.intro - t) / 0.3);
+  const k = Math.max(0, Math.min(fadeIn, fadeOut));
+  const m = Math.min(W, H);
+  const maxWidth = W * 0.84;
+  const title = style.title ? fit(ctx, toWords(style.title), style, m * 0.16 * style.size, maxWidth, 3) : null;
+  const sub = style.subtitle ? fit(ctx, toWords(style.subtitle), style, m * 0.075 * style.size, maxWidth, 2) : null;
+  const titleH = title ? title.lines.length * title.size * 1.25 : 0;
+  const subH = sub ? sub.lines.length * sub.size * 1.25 : 0;
+  const gap = title && sub ? m * 0.04 : 0;
+  const top = H / 2 - (titleH + gap + subH) / 2;
+  ctx.save();
+  ctx.globalAlpha = k;
+  if (title) {
+    ctx.font = fontFor(style, title.size);
+    drawLines(ctx, title, W / 2, top + titleH / 2, () => style.color);
+  }
+  if (sub) {
+    ctx.font = fontFor(style, sub.size);
+    drawLines(ctx, sub, W / 2, top + titleH + gap + subH / 2, () => style.highlight);
+  }
+  ctx.restore();
+}
+
+function drawNameTag(ctx, W, H, style) {
+  const m = Math.min(W, H);
+  const size = m * 0.06 * Math.sqrt(style.size);
+  ctx.font = fontFor(style, size);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = style.color;
+  ctx.globalAlpha = 0.9;
+  ctx.fillText(style.name, m * 0.06, m * 0.06 + size * 0.9);
+  ctx.globalAlpha = 1;
+}
+
+// t is video time in seconds. The title card (style.intro seconds long, 0 for
+// none) plays first; captions are timed against the audio, which starts after it.
+// style: { bg, bgImage, bgFade, color, highlight, highlightOn, family, size (0.5–1.6),
+//          position: 'middle' | 'lower', intro, title, subtitle, name, still }
+// `still` skips animations (for a paused preview).
+export function drawFrame(ctx, W, H, t, captions, style) {
+  drawBackground(ctx, W, H, style);
+  ctx.save();
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  if (style.bgImage) {
+    ctx.shadowColor = 'rgba(0,0,0,.35)';
+    ctx.shadowBlur = Math.min(W, H) * 0.012;
+  }
+  const intro = style.intro || 0;
+  if (t < intro) drawTitleCard(ctx, W, H, t, style);
+  else {
+    if (style.name) drawNameTag(ctx, W, H, style);
+    drawCaption(ctx, W, H, t - intro, captions, style);
+  }
+  ctx.restore();
+}
+
+function drawCaption(ctx, W, H, t, captions, style) {
+  const cap = activeCaption(captions, t);
+  if (!cap) return;
+  const lay = fit(ctx, captionWords(cap), style, Math.min(W, H) * 0.12 * style.size, W * 0.86, 3);
   const centerY = style.position === 'lower' ? H * 0.78 : H * 0.5;
-  const age = t - cap.start;
-  const k = style.still ? 1 : Math.min(1, age / POP);
+  const k = style.still ? 1 : Math.min(1, (t - cap.start) / POP);
   const ease = 1 - (1 - k) ** 3;
 
   ctx.save();
@@ -67,19 +152,8 @@ export function drawFrame(ctx, W, H, t, captions, style) {
   ctx.translate(W / 2, centerY);
   const scale = 0.9 + 0.1 * ease;
   ctx.scale(scale, scale);
-  ctx.textBaseline = 'alphabetic';
-  ctx.textAlign = 'left';
-  // Baseline of each line, with the block vertically centred on centerY.
-  lay.lines.forEach((line, li) => {
-    let x = -line.width / 2;
-    const y = -blockH / 2 + li * lineH + size * 0.92;
-    for (const w of line.words) {
-      const on = style.highlightOn && t >= w.start && t < w.end;
-      ctx.fillStyle = on ? style.highlight : style.color;
-      ctx.fillText(w.text, x, y);
-      x += w.width + lay.space;
-    }
-  });
+  ctx.font = fontFor(style, lay.size);
+  drawLines(ctx, lay, 0, 0, (w) => (style.highlightOn && t >= w.start && t < w.end ? style.highlight : style.color));
   ctx.restore();
 }
 
@@ -95,7 +169,8 @@ export function pickMime() {
   return options.find((m) => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
 }
 
-// Plays an AudioBuffer and reports the current position; used for both preview and export.
+// Plays an AudioBuffer on a video timeline: the audio starts `intro` seconds in.
+// Used for both preview and export.
 export class Player {
   constructor() {
     this.ctx = null;
@@ -108,7 +183,7 @@ export class Player {
     if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
     return this.ctx;
   }
-  async play(buffer, from = 0, extraDestination = null, { toSpeakers = true } = {}) {
+  async play(buffer, from = 0, { intro = 0, extraDestination = null, toSpeakers = true } = {}) {
     this.stop();
     const ctx = this.ensure();
     if (ctx.state === 'suspended') await ctx.resume();
@@ -116,10 +191,10 @@ export class Player {
     src.buffer = buffer;
     if (toSpeakers) src.connect(ctx.destination);
     if (extraDestination) src.connect(extraDestination);
-    src.onended = () => { if (this.src === src) { this.playing = false; this.offset = buffer.duration; this.onended?.(); } };
+    src.onended = () => { if (this.src === src) { this.playing = false; this.offset = intro + buffer.duration; this.onended?.(); } };
     this.offset = from;
     this.startedAt = ctx.currentTime;
-    src.start(0, from);
+    src.start(ctx.currentTime + Math.max(0, intro - from), Math.max(0, from - intro));
     this.src = src;
     this.playing = true;
   }
@@ -163,14 +238,14 @@ export function exportVideo({ buffer, captions, style, aspect, onProgress, signa
     };
     rec.onerror = (e) => reject(e.error || new Error('Recording failed'));
 
-    const tail = 0.6;
-    const total = buffer.duration + tail;
+    const intro = style.intro || 0;
+    const total = intro + buffer.duration + 0.6;
+    // The audio clock keeps running after the voice ends, so it times the whole video.
     // A timer rather than requestAnimationFrame, so the export still finishes
     // (if choppily) when the tab is in the background.
     let timer = 0;
-    let ended = false;
     const tick = () => {
-      const t = ended ? buffer.duration + (performance.now() - endWall) / 1000 : player.time;
+      const t = actx.currentTime - player.startedAt;
       drawFrame(ctx, w, h, t, captions, style);
       onProgress?.(Math.min(1, t / total));
       if (signal?.aborted || t >= total) {
@@ -181,10 +256,8 @@ export function exportVideo({ buffer, captions, style, aspect, onProgress, signa
       }
       timer = setTimeout(tick, 1000 / 30);
     };
-    let endWall = 0;
-    player.onended = () => { ended = true; endWall = performance.now(); };
 
     rec.start(250);
-    player.play(buffer, 0, dest, { toSpeakers: false }).then(tick, reject);
+    player.play(buffer, 0, { intro, extraDestination: dest, toSpeakers: false }).then(tick, reject);
   });
 }
