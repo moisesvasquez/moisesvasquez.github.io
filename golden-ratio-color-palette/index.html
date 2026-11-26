@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golden Ratio Color Palette</title>
+<meta name="description" content="Enter one hex color and get a palette built on the golden ratio: an accent, a complementary and a contrasting color, with the math behind each one.">
+<meta property="og:title" content="Golden Ratio Color Palette">
+<meta property="og:description" content="One hex color in, a golden-ratio palette out. Accent, complementary and contrasting colors with the logic behind each.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f7f5f0;
+    --panel: #fffdf8;
+    --ink: #1b1a17;
+    --muted: #6b675e;
+    --line: #dcd7cc;
+    --focus: #1b1a17;
+    --radius: 14px;
+    --serif: "Instrument Serif", Georgia, serif;
+    --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    /* palette, set from JS */
+    --c-base: #2f6f62;
+    --c-accent: #6f2f5c;
+    --c-comp: #7a5b55;
+    --c-contrast: #d9e6e3;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #141412;
+      --panel: #1c1b19;
+      --ink: #eeebe4;
+      --muted: #a29d92;
+      --line: #34322d;
+      --focus: #eeebe4;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #141412;
+    --panel: #1c1b19;
+    --ink: #eeebe4;
+    --muted: #a29d92;
+    --line: #34322d;
+    --focus: #eeebe4;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  #tiles {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity .4s ease;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 16px 72px;
+  }
+  @media (min-width: 720px) { .wrap { padding: 88px 32px 96px; } }
+
+  header { max-width: 680px; margin-bottom: 20px; padding: 24px 20px 26px; }
+  @media (min-width: 720px) { header { padding: 36px 36px 38px; margin-bottom: 24px; } }
+  .eyebrow {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .04em;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 10px;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(44px, 9vw, 84px);
+    line-height: .95;
+    letter-spacing: -0.015em;
+    margin: 0 0 18px;
+  }
+  h1 em { font-style: italic; color: var(--title-accent, var(--c-base)); }
+  .credit {
+    margin: 0;
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+  .credit a { color: var(--ink); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  .credit a:hover { text-decoration-thickness: 2px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  /* ---------- input ---------- */
+  .input-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+  }
+  .picker {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    flex: none;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--c-base);
+  }
+  .picker input {
+    position: absolute;
+    inset: -8px;
+    width: calc(100% + 16px);
+    height: calc(100% + 16px);
+    opacity: 0;
+    cursor: pointer;
+  }
+  .hex-field {
+    flex: 1 1 180px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    height: 52px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper);
+  }
+  .hex-field:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .hex-field span { font-family: var(--mono); color: var(--muted); font-size: 20px; }
+  .hex-field input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 20px;
+    text-transform: lowercase;
+  }
+  .hex-field.bad { border-color: #c2412d; }
+  .input-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .btn {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: background .15s ease, transform .1s ease;
+  }
+  .btn:hover { background: var(--paper); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible, .copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .btn.solid { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn.solid:hover { opacity: .88; }
+  .btn svg { width: 16px; height: 16px; }
+
+  /* ---------- palette ---------- */
+  .palette {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  @media (min-width: 560px) { .palette { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 960px) { .palette { grid-template-columns: repeat(4, 1fr); } }
+
+  .swatch-card { display: flex; flex-direction: column; overflow: hidden; }
+  .chip {
+    position: relative;
+    aspect-ratio: 2.618 / 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .chip .share {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(2px);
+  }
+  .swatch-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .role {
+    font-family: var(--serif);
+    font-size: 30px;
+    line-height: 1;
+    margin: 0;
+    font-weight: 400;
+  }
+  .logic { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; flex: 1; }
+  .logic b { color: var(--ink); font-weight: 500; }
+  .hex-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+  }
+  .hex-line code { font-family: var(--mono); font-size: 15px; }
+  .copy {
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: 8px;
+    height: 34px;
+    padding: 0 10px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .copy:hover { background: var(--paper); }
+  .copy svg { width: 14px; height: 14px; }
+
+  /* proportion bar */
+  .ratio { padding: 16px; margin-bottom: 40px; }
+  .ratio-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .ratio-head h2 { margin: 0; font-size: 15px; font-weight: 600; }
+  .ratio-head p { margin: 0; font-size: 13px; color: var(--muted); }
+  .bar { display: flex; height: 44px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+  .bar div { display: flex; align-items: center; padding-left: 10px; font-family: var(--mono); font-size: 12px; min-width: 0; overflow: hidden; white-space: nowrap; }
+
+  /* ---------- sections ---------- */
+  .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 0 0 14px; flex-wrap: wrap; }
+  .section-title h2 { font-family: var(--serif); font-weight: 400; font-size: 36px; line-height: 1; margin: 0; }
+  .section-title p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  .sample-input {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 10px 10px 14px;
+    margin-bottom: 12px;
+  }
+  .sample-input label { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .sample-input input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0 12px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: 15px;
+  }
+  .sample-input input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+  .samples { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 40px; }
+  @media (min-width: 720px) { .samples { grid-template-columns: 1fr 1fr; } }
+  .sample {
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    padding: 22px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 220px;
+  }
+  .sample .pair { font-family: var(--mono); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; opacity: .8; }
+  .sample h3 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.02; margin: 0; overflow-wrap: anywhere; }
+  .sample p { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+  .sample .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 8px; flex-wrap: wrap; }
+  .sample .cta { border: 0; border-radius: 999px; padding: 8px 16px; font-size: 14px; font-weight: 500; }
+  .sample .score { font-family: var(--mono); font-size: 12px; padding: 3px 8px; border-radius: 6px; border: 1px solid currentColor; opacity: .9; }
+
+  /* ---------- export ---------- */
+  .export { padding: 16px; display: grid; gap: 14px; margin-bottom: 40px; }
+  .export-row { display: grid; gap: 8px; }
+  .export-row .lbl { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .export-row .lbl span { font-size: 13px; color: var(--muted); }
+  .export pre {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ---------- method ---------- */
+  .method { padding: 20px; margin-bottom: 32px; }
+  .method ol { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+  .method li { padding-left: 4px; color: var(--muted); font-size: 15px; }
+  .method li b { color: var(--ink); font-weight: 600; }
+  .method .phi { font-family: var(--mono); font-size: 13px; color: var(--muted); margin: 16px 0 0; }
+
+  footer { font-size: 13px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
+  footer a { color: var(--muted); }
+  .footer-pill { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    z-index: 10;
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    max-width: calc(100vw - 32px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="tiles" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <header class="panel">
+    <span class="eyebrow">φ = 1.618…</span>
+    <h1>Golden Ratio <em>Color</em> Palette</h1>
+    <p class="credit">Built on the method from <a href="https://www.instagram.com/reel/DgF3iQBRcXG/" target="_blank" rel="noopener">“Golden Ratio for color”</a> by <a href="https://www.instagram.com/harr.ysalce/" target="_blank" rel="noopener">Harry Salce (@harr.ysalce)</a>. Enter one color and the rest of the palette is worked out with φ.</p>
+  </header>
+
+  <section class="panel input-row" aria-label="Choose your color">
+    <label class="picker" title="Pick a color">
+      <span class="sr-only">Color picker</span>
+      <input type="color" id="picker" value="#2f6f62">
+    </label>
+    <div class="hex-field" id="hexField">
+      <span aria-hidden="true">#</span>
+      <label for="hex" class="sr-only">Hex code</label>
+      <input id="hex" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="7" value="2f6f62" placeholder="2f6f62">
+    </div>
+    <div class="input-actions">
+      <button class="btn" id="random" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></svg>
+        Random
+      </button>
+      <button class="btn solid" id="copyAllTop" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        Copy all
+      </button>
+    </div>
+  </section>
+
+  <section class="palette" id="palette" aria-label="Generated palette"></section>
+
+  <section class="panel ratio" aria-label="Golden proportions">
+    <div class="ratio-head">
+      <h2>How much of each</h2>
+      <p>Each share is the previous one ÷ φ: 61.8 · 23.6 · 9.0 · 5.6</p>
+    </div>
+    <div class="bar" id="bar"></div>
+  </section>
+
+  <section aria-labelledby="test-h">
+    <div class="section-title">
+      <h2 id="test-h">Test it with text</h2>
+      <p>Contrast ratios are WCAG 2.x. AA needs 4.5:1 for body text.</p>
+    </div>
+    <div class="panel sample-input">
+      <label for="sampleText">Your text</label>
+      <input id="sampleText" type="text" value="The quick brown fox jumps over the lazy dog." maxlength="140">
+    </div>
+    <div class="samples" id="samples"></div>
+  </section>
+
+  <section aria-labelledby="export-h">
+    <div class="section-title">
+      <h2 id="export-h">Take it with you</h2>
+      <p>Order: your color, accent, complementary, contrasting.</p>
+    </div>
+    <div class="panel export">
+      <div class="export-row">
+        <div class="lbl"><span>Comma-separated</span><button class="copy" type="button" data-copy-target="csvOut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy list</button></div>
+        <pre id="csvOut"></pre>
+      </div>
+      <div class="export-row">
+        <div class="lbl"><span>As code (CSS variables)</span><button class="copy" type="button" data-copy-target="cssOut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy code</button></div>
+        <pre id="cssOut"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="method-h">
+    <div class="section-title"><h2 id="method-h">The method</h2></div>
+    <div class="panel method">
+      <ol>
+        <li><b>Your color</b> is the anchor. It takes the biggest share: 61.8% of the design.</li>
+        <li><b>Accent</b>: turn the hue wheel by the golden angle, 137.5° (360° ÷ φ²). It lands far enough away to stand out but never on a clashing straight opposite.</li>
+        <li><b>Complementary</b>: go straight across the wheel (180°) and divide the saturation by φ so it supports your color instead of fighting it.</li>
+        <li><b>Contrasting</b>: keep your hue and flip the lightness by golden steps: dark colors move 61.8% of the way to white, light colors keep 38.2% of their lightness. Then it's pushed further if needed until it passes 4.5:1 against your color, so it works as text.</li>
+        <li><b>Proportions</b>: split the design 61.8 / 23.6 / 9.0 / 5.6, each share being the last one divided by φ.</li>
+      </ol>
+      <p class="phi">φ = (1 + √5) / 2 ≈ 1.618 · 1/φ ≈ 0.618 · 1/φ² ≈ 0.382</p>
+    </div>
+  </section>
+
+  <footer>
+    <span class="footer-pill">Background: the aperiodic “hat”, the einstein monotile, shaded in your palette</span>
+    <a class="footer-pill" href="/">moisesvasquez.io</a>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="hat.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const PHI = (1 + Math.sqrt(5)) / 2;   // 1.618…
+  const INV = 1 / PHI;                  // 0.618…
+  const INV2 = 1 / (PHI * PHI);         // 0.382…
+  const GOLDEN_ANGLE = 360 * INV2;      // 137.507…°
+
+  /* ---------- color math ---------- */
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const wrapHue = (h) => ((h % 360) + 360) % 360;
+
+  function parseHex(str) {
+    let s = String(str).trim().replace(/^#/, '').toLowerCase();
+    if (/^[0-9a-f]{3}$/.test(s)) s = s.split('').map((c) => c + c).join('');
+    return /^[0-9a-f]{6}$/.test(s) ? '#' + s : null;
+  }
+  function hexToRgb(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function rgbToHex([r, g, b]) {
+    return '#' + [r, g, b].map((v) => Math.round(clamp(v, 0, 255)).toString(16).padStart(2, '0')).join('');
+  }
+  function rgbToHsl([r, g, b]) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    let h = 0, s = 0;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
+    }
+    return { h, s: s * 100, l: l * 100 };
+  }
+  function hslToRgb({ h, s, l }) {
+    s /= 100; l /= 100;
+    const k = (n) => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return [f(0) * 255, f(8) * 255, f(4) * 255];
+  }
+  const hslToHex = (hsl) => rgbToHex(hslToRgb(hsl));
+  function luminance(hex) {
+    const c = hexToRgb(hex).map((v) => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function contrast(a, b) {
+    const la = luminance(a), lb = luminance(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  }
+  const r0 = (v) => Math.round(v);
+  const deg = (v) => r0(v) + '°';
+  const pct = (v) => r0(v) + '%';
+
+  /* ---------- the golden-ratio rules ---------- */
+  function buildPalette(baseHex) {
+    const b = rgbToHsl(hexToRgb(baseHex));
+
+    // Accent: golden-angle hue rotation, same saturation and lightness.
+    const aH = wrapHue(b.h + GOLDEN_ANGLE);
+    const accent = hslToHex({ h: aH, s: b.s, l: b.l });
+
+    // Complementary: opposite hue, saturation divided by φ.
+    const cH = wrapHue(b.h + 180);
+    const cS = b.s * INV;
+    const comp = hslToHex({ h: cH, s: cS, l: b.l });
+
+    // Contrasting: same hue, lightness flipped by golden steps, saturation × 0.382.
+    const dark = luminance(baseHex) < 0.18;
+    let tL = dark ? b.l + (100 - b.l) * INV : b.l * INV2;
+    const tS = b.s * INV2;
+    let tHex = hslToHex({ h: b.h, s: tS, l: tL });
+    let pushed = false;
+    while (contrast(baseHex, tHex) < 4.5 && tL > 0 && tL < 100) {
+      tL = clamp(tL + (dark ? 2 : -2), 0, 100);
+      tHex = hslToHex({ h: b.h, s: tS, l: tL });
+      pushed = true;
+    }
+    const ratio = contrast(baseHex, tHex);
+
+    return [
+      {
+        key: 'base', role: 'Your color', hex: baseHex, share: 61.8,
+        logic: `The anchor. <b>H ${deg(b.h)} · S ${pct(b.s)} · L ${pct(b.l)}</b>. Use it for 61.8% of the design.`
+      },
+      {
+        key: 'accent', role: 'Accent', hex: accent, share: 9.0,
+        logic: `Hue turned by the golden angle: <b>${deg(b.h)} + 137.5° = ${deg(aH)}</b>. Saturation and lightness kept, so it pops at the same weight.`
+      },
+      {
+        key: 'comp', role: 'Complementary', hex: comp, share: 23.6,
+        logic: `Straight across the wheel: <b>${deg(b.h)} + 180° = ${deg(cH)}</b>. Saturation ÷ φ: <b>${pct(b.s)} → ${pct(cS)}</b>, so it supports rather than competes.`
+      },
+      {
+        key: 'contrast', role: 'Contrasting', hex: tHex, share: 5.6,
+        logic: (dark
+          ? `Same hue, lightness moved 61.8% toward white: <b>${pct(b.l)} → ${pct(tL)}</b>`
+          : `Same hue, lightness × 0.382 (1/φ²): <b>${pct(b.l)} → ${pct(tL)}</b>`) +
+          (pushed ? ', then nudged until it was legible' : '') +
+          `. Saturation × 0.382. <b>${ratio.toFixed(1)}:1</b> against your color.`
+      }
+    ];
+  }
+
+  /* ---------- rendering ---------- */
+  const $ = (id) => document.getElementById(id);
+  const copyIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+  const readableOn = (hex) => (contrast(hex, '#ffffff') >= contrast(hex, '#111111') ? '#ffffff' : '#111111');
+
+  let current = [];
+
+  function renderPalette(p) {
+    $('palette').innerHTML = p.map((c) => `
+      <article class="panel swatch-card">
+        <div class="chip" style="background:${c.hex};color:${readableOn(c.hex)}">
+          <span class="share">${c.share}%</span>
+        </div>
+        <div class="swatch-body">
+          <h2 class="role" style="color:${c.key === 'base' ? 'var(--ink)' : 'inherit'}">${c.role}</h2>
+          <p class="logic">${c.logic}</p>
+          <div class="hex-line">
+            <code>${c.hex}</code>
+            <button class="copy" type="button" data-copy="${c.hex}" aria-label="Copy ${c.role} ${c.hex}">${copyIcon}Copy</button>
+          </div>
+        </div>
+      </article>`).join('');
+
+    const order = ['base', 'comp', 'accent', 'contrast'];
+    $('bar').innerHTML = order.map((k) => {
+      const c = p.find((x) => x.key === k);
+      return `<div style="flex:${c.share};background:${c.hex};color:${readableOn(c.hex)}" title="${c.role} ${c.share}%">${c.share}%</div>`;
+    }).join('');
+  }
+
+  function renderSamples(p) {
+    const C = Object.fromEntries(p.map((c) => [c.key, c.hex]));
+    const text = escapeHtml($('sampleText').value || 'The quick brown fox jumps over the lazy dog.');
+    const combos = [
+      { bg: C.base, fg: C.contrast, btnBg: C.accent, label: 'Contrasting on your color', title: 'Headline' },
+      { bg: C.contrast, fg: C.base, btnBg: C.accent, label: 'Your color on contrasting', title: 'Headline' },
+      { bg: C.comp, fg: C.contrast, btnBg: C.base, label: 'Contrasting on complementary', title: 'Section' },
+      { bg: C.contrast, fg: C.accent, btnBg: C.base, label: 'Accent on contrasting', title: 'Callout' }
+    ];
+    $('samples').innerHTML = combos.map((s) => {
+      const r = contrast(s.bg, s.fg);
+      const grade = r >= 7 ? 'AAA' : r >= 4.5 ? 'AA' : r >= 3 ? 'AA large' : 'Fails';
+      return `
+      <div class="sample" style="background:${s.bg};color:${s.fg};border-color:${s.bg}">
+        <span class="pair">${s.label}</span>
+        <h3>${s.title}: ${text}</h3>
+        <p>${text} Body copy set at 15px to check comfortable reading at small sizes.</p>
+        <div class="foot">
+          <button class="cta" type="button" tabindex="-1" style="background:${s.btnBg};color:${readableOn(s.btnBg)}">Button</button>
+          <span class="score">${r.toFixed(2)}:1 · ${grade}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderExport(p) {
+    $('csvOut').textContent = p.map((c) => c.hex).join(', ');
+    $('cssOut').textContent = ':root {\n' + p.map((c) => {
+      const name = { base: 'primary', accent: 'accent', comp: 'complementary', contrast: 'contrasting' }[c.key];
+      return `  --color-${name}: ${c.hex};`;
+    }).join('\n') + '\n}';
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  /* ---------- einstein tile background ---------- */
+  const canvas = $('tiles');
+  const ctx = canvas.getContext('2d');
+  let hats = null;
+  let hatCenter = { x: 0, y: 0 };
+
+  function prepareHats() {
+    hats = window.HatTiling.generate(3);
+    // Centre on the median tile so the viewport sits inside the dense part of the patch.
+    const xs = hats.map((h) => h.pts[0].x).sort((a, b) => a - b);
+    const ys = hats.map((h) => h.pts[0].y).sort((a, b) => a - b);
+    hatCenter = { x: xs[xs.length >> 1], y: ys[ys.length >> 1] };
+  }
+
+  function drawTiles() {
+    if (!hats || !current.length) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = window.innerWidth, h = window.innerHeight;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    const C = Object.fromEntries(current.map((c) => [c.key, c.hex]));
+    const isDark = getComputedStyle(document.documentElement).colorScheme === 'dark';
+    const unit = w < 600 ? 9 : 12; // px per hex-grid unit
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.translate(w / 2, h / 2);
+    ctx.rotate(-0.12);
+    ctx.scale(unit, unit);
+    ctx.translate(-hatCenter.x, -hatCenter.y);
+
+    const fills = { H: C.base, H1: C.accent, T: C.comp, P: C.comp, F: C.base };
+    const alpha = { H: 0.09, H1: 0.22, T: 0.15, P: 0.11, F: 0.05 };
+    const k = isDark ? 1.3 : 1;
+    // Lines in the contrasting color. When it is close to the page tone, draw them solid so they read as grout.
+    const pageLum = isDark ? 0.01 : 0.9;
+    const lineContrast = (Math.max(luminance(C.contrast), pageLum) + 0.05) / (Math.min(luminance(C.contrast), pageLum) + 0.05);
+    const lineAlpha = lineContrast < 2 ? 0.7 : 0.22;
+    const reach = Math.hypot(w, h) / unit / 2 + 6;
+
+    for (const t of hats) {
+      const p0 = t.pts[0];
+      if (Math.abs(p0.x - hatCenter.x) > reach || Math.abs(p0.y - hatCenter.y) > reach) continue;
+      ctx.beginPath();
+      t.pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.closePath();
+      ctx.globalAlpha = alpha[t.kind] * k;
+      ctx.fillStyle = fills[t.kind];
+      ctx.fill();
+      ctx.globalAlpha = lineAlpha;
+      ctx.strokeStyle = C.contrast;
+      ctx.lineWidth = 1.4 / unit;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---------- state ---------- */
+  function apply(hex, opts = {}) {
+    current = buildPalette(hex);
+    const root = document.documentElement.style;
+    current.forEach((c) => root.setProperty('--c-' + c.key, c.hex));
+    // Keep the italic title word legible: use your color unless it is too close to the panel tone.
+    const panel = getComputedStyle(document.documentElement).getPropertyValue('--panel').trim() || '#fffdf8';
+    root.setProperty('--title-accent', contrast(hex, panel) >= 3 ? hex : current[3].hex);
+    renderPalette(current);
+    renderSamples(current);
+    renderExport(current);
+    drawTiles();
+    if (!opts.fromPicker) $('picker').value = hex;
+    if (!opts.fromText) $('hex').value = hex.slice(1);
+    try { history.replaceState(null, '', '#' + hex.slice(1)); } catch (e) { /* ignore */ }
+  }
+
+  $('hex').addEventListener('input', (e) => {
+    const v = e.target.value.replace(/[^0-9a-fA-F#]/g, '');
+    if (v !== e.target.value) e.target.value = v;
+    const hex = (v.replace('#', '').length === 6 || v.replace('#', '').length === 3) ? parseHex(v) : null;
+    $('hexField').classList.toggle('bad', !hex && v.replace('#', '').length >= 6);
+    if (hex) apply(hex, { fromText: true });
+  });
+  $('hex').addEventListener('blur', () => {
+    const hex = parseHex($('hex').value);
+    $('hexField').classList.remove('bad');
+    $('hex').value = (hex || current[0].hex).slice(1);
+  });
+  $('hex').addEventListener('paste', (e) => {
+    const txt = (e.clipboardData || window.clipboardData).getData('text');
+    const hex = parseHex(txt);
+    if (hex) { e.preventDefault(); apply(hex); }
+  });
+  $('picker').addEventListener('input', (e) => apply(e.target.value.toLowerCase(), { fromPicker: true }));
+  $('random').addEventListener('click', () => {
+    const hsl = { h: Math.random() * 360, s: 35 + Math.random() * 50, l: 28 + Math.random() * 44 };
+    apply(hslToHex(hsl));
+  });
+  $('sampleText').addEventListener('input', () => renderSamples(current));
+
+  /* ---------- copy ---------- */
+  const toast = $('toast');
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1600);
+  }
+  async function copyText(text, label) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (err) { /* ignore */ }
+      ta.remove();
+    }
+    showToast('Copied ' + (label || text));
+  }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-copy],[data-copy-target]');
+    if (!b) return;
+    if (b.dataset.copy) copyText(b.dataset.copy);
+    else {
+      const id = b.dataset.copyTarget;
+      copyText($(id).textContent, id === 'csvOut' ? $(id).textContent : 'CSS variables');
+    }
+  });
+  $('copyAllTop').addEventListener('click', () => copyText(current.map((c) => c.hex).join(', ')));
+
+  /* ---------- boot ---------- */
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(drawTiles, 120); });
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    (mq.addEventListener ? mq.addEventListener.bind(mq, 'change') : mq.addListener.bind(mq))(() => apply(current[0].hex));
+  }
+
+  window.addEventListener('hashchange', () => {
+    const hex = parseHex(location.hash);
+    if (hex && (!current.length || hex !== current[0].hex)) apply(hex);
+  });
+
+  prepareHats();
+  apply(parseHex(location.hash) || '#2f6f62');
+})();
+</script>
+</body>
+</html>
