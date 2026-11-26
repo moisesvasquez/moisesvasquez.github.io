@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Golden Ratio Color Palette</title>
-<meta name="description" content="Enter one hex color and get a palette built on the golden ratio: an accent, a complementary and a contrasting color, with the math behind each one.">
+<meta name="description" content="Enter one hex color and get a palette built on the golden ratio: an accent, a complementary and a contrast color, with the math behind each one.">
 <meta property="og:title" content="Golden Ratio Color Palette">
-<meta property="og:description" content="One hex color in, a golden-ratio palette out. Accent, complementary and contrasting colors with the logic behind each.">
+<meta property="og:description" content="One hex color in, a golden-ratio palette out. Accent, complementary and contrast colors with the logic behind each.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -430,7 +430,7 @@
   <section aria-labelledby="export-h">
     <div class="section-title">
       <h2 id="export-h">Take it with you</h2>
-      <p>Order: your color, accent, complementary, contrasting.</p>
+      <p>Order: your color, accent, complementary, contrast.</p>
     </div>
     <div class="panel export">
       <div class="export-row">
@@ -448,10 +448,10 @@
     <div class="section-title"><h2 id="method-h">The method</h2></div>
     <div class="panel method">
       <ol>
-        <li><b>Your color</b> is the anchor. It takes the biggest share: 61.8% of the design.</li>
-        <li><b>Accent</b>: turn the hue wheel by the golden angle, 137.5° (360° ÷ φ²). It lands far enough away to stand out but never on a clashing straight opposite.</li>
-        <li><b>Complementary</b>: go straight across the wheel (180°) and divide the saturation by φ so it supports your color instead of fighting it.</li>
-        <li><b>Contrasting</b>: keep your hue and flip the lightness by golden steps: dark colors move 61.8% of the way to white, light colors keep 38.2% of their lightness. Then it's pushed further if needed until it passes 4.5:1 against your color, so it works as text.</li>
+        <li><b>Your color</b>: read its hue, saturation and brightness (HSB) as whole numbers.</li>
+        <li><b>Accent</b>: subtract the golden angle, 137.5° (360° ÷ φ²), from the hue. Saturation and brightness stay the same.</li>
+        <li><b>Complementary</b>: keep the hue, bring the saturation down by 61.8% (× 0.382) and raise the brightness 38.2% of the way to 100.</li>
+        <li><b>Contrast</b>: keep the hue and saturation and multiply the brightness by 0.382.</li>
         <li><b>Proportions</b>: split the design 61.8 / 23.6 / 9.0 / 5.6, each share being the last one divided by φ.</li>
       </ol>
       <p class="phi">φ = (1 + √5) / 2 ≈ 1.618 · 1/φ ≈ 0.618 · 1/φ² ≈ 0.382</p>
@@ -472,9 +472,7 @@
   'use strict';
 
   const PHI = (1 + Math.sqrt(5)) / 2;   // 1.618…
-  const INV = 1 / PHI;                  // 0.618…
   const INV2 = 1 / (PHI * PHI);         // 0.382…
-  const GOLDEN_ANGLE = 360 * INV2;      // 137.507…°
 
   /* ---------- color math ---------- */
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -530,52 +528,67 @@
   const deg = (v) => r0(v) + '°';
   const pct = (v) => r0(v) + '%';
 
-  /* ---------- the golden-ratio rules ---------- */
-  function buildPalette(baseHex) {
-    const b = rgbToHsl(hexToRgb(baseHex));
-
-    // Accent: golden-angle hue rotation, same saturation and lightness.
-    const aH = wrapHue(b.h + GOLDEN_ANGLE);
-    const accent = hslToHex({ h: aH, s: b.s, l: b.l });
-
-    // Complementary: opposite hue, saturation divided by φ.
-    const cH = wrapHue(b.h + 180);
-    const cS = b.s * INV;
-    const comp = hslToHex({ h: cH, s: cS, l: b.l });
-
-    // Contrasting: same hue, lightness flipped by golden steps, saturation × 0.382.
-    const dark = luminance(baseHex) < 0.18;
-    let tL = dark ? b.l + (100 - b.l) * INV : b.l * INV2;
-    const tS = b.s * INV2;
-    let tHex = hslToHex({ h: b.h, s: tS, l: tL });
-    let pushed = false;
-    while (contrast(baseHex, tHex) < 4.5 && tL > 0 && tL < 100) {
-      tL = clamp(tL + (dark ? 2 : -2), 0, 100);
-      tHex = hslToHex({ h: b.h, s: tS, l: tL });
-      pushed = true;
+  /* ---------- HSB (a.k.a. HSV), the model design tools show ---------- */
+  function rgbToHsb([r, g, b]) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+    let h = 0;
+    if (d) {
+      if (max === r) h = ((g - b) / d + 6) % 6;
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
     }
+    return { h, s: max ? (d / max) * 100 : 0, b: max * 100 };
+  }
+  function hsbToHex({ h, s, b }) {
+    s /= 100; b /= 100;
+    const f = (n) => {
+      const k = (n + h / 60) % 6;
+      return b - b * s * Math.max(0, Math.min(k, 4 - k, 1));
+    };
+    return rgbToHex([f(5) * 255, f(3) * 255, f(1) * 255]);
+  }
+  const fmtDeg = (v) => (Math.round(v * 10) / 10) + '°';
+
+  /* ---------- the golden-ratio rules (Harry Salce, "Golden Ratio for color") ----------
+     Worked in whole-number HSB, like a design tool's color picker.
+     Example from the video: #00B2A9 → accent #F29F00 (hue), complementary #80CFCB, contrast #004541. */
+  function buildPalette(baseHex) {
+    const raw = rgbToHsb(hexToRgb(baseHex));
+    const H = wrapHue(Math.round(raw.h)), S = Math.round(raw.s), B = Math.round(raw.b);
+
+    // Accent: hue minus the golden angle (137.5°). Saturation and brightness kept.
+    const aH = wrapHue(H - 137.5);
+    const accent = hsbToHex({ h: aH, s: S, b: B });
+
+    // Complementary: same hue, saturation down 61.8% (× 0.382),
+    // brightness up 38.2% of the way to 100 (70 → 81 in the video).
+    const cS = Math.round(S * INV2);
+    const cB = Math.round(B + (100 - B) * INV2);
+    const comp = hsbToHex({ h: H, s: cS, b: cB });
+
+    // Contrast: same hue and saturation, brightness × 0.382 (70 × 0.382 = 27 in the video).
+    const tB = Math.round(B * INV2);
+    const tHex = hsbToHex({ h: H, s: S, b: tB });
     const ratio = contrast(baseHex, tHex);
 
     return [
       {
         key: 'base', role: 'Your color', hex: baseHex, share: 61.8,
-        logic: `The anchor. <b>H ${deg(b.h)} · S ${pct(b.s)} · L ${pct(b.l)}</b>. Use it for 61.8% of the design.`
+        logic: `The starting point. <b>H ${fmtDeg(H)} · S ${S} · B ${B}</b>. Every other color is worked out from these three numbers.`
       },
       {
         key: 'accent', role: 'Accent', hex: accent, share: 9.0,
-        logic: `Hue turned by the golden angle: <b>${deg(b.h)} + 137.5° = ${deg(aH)}</b>. Saturation and lightness kept, so it pops at the same weight.`
+        logic: `Hue minus the golden angle: <b>${fmtDeg(H)} − 137.5° = ${fmtDeg(aH)}</b>. Saturation ${S} and brightness ${B} stay the same.`
       },
       {
         key: 'comp', role: 'Complementary', hex: comp, share: 23.6,
-        logic: `Straight across the wheel: <b>${deg(b.h)} + 180° = ${deg(cH)}</b>. Saturation ÷ φ: <b>${pct(b.s)} → ${pct(cS)}</b>, so it supports rather than competes.`
+        logic: `Same hue, saturation down 61.8%: <b>${S} × 0.382 = ${cS}</b>. Brightness up 38.2% of the way to 100: <b>${B} → ${cB}</b>.`
       },
       {
-        key: 'contrast', role: 'Contrasting', hex: tHex, share: 5.6,
-        logic: (dark
-          ? `Same hue, lightness moved 61.8% toward white: <b>${pct(b.l)} → ${pct(tL)}</b>`
-          : `Same hue, lightness × 0.382 (1/φ²): <b>${pct(b.l)} → ${pct(tL)}</b>`) +
-          (pushed ? ', then nudged until it was legible' : '') +
-          `. Saturation × 0.382. <b>${ratio.toFixed(1)}:1</b> against your color.`
+        key: 'contrast', role: 'Contrast', hex: tHex, share: 5.6,
+        logic: `Same hue and saturation, brightness × 0.382: <b>${B} × 0.382 = ${tB}</b>. ${ratio.toFixed(1)}:1 against your color.`
       }
     ];
   }
@@ -614,10 +627,10 @@
     const C = Object.fromEntries(p.map((c) => [c.key, c.hex]));
     const text = escapeHtml($('sampleText').value || 'The quick brown fox jumps over the lazy dog.');
     const combos = [
-      { bg: C.base, fg: C.contrast, btnBg: C.accent, label: 'Contrasting on your color', title: 'Headline' },
-      { bg: C.contrast, fg: C.base, btnBg: C.accent, label: 'Your color on contrasting', title: 'Headline' },
-      { bg: C.comp, fg: C.contrast, btnBg: C.base, label: 'Contrasting on complementary', title: 'Section' },
-      { bg: C.contrast, fg: C.accent, btnBg: C.base, label: 'Accent on contrasting', title: 'Callout' }
+      { bg: C.base, fg: C.contrast, btnBg: C.accent, label: 'Contrast on your color', title: 'Headline' },
+      { bg: C.contrast, fg: C.base, btnBg: C.accent, label: 'Your color on contrast', title: 'Headline' },
+      { bg: C.comp, fg: C.contrast, btnBg: C.base, label: 'Contrast on complementary', title: 'Section' },
+      { bg: C.contrast, fg: C.accent, btnBg: C.base, label: 'Accent on contrast', title: 'Callout' }
     ];
     $('samples').innerHTML = combos.map((s) => {
       const r = contrast(s.bg, s.fg);
@@ -638,7 +651,7 @@
   function renderExport(p) {
     $('csvOut').textContent = p.map((c) => c.hex).join(', ');
     $('cssOut').textContent = ':root {\n' + p.map((c) => {
-      const name = { base: 'primary', accent: 'accent', comp: 'complementary', contrast: 'contrasting' }[c.key];
+      const name = { base: 'primary', accent: 'accent', comp: 'complementary', contrast: 'contrast' }[c.key];
       return `  --color-${name}: ${c.hex};`;
     }).join('\n') + '\n}';
   }
