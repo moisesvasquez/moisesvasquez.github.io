@@ -449,7 +449,7 @@
     <div class="panel method">
       <ol>
         <li><b>Your color</b>: read its hue, saturation and brightness (HSB) as whole numbers.</li>
-        <li><b>Accent</b>: subtract the golden angle, 137.5° (360° ÷ φ²), from the hue. Saturation and brightness stay the same.</li>
+        <li><b>Accent</b>: subtract the golden angle, 137.5° (360 − 360 ÷ 1.618), from the hue and take that hue off the color wheel at saturation 100, brightness 95.</li>
         <li><b>Complementary</b>: keep the hue, bring the saturation down by 61.8% (× 0.382) and raise the brightness 38.2% of the way to 100.</li>
         <li><b>Contrast</b>: keep the hue and saturation and multiply the brightness by 0.382.</li>
         <li><b>Proportions</b>: split the design 61.8 / 23.6 / 9.0 / 5.6, each share being the last one divided by φ.</li>
@@ -553,14 +553,15 @@
 
   /* ---------- the golden-ratio rules (Harry Salce, "Golden Ratio for color") ----------
      Worked in whole-number HSB, like a design tool's color picker.
-     Example from the video: #00B2A9 → accent #F29F00 (hue), complementary #80CFCB, contrast #004541. */
+     Example from the video: #00B2A9 → accent #F29F00, complementary #80CFCB, contrast #004541. */
   function buildPalette(baseHex) {
     const raw = rgbToHsb(hexToRgb(baseHex));
     const H = wrapHue(Math.round(raw.h)), S = Math.round(raw.s), B = Math.round(raw.b);
 
-    // Accent: hue minus the golden angle (137.5°). Saturation and brightness kept.
+    // Accent: hue minus the golden angle (137.5°), taken off the color wheel at
+    // saturation 100 and brightness 95, as in the video (39.5° → #F29F00).
     const aH = wrapHue(H - 137.5);
-    const accent = hsbToHex({ h: aH, s: S, b: B });
+    const accent = hsbToHex({ h: aH, s: 100, b: 95 });
 
     // Complementary: same hue, saturation down 61.8% (× 0.382),
     // brightness up 38.2% of the way to 100 (70 → 81 in the video).
@@ -580,7 +581,7 @@
       },
       {
         key: 'accent', role: 'Accent', hex: accent, share: 9.0,
-        logic: `Hue minus the golden angle: <b>${fmtDeg(H)} − 137.5° = ${fmtDeg(aH)}</b>. Saturation ${S} and brightness ${B} stay the same.`
+        logic: `Hue minus the golden angle: <b>${fmtDeg(H)} − 137.5° = ${fmtDeg(aH)}</b>. Picked off the color wheel at <b>saturation 100 · brightness 95</b>.`
       },
       {
         key: 'comp', role: 'Complementary', hex: comp, share: 23.6,
